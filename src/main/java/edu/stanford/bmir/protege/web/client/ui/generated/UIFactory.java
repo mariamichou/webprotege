@@ -2,6 +2,7 @@ package edu.stanford.bmir.protege.web.client.ui.generated;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gwt.core.client.GWT;
+
 import edu.stanford.bmir.protege.web.client.metrics.MetricsPortlet;
 import edu.stanford.bmir.protege.web.client.project.Project;
 import edu.stanford.bmir.protege.web.client.renderer.OWLEntityDescriptionBrowserPortlet;
@@ -28,6 +29,7 @@ import edu.stanford.bmir.protege.web.client.ui.portlet.propertyForm.PropertyFiel
 import edu.stanford.bmir.protege.web.client.ui.projectfeed.ProjectFeedPortlet;
 import edu.stanford.bmir.protege.web.client.ui.tab.AbstractTab;
 import edu.stanford.bmir.protege.web.client.ui.tab.UserDefinedTab;
+import edu.stanford.bmir.protege.web.client.ui.webvowl.WebVowlPortlet;
 import edu.stanford.bmir.protege.web.client.usage.UsagePortlet;
 import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
 
@@ -165,6 +167,9 @@ public class UIFactory {
             else if (portletJavaClassName.endsWith(OWLEntityDescriptionEditorPortlet.class.getName())) {
                 return new OWLEntityDescriptionEditorPortlet(selectionModel, project);
             }
+            else if (portletJavaClassName.endsWith(WebVowlPortlet.class.getName())) {
+                return new WebVowlPortlet(project);
+            }
             else {
                 GWT.log("Portlet not found: " + portletJavaClassName);
             }
@@ -207,7 +212,7 @@ public class UIFactory {
                 OBOTermRelationshipPortlet.class.getName(), OBOTermSynonymsPortlet.class.getName(),
                 OBOTermIdEditorPortlet.class.getName(),
                 OBOTermDefinitionPortlet.class.getName(), OBOTermXRefsEditorPortlet.class.getName(),
-                RevisionsPortlet.class.getName()};
+                RevisionsPortlet.class.getName(), WebVowlPortlet.class.getName()};
 
         List<String> portletsList = Arrays.asList(portlets);
         Collections.sort(portletsList, new Comparator<String>() {

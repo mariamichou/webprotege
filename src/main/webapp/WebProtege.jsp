@@ -34,6 +34,7 @@
 
     <link rel="stylesheet" href="css/WebProtege.css" type="text/css">
     <link rel="stylesheet" href="css/bootstrap.css" type="text/css">
+    <link rel="stylesheet" href="css/vowl.css" type="text/css">
 
     <script>
         <%

@@ -281,6 +281,30 @@
             </columns>
         </tab>
 
+        <!-- ********************************** -->
+        <!--         Visualization Tab          -->
+        <!-- ********************************** -->
+        <tab>
+            <name>edu.stanford.bmir.protege.web.client.ui.tab.UserDefinedTab</name>
+            <label>Visualization</label>
+            <columns>
+
+                <!-- Column 1 -->
+                <column>
+                    <width>1</width>
+                    <portlets>
+                        <portlet>
+                            <name>edu.stanford.bmir.protege.web.client.ui.webvowl.WebVowlPortlet</name>
+                            <height>570</height>
+                            <width>0</width>
+                        </portlet>
+                    </portlets>
+                </column>
+
+            </columns>
+        </tab>
+
+
     </tabs>
 
 </project>

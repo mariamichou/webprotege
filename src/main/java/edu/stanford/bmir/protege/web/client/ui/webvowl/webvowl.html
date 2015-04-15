@@ -1,0 +1,54 @@
+<main>
+       <section id="canvasArea">
+           <div id="graph"></div>
+       </section>
+       <nav id="optionsArea">
+           <ul id="optionsMenu">
+               <li id="aboutMenu"><a href="#">About</a>
+                   <ul class="toolTipMenu aboutMenu">
+                       <li><a href="license.txt" target="_blank">MIT License Copyright &copy; 2014/15</a>
+                       </li>
+                       <li id="credits" class="option">WebVOWL Developers:
+                           <br/>Vincent Link, Steffen Lohmann, Eduard Marbach, Stefan Negru
+                       </li>
+                       <li><a href="http://vowl.visualdataweb.org/webvowl.html#releases" target="_blank">Version: beta 0.3.3<br/>
+					(release history)</a>
+                       </li>
+                       <li><a href="http://purl.org/vowl/" target="_blank">VOWL Specification &raquo;</a>
+                       </li>
+                   </ul>
+               </li>
+               <li id="pauseOption"></li>
+               <li id="resetOption"></li>
+               <li id="moduleOption"><a href="#">Modes</a>
+                   <ul class="toolTipMenu module">
+                       <li class="toggleOption" id="pickAndPinOption"></li>
+                       <li class="toggleOption" id="nodeScalingOption"></li>
+                   </ul>
+               </li>
+               <li id="filterOption"><a href="#">Filter</a>
+                   <ul class="toolTipMenu filter">
+                       <li class="toggleOption" id="datatypeFilteringOption"></li>
+                       <li class="toggleOption" id="subclassFilteringOption"></li>
+                       <li class="toggleOption" id="disjointFilteringOption"></li>
+                       <li class="toggleOption" id="setOperatorFilteringOption"></li>
+                       <li class="slideOption" id="nodeDegreeFilteringOption"></li>
+                   </ul>
+               </li>
+               <li id="gravityOption"><a href="#">Gravity</a>
+                   <ul class="toolTipMenu gravity">
+                       <li class="slideOption" id="classSliderOption"></li>
+                       <li class="slideOption" id="datatypeSliderOption"></li>
+                   </ul>
+               </li>
+               <li id="export"><a href="#">Export</a>
+                   <ul class="toolTipMenu export">
+                       <li><a href="#" download id="exportSvg">Export as SVG</a>
+                       </li>
+                       <li><a href="#" download id="exportJson">Export as JSON</a>
+                       </li>
+                   </ul>
+               </li>
+           </ul>
+       </nav>
+  </main>
