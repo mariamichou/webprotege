@@ -1,4 +1,4 @@
-package edu.stanford.bmir.protege.web.client.ui.webvowl;
+package edu.stanford.bmir.protege.web.client.ui.visualization;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
@@ -9,5 +9,5 @@ public interface WebVowlResources extends ClientBundle {
 	public static final WebVowlResources INSTANCE =  GWT.create(WebVowlResources.class);
 	
 	@Source("webvowl.html")
-	public TextResource html();
+	public TextResource webVowlHtml();
 }

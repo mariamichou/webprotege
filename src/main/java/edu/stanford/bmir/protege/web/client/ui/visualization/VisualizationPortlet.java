@@ -1,4 +1,4 @@
-package edu.stanford.bmir.protege.web.client.ui.webvowl;
+package edu.stanford.bmir.protege.web.client.ui.visualization;
 
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.ScriptInjector;
@@ -13,9 +13,9 @@ import edu.stanford.bmir.protege.web.client.project.Project;
 import edu.stanford.bmir.protege.web.client.ui.portlet.AbstractOWLEntityPortlet;
 
 @SuppressWarnings("unchecked")
-public class WebVowlPortlet extends AbstractOWLEntityPortlet {
+public class VisualizationPortlet extends AbstractOWLEntityPortlet {
 
-	public WebVowlPortlet(Project project) {
+	public VisualizationPortlet(Project project) {
 		super(project);
 		// TODO Auto-generated constructor stub
 	}
@@ -56,23 +56,25 @@ public class WebVowlPortlet extends AbstractOWLEntityPortlet {
 		
 		
 		
-		Panel p = new Panel();
-		p.add(new Button("Initialize WebVOWL",new ButtonListenerAdapter() {
+		Panel wrapperPanel = new Panel();
+		
+		// Buttons to interact with WebVOWL
+		wrapperPanel.add(new Button("Initialize WebVOWL",new ButtonListenerAdapter() {
 			public void onClick(final Button button, final EventObject e) {
 				reloadWebVowl();
 			}
 		}));
-		p.add(new Button("Load FOAF",new ButtonListenerAdapter() {
+		wrapperPanel.add(new Button("Load FOAF",new ButtonListenerAdapter() {
 			public void onClick(final Button button, final EventObject e) {
 				loadFoaf();
 			}
 		}));
 		
-		String webVowlHtml = WebVowlResources.INSTANCE.html().getText();
-		HTMLPanel html = new HTMLPanel(webVowlHtml);
-		p.add(html);
+		// WebVOWL-specific HTML
+		String webVowlHtml = WebVowlResources.INSTANCE.webVowlHtml().getText();
+		wrapperPanel.add(new HTMLPanel(webVowlHtml));
 		
-		add(p);
+		add(wrapperPanel);
 	}
 	
     // JSNI call to reload WebVowl interface
