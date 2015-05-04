@@ -1,3 +1,11 @@
+WebVOWL Integration
+===================
+This is a try to integrate the OWL visualization 'WebVOWL' into WebProtégé. We think this would be an could extension because WebVOWL received good feedback as a fast and compact visualization method.
+
+Where can I find the specification and demo?
+--------------------------------------------
+You can find everything at http://vowl.visualdataweb.org/
+
 WebProtégé
 ==========
 
