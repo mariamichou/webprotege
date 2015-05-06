@@ -162,5 +162,16 @@ public class OntologyServiceManager {
         proxy.replaceExternalReference(projectId.getId(), entityName, bpRefData, oldValueEntityData, userId.getUserName(), operationDescription, cb);
     }
 
+    /*
+    WebVOWL test methods
+     */
+    public void getOntologyInformation(ProjectId projectId, AsyncCallback<String> cb) {
+        proxy.getOntologyInformation(projectId.getId(), cb);
+    }
+
+    public void convertOntology(ProjectId projectId, AsyncCallback<String> cb) {
+        proxy.convertOntology(projectId.getId(), cb);
+    }
+
 
 }
