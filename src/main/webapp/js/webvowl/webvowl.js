@@ -8,6 +8,8 @@ webvowl.nodes = webvowl.nodes || {};
 webvowl.util = webvowl.util || {};
 webvowl.modules = webvowl.modules || {};
 webvowl.parsing = webvowl.parsing || {};
+webvowl.version = "0.4.0";
+
 // Source: src/js/graph/elements/BaseElement.js
 /**
  * The base element for all visual elements of webvowl.
@@ -22,11 +24,13 @@ webvowl.elements.BaseElement = (function () {
 			id,
 			label,
 			type,
-			uri,
+			iri,
 		// Additional attributes
+			annotations,
 			attributes = [],
 			visualAttribute,
 			comment,
+			description,
 			equivalentBase,
 		// Style attributes
 			focused = false,
@@ -45,9 +49,21 @@ webvowl.elements.BaseElement = (function () {
 			return this;
 		};
 
+		this.annotations = function (p) {
+			if (!arguments.length) return annotations;
+			annotations = p;
+			return this;
+		};
+
 		this.comment = function (p) {
 			if (!arguments.length) return comment;
 			comment = p;
+			return this;
+		};
+
+		this.description = function (p) {
+			if (!arguments.length) return description;
+			description = p;
 			return this;
 		};
 
@@ -81,6 +97,12 @@ webvowl.elements.BaseElement = (function () {
 			return this;
 		};
 
+		this.iri = function (p) {
+			if (!arguments.length) return iri;
+			iri = p;
+			return this;
+		};
+
 		this.label = function (p) {
 			if (!arguments.length) return label;
 			label = p || DEFAULT_LABEL;
@@ -105,12 +127,6 @@ webvowl.elements.BaseElement = (function () {
 			return this;
 		};
 
-		this.uri = function (p) {
-			if (!arguments.length) return uri;
-			uri = p;
-			return this;
-		};
-
 		this.visible = function (p) {
 			if (!arguments.length) return visible;
 			visible = p;
@@ -124,8 +140,12 @@ webvowl.elements.BaseElement = (function () {
 		};
 
 
-		this.commentForCurrentLanguage = function() {
-			return languageTools.textForCurrentLanguage(this.comment(), graph.getLanguage());
+		this.commentForCurrentLanguage = function () {
+			return languageTools.textForCurrentLanguage(this.comment(), graph.language());
+		};
+
+		this.descriptionForCurrentLanguage = function() {
+			return languageTools.textForCurrentLanguage(this.description(), graph.language());
 		};
 
 		this.defaultLabel = function () {
@@ -137,7 +157,7 @@ webvowl.elements.BaseElement = (function () {
 		};
 
 		this.labelForCurrentLanguage = function () {
-			return languageTools.textForCurrentLanguage(this.label(), graph.getLanguage());
+			return languageTools.textForCurrentLanguage(this.label(), graph.language());
 		};
 	};
 
@@ -327,36 +347,36 @@ webvowl.labels.BaseLabel = (function () {
 				return label;
 			}
 
-			if (!this.labelVisible()) {
+			if (!that.labelVisible()) {
 				return undefined;
 			}
 
-			this.labelElement(attachLabel(this));
+			that.labelElement(attachLabel(that));
 
 			// Draw an inverse label and reposition both labels if necessary
-			if (this.inverse()) {
-				var yTransformation = (this.labelHeight() / 2) + 1 /* additional space */;
-				this.inverse()
-					.labelElement(attachLabel(this.inverse()));
+			if (that.inverse()) {
+				var yTransformation = (that.labelHeight() / 2) + 1 /* additional space */;
+				that.inverse()
+					.labelElement(attachLabel(that.inverse()));
 
-				this.labelElement()
+				that.labelElement()
 					.attr("transform", "translate(" + 0 + ",-" + yTransformation + ")");
-				this.inverse()
+				that.inverse()
 					.labelElement()
 					.attr("transform", "translate(" + 0 + "," + yTransformation + ")");
 			}
 
-			return this.labelElement();
+			return that.labelElement();
 		};
 
 		this.addRect = function (groupTag) {
 			var rect = groupTag.append("rect")
-				.classed(this.styleClass(), true)
+				.classed(that.styleClass(), true)
 				.classed("property", true)
-				.attr("x", -this.labelWidth() / 2)
-				.attr("y", -this.labelHeight() / 2)
-				.attr("width", this.labelWidth())
-				.attr("height", this.labelHeight())
+				.attr("x", -that.labelWidth() / 2)
+				.attr("y", -that.labelHeight() / 2)
+				.attr("width", that.labelWidth())
+				.attr("height", that.labelHeight())
 				.on("mouseover", function () {
 					onMouseOver();
 				})
@@ -365,10 +385,10 @@ webvowl.labels.BaseLabel = (function () {
 				});
 
 			rect.append("title")
-				.text(this.labelForCurrentLanguage());
+				.text(that.labelForCurrentLanguage());
 
-			if (this.visualAttribute()) {
-				rect.classed(this.visualAttribute(), true);
+			if (that.visualAttribute()) {
+				rect.classed(that.visualAttribute(), true);
 			}
 		};
 		this.addDisjointLabel = function (groupTag, textTag) {
@@ -386,15 +406,17 @@ webvowl.labels.BaseLabel = (function () {
 				.attr("cx", 12.5)
 				.attr("r", 10);
 
-			textTag.addSubText("disjoint");
+			if (!graph.options().compactNotation()) {
+				textTag.addSubText("disjoint");
+			}
 			textTag.setTranslation(0, 20);
 		};
 		this.addEquivalentsToLabel = function (textBox) {
-			if (this.equivalents()) {
+			if (that.equivalents()) {
 				var equivalentLabels,
 					equivalentString;
 
-				equivalentLabels = this.equivalents().map(function (property) {
+				equivalentLabels = that.equivalents().map(function (property) {
 					return property.labelForCurrentLanguage();
 				});
 				equivalentString = equivalentLabels.join(", ");
@@ -403,31 +425,31 @@ webvowl.labels.BaseLabel = (function () {
 			}
 		};
 		this.drawCardinality = function (cardinalityGroup) {
-			if (this.minCardinality() === undefined &&
-				this.maxCardinality() === undefined &&
-				this.cardinality() === undefined) {
+			if (that.minCardinality() === undefined &&
+				that.maxCardinality() === undefined &&
+				that.cardinality() === undefined) {
 				return undefined;
 			}
 
 			// Drawing cardinality groups
-			this.cardinalityElement(cardinalityGroup.classed("cardinality", true));
+			that.cardinalityElement(cardinalityGroup.classed("cardinality", true));
 
 			var cardText = cardinalityGroup.append("text")
 				.classed("cardinality", true)
 				.attr("text-anchor", "middle")
 				.attr("dy", "0.5ex");
 
-			if (this.minCardinality() !== undefined) {
-				var cardString = this.minCardinality().toString();
+			if (that.minCardinality() !== undefined) {
+				var cardString = that.minCardinality().toString();
 				cardString = cardString.concat(" .. ");
-				cardString = cardString.concat(this.maxCardinality() !== undefined ? this.maxCardinality() : "*");
+				cardString = cardString.concat(that.maxCardinality() !== undefined ? that.maxCardinality() : "*");
 
 				cardText.text(cardString);
-			} else if (this.cardinality() !== undefined) {
-				cardText.text(this.cardinality());
+			} else if (that.cardinality() !== undefined) {
+				cardText.text(that.cardinality());
 			}
 
-			return this.cardinalityElement();
+			return that.cardinalityElement();
 		};
 		function onMouseOver() {
 			if (that.mouseEntered()) {
@@ -445,6 +467,9 @@ webvowl.labels.BaseLabel = (function () {
 			that.labelElement().select("rect").classed("hovered", enable);
 			that.linkGroup().selectAll("path, text").classed("hovered", enable);
 			that.markerElement().select("path").classed("hovered", enable);
+			if (that.cardinalityElement()) {
+				that.cardinalityElement().classed("hovered", enable);
+			}
 
 			var subAndSuperProperties = getSubAndSuperProperties();
 			subAndSuperProperties.forEach(function (property) {
@@ -589,21 +614,6 @@ webvowl.labels.owlequivalentproperty = (function () {
 
 	return o;
 }());
-// Source: src/js/graph/elements/labels/implementations/owlExternalProperty.js
-webvowl.labels.owlexternalproperty = (function () {
-
-	var o = function (graph) {
-		webvowl.labels.BaseLabel.apply(this, arguments);
-
-		this.attributes(["external"])
-			.styleClass("externalproperty")
-			.type("owl:ExternalProperty");
-	};
-	o.prototype = Object.create(webvowl.labels.BaseLabel.prototype);
-	o.prototype.constructor = o;
-
-	return o;
-}());
 // Source: src/js/graph/elements/labels/implementations/owlFunctionalProperty.js
 webvowl.labels.owlfunctionalproperty = (function () {
 
@@ -703,8 +713,16 @@ webvowl.labels.rdfssubclassof = (function () {
 	var o = function (graph) {
 		webvowl.labels.BaseLabel.apply(this, arguments);
 
+		var that = this,
+			superDrawFunction = that.drawProperty,
+			label = "Subclass of";
+
+		this.drawProperty = function(labelGroup) {
+			that.labelVisible(!graph.options().compactNotation());
+			return superDrawFunction(labelGroup);
+		};
+
 		// Disallow overwriting the label
-		var label = "Subclass of";
 		this.label = function (p) {
 			if (!arguments.length) return label;
 			return this;
@@ -720,6 +738,7 @@ webvowl.labels.rdfssubclassof = (function () {
 
 	return o;
 }());
+
 // Source: src/js/graph/elements/labels/implementations/setOperatorProperty.js
 webvowl.labels.setoperatorproperty = (function () {
 
@@ -899,12 +918,12 @@ webvowl.nodes.BaseNode = (function () {
 		// Basic attributes
 			complement,
 			disjointWith,
-			instances = 0,
+			individuals = [],
 			intersection,
 			links,
 			union,
 		// Additional attributes
-			maxInstanceCount,
+			maxIndividualCount,
 		// Fixed Location attributes
 			locked = false,
 			frozen = false,
@@ -926,9 +945,9 @@ webvowl.nodes.BaseNode = (function () {
 			return this;
 		};
 
-		this.instances = function (p) {
-			if (!arguments.length) return instances;
-			instances = p || 0;
+		this.individuals = function (p) {
+			if (!arguments.length) return individuals;
+			individuals = p || [];
 			return this;
 		};
 
@@ -944,9 +963,9 @@ webvowl.nodes.BaseNode = (function () {
 			return this;
 		};
 
-		this.maxInstanceCount = function (p) {
-			if (!arguments.length) return maxInstanceCount;
-			maxInstanceCount = p;
+		this.maxIndividualCount = function (p) {
+			if (!arguments.length) return maxIndividualCount;
+			maxIndividualCount = p;
 			return this;
 		};
 
@@ -1202,12 +1221,12 @@ webvowl.nodes.RoundNode = (function () {
 		};
 
 		this.actualRadius = function () {
-			if (!graph.options().scaleNodesByInstances() || that.instances() <= 0) {
+			if (!graph.options().scaleNodesByIndividuals() || that.individuals().length <= 0) {
 				return that.radius();
 			} else {
-				// we could "listen" for radius and maxInstanceCount changes, but this is easier
+				// we could "listen" for radius and maxIndividualCount changes, but this is easier
 				var MULTIPLIER = 8,
-					additionalRadius = Math.log(that.instances() + 1) * MULTIPLIER;
+					additionalRadius = Math.log(that.individuals().length + 1) * MULTIPLIER + 5;
 
 				return that.radius() + additionalRadius;
 			}
@@ -1292,7 +1311,6 @@ webvowl.nodes.RoundNode = (function () {
 		 */
 		this.drawNode = function (parentElement, additionalCssClasses) {
 			var drawTools = webvowl.nodes.drawTools(),
-				textBlock,
 				cssClasses = that.collectCssClasses();
 
 			that.nodeElement(parentElement);
@@ -1309,11 +1327,13 @@ webvowl.nodes.RoundNode = (function () {
 		 * Common actions that should be invoked after drawing a node.
 		 */
 		this.postDrawActions = function () {
-			var textBlock = webvowl.util.textElement(this.nodeElement());
+			var textBlock = webvowl.util.textElement(that.nodeElement());
 			textBlock.addText(that.labelForCurrentLanguage());
-			textBlock.addInstanceCount(that.instances());
-			textBlock.addSubText(that.indicationString());
-			this.textBlock(textBlock);
+			if (!graph.options().compactNotation()) {
+				textBlock.addSubText(that.indicationString());
+			}
+			textBlock.addInstanceCount(that.individuals().length);
+			that.textBlock(textBlock);
 
 			that.addMouseListeners();
 			if (that.pinned()) {
@@ -1339,7 +1359,8 @@ webvowl.nodes.SetOperatorNode = (function () {
 		webvowl.nodes.RoundNode.apply(this, arguments);
 
 		var that = this,
-			superHoverHighlightingFunction = this.setHoverHighlighting;
+			superHoverHighlightingFunction = this.setHoverHighlighting,
+			superPostDrawActions = this.postDrawActions;
 
 		this.radius(radius);
 
@@ -1348,12 +1369,21 @@ webvowl.nodes.SetOperatorNode = (function () {
 
 			d3.selectAll(".special." + that.cssClassOfNode()).classed("hovered", enable);
 		};
+
+		this.postDrawActions = function () {
+			superPostDrawActions();
+
+			that.textBlock().clear();
+			that.textBlock().addInstanceCount(that.individuals().length);
+			that.textBlock().setTranslation(0, that.radius() - 15);
+		};
 	};
 	o.prototype = Object.create(webvowl.nodes.RoundNode.prototype);
 	o.prototype.constructor = o;
 
 	return o;
 }());
+
 // Source: src/js/graph/elements/nodes/drawTools.js
 /**
  * Contains reusable function for drawing nodes.
@@ -1477,7 +1507,8 @@ webvowl.nodes.owlthing = (function () {
 		this.label("Thing")
 			.radius(30)
 			.styleClass("thing")
-			.type("owl:Thing");
+			.type("owl:Thing")
+			.iri("http://www.w3.org/2002/07/owl#Thing");
 
 		this.drawNode = function (element) {
 			superDrawFunction(element, ["white", "special"]);
@@ -1488,6 +1519,7 @@ webvowl.nodes.owlthing = (function () {
 
 	return o;
 }());
+
 // Source: src/js/graph/elements/nodes/implementions/owlcomplementOf.js
 webvowl.nodes.owlcomplementof = (function () {
 
@@ -1518,12 +1550,9 @@ webvowl.nodes.owlcomplementof = (function () {
 				.attr("class", "nofill")
 				.attr("d", "m -7,-1.5 12,0 0,6");
 
-			var scale = that.actualRadius() / that.radius();
-			symbol.attr("transform", "translate(-" + scale * (that.radius() - 15) / 100 + ",-" +
-				(that.radius() - 15) / 100 + ")scale(" + scale + ")");
+			symbol.attr("transform", "translate(-" + (that.radius() - 15) / 100 + ",-" + (that.radius() - 15) / 100 + ")");
 
 			that.postDrawActions();
-			that.textBlock().clear();
 		};
 	};
 	o.prototype = Object.create(webvowl.nodes.SetOperatorNode.prototype);
@@ -1557,9 +1586,8 @@ webvowl.nodes.owlequivalentclass = (function () {
 
 			that.nodeElement(parentElement);
 
-			drawTools.appendCircularClass(parentElement, that.actualRadius(), ["white", "embedded"]);
-			drawTools.appendCircularClass(parentElement, that.actualRadius() - CIRCLE_SIZE_DIFFERENCE,
-				cssClasses, that.labelForCurrentLanguage());
+			drawTools.appendCircularClass(parentElement, that.actualRadius() + CIRCLE_SIZE_DIFFERENCE, ["white", "embedded"]);
+			drawTools.appendCircularClass(parentElement, that.actualRadius(), cssClasses, that.labelForCurrentLanguage());
 
 			that.postDrawActions();
 			appendEquivalentClasses(that.textBlock(), that.equivalents());
@@ -1620,7 +1648,7 @@ webvowl.nodes.owlintersectionof = (function () {
 			symbol.append("path")
 				.attr("class", "nostroke")
 				.classed("symbol", true).attr("d", "m 24.777,0.771 c0,16.387-13.607,23.435-19.191,23.832S-15.467," +
-					"14.526-15.467,0.424S-1.216-24.4,5.437-24.4 C12.09-24.4,24.777-15.616,24.777,0.771z");
+				"14.526-15.467,0.424S-1.216-24.4,5.437-24.4 C12.09-24.4,24.777-15.616,24.777,0.771z");
 			symbol.append("circle")
 				.attr("class", "nofill")
 				.classed("fineline", true)
@@ -1633,14 +1661,11 @@ webvowl.nodes.owlintersectionof = (function () {
 			symbol.append("path")
 				.attr("class", "nofill")
 				.attr("d", "m 9,5 c 0,-2 0,-4 0,-6 0,0 0,0 0,0 0,0 0,-1.8 -1,-2.3 -0.7,-0.6 -1.7,-0.8 -2.9," +
-					"-0.8 -1.2,0 -2,0 -3,0.8 -0.7,0.5 -1,1.4 -1,2.3 0,2 0,4 0,6");
+				"-0.8 -1.2,0 -2,0 -3,0.8 -0.7,0.5 -1,1.4 -1,2.3 0,2 0,4 0,6");
 
-			var scale = that.actualRadius() / that.radius();
-			symbol.attr("transform", "translate(-" + scale * (that.radius() - 15) / 5 + ",-" +
-				(that.radius() - 15) / 100 + ")scale(" + scale + ")");
+			symbol.attr("transform", "translate(-" +  (that.radius() - 15) / 5 + ",-" + (that.radius() - 15) / 100 + ")");
 
 			that.postDrawActions();
-			that.textBlock().clear();
 		};
 	};
 	o.prototype = Object.create(webvowl.nodes.SetOperatorNode.prototype);
@@ -1687,12 +1712,9 @@ webvowl.nodes.owlunionof = (function () {
 				.attr("class", "link")
 				.attr("d", "m 1,-3 c 0,2 0,4 0,6 0,0 0,0 0,0 0,2 2,3 4,3 2,0 4,-1 4,-3 0,-2 0,-4 0,-6");
 
-			var scale = that.actualRadius() / that.radius();
-			symbol.attr("transform", "translate(-" + scale * (that.radius() - 15) / 5 + ",-" +
-				(that.radius() - 15) / 100 + ")scale(" + scale + ")");
+			symbol.attr("transform", "translate(-" + (that.radius() - 15) / 5 + ",-" + (that.radius() - 15) / 100 + ")");
 
 			that.postDrawActions();
-			that.textBlock().clear();
 		};
 	};
 	o.prototype = Object.create(webvowl.nodes.SetOperatorNode.prototype);
@@ -1741,7 +1763,8 @@ webvowl.nodes.rdfsliteral = (function () {
 		this.attributes(["datatype"])
 			.label("Literal")
 			.styleClass("literal")
-			.type("rdfs:Literal");
+			.type("rdfs:Literal")
+			.iri("http://www.w3.org/2000/01/rdf-schema#Literal");
 
 		this.drawNode = function (element) {
 			superDrawFunction(element, ["special"]);
@@ -1757,6 +1780,7 @@ webvowl.nodes.rdfsliteral = (function () {
 
 	return o;
 }());
+
 // Source: src/js/graph/elements/nodes/implementions/rdfsResource.js
 webvowl.nodes.rdfsresource = (function () {
 
@@ -1795,7 +1819,7 @@ webvowl.graph = function (graphContainerSelector) {
 				return d.y;
 			})
 			.interpolate("cardinal"),
-		options,
+		options = webvowl.options(),
 		parser = webvowl.parser(graph),
 		linkCreator = webvowl.parsing.linkCreator(),
 		language = "default",
@@ -1880,7 +1904,6 @@ webvowl.graph = function (graphContainerSelector) {
 	 * Initializes the graph.
 	 */
 	function initializeGraph() {
-		options = webvowl.options();
 		options.graphContainerSelector(graphContainerSelector);
 
 		force = d3.layout.force()
@@ -2036,6 +2059,10 @@ webvowl.graph = function (graphContainerSelector) {
 	function redrawContent() {
 		var markerContainer;
 
+		if (!graphContainer) {
+			return;
+		}
+
 		// Empty the graph container
 		graphContainer.selectAll("*").remove();
 
@@ -2078,7 +2105,12 @@ webvowl.graph = function (graphContainerSelector) {
 		});
 
 		// Place subclass label groups on the bottom of all labels
-		labelGroupElements.each(function(link) {
+		labelGroupElements.each(function (link) {
+			// the label might be hidden e.g. in compact notation
+			if (!this.parentNode) {
+				return;
+			}
+
 			if (link.property() instanceof webvowl.labels.rdfssubclassof ||
 				link.inverse() instanceof webvowl.labels.rdfssubclassof) {
 
@@ -2195,7 +2227,9 @@ webvowl.graph = function (graphContainerSelector) {
 	 */
 	function refreshGraphStyle() {
 		zoom = zoom.scaleExtent([options.minMagnification(), options.maxMagnification()]);
-		zoom.event(graphContainer);
+		if (graphContainer) {
+			zoom.event(graphContainer);
+		}
 
 		force.charge(options.charge())
 			.size([options.width(), options.height()])
@@ -2214,20 +2248,20 @@ webvowl.graph = function (graphContainerSelector) {
 		}
 	}
 
-	graph.options = function() {
+	graph.options = function () {
 		return options;
 	};
 
-	graph.setLanguage = function (l) {
-		if (language !== l) {
-			language = l || "default";
+	graph.language = function (newLanguage) {
+		if (!arguments.length) return language;
+
+		// Just update if the language changes
+		if (language !== newLanguage) {
+			language = newLanguage || "default";
 			redrawContent();
 			recalculatePositions();
 		}
-	};
-
-	graph.getLanguage = function () {
-		return language;
+		return graph;
 	};
 
 
@@ -2275,6 +2309,63 @@ webvowl.modules.collapsing = function () {
 	};
 
 	return collapsing;
+};
+
+// Source: src/js/graph/modules/compactNotationSwitch.js
+/**
+ * This module abuses the filter function a bit like the statistics module. Nothing is filtered.
+ *
+ * @returns {{}}
+ */
+webvowl.modules.compactNotationSwitch = function (graph) {
+
+	var DEFAULT_STATE = false;
+
+	var filter = {},
+		nodes,
+		properties,
+		enabled = DEFAULT_STATE,
+		filteredNodes,
+		filteredProperties;
+
+
+	/**
+	 * If enabled, redundant details won't be drawn anymore.
+	 * @param untouchedNodes
+	 * @param untouchedProperties
+	 */
+	filter.filter = function (untouchedNodes, untouchedProperties) {
+		nodes = untouchedNodes;
+		properties = untouchedProperties;
+
+		graph.options().compactNotation(enabled);
+
+		filteredNodes = nodes;
+		filteredProperties = properties;
+	};
+
+	filter.enabled = function (p) {
+		if (!arguments.length) return enabled;
+		enabled = p;
+		return filter;
+	};
+
+	filter.reset = function() {
+		enabled = DEFAULT_STATE;
+	};
+
+
+	// Functions a filter must have
+	filter.filteredNodes = function () {
+		return filteredNodes;
+	};
+
+	filter.filteredProperties = function () {
+		return filteredProperties;
+	};
+
+
+	return filter;
 };
 
 // Source: src/js/graph/modules/datatypeFilter.js
@@ -2496,7 +2587,11 @@ webvowl.modules.nodeDegreeFilter = function () {
 		setMaxLinkCount();
 
 		if (this.enabled()) {
-			filterByNodeDegree(degreeQueryFunction());
+			if (degreeQueryFunction instanceof Function) {
+				filterByNodeDegree(degreeQueryFunction());
+			} else {
+				console.error("No degree query function set.");
+			}
 		}
 
 		filteredNodes = nodes;
@@ -2565,8 +2660,7 @@ webvowl.modules.nodeDegreeFilter = function () {
 
 // Source: src/js/graph/modules/nodeScalingSwitch.js
 /**
- * This module abuses the filter function a bit like the statistics module. Nothing is filtered
- * but if enabled, it enables an attribute of each passed node.
+ * This module abuses the filter function a bit like the statistics module. Nothing is filtered.
  *
  * @returns {{}}
  */
@@ -2583,7 +2677,7 @@ webvowl.modules.nodeScalingSwitch = function (graph) {
 
 
 	/**
-	 * If enabled, the scaling of nodes according to instances will be enabled.
+	 * If enabled, the scaling of nodes according to individuals will be enabled.
 	 * @param untouchedNodes
 	 * @param untouchedProperties
 	 */
@@ -2591,7 +2685,7 @@ webvowl.modules.nodeScalingSwitch = function (graph) {
 		nodes = untouchedNodes;
 		properties = untouchedProperties;
 
-		graph.options().scaleNodesByInstances(enabled);
+		graph.options().scaleNodesByIndividuals(enabled);
 
 		filteredNodes = nodes;
 		filteredProperties = properties;
@@ -2775,7 +2869,7 @@ webvowl.modules.statistics = function () {
 		datatypePropertyCount,
 		objectPropertyCount,
 		propertyCount,
-		totalInstanceCount,
+		totalIndividualCount,
 		filteredNodes,
 		filteredProperties;
 
@@ -2790,7 +2884,7 @@ webvowl.modules.statistics = function () {
 		storeOccurencesOfTypes(classesAndDatatypes, occurencesOfClassAndDatatypeTypes);
 		storeOccurencesOfTypes(properties, occurencesOfPropertyTypes);
 
-		storeTotalInstanceCount(classesAndDatatypes);
+		storeTotalIndividualCount(classesAndDatatypes);
 
 		filteredNodes = classesAndDatatypes;
 		filteredProperties = properties;
@@ -2804,7 +2898,7 @@ webvowl.modules.statistics = function () {
 		datatypePropertyCount = 0;
 		objectPropertyCount = 0;
 		propertyCount = 0;
-		totalInstanceCount = 0;
+		totalIndividualCount = 0;
 	}
 
 	function storeTotalCounts(classesAndDatatypes, properties) {
@@ -2901,12 +2995,12 @@ webvowl.modules.statistics = function () {
 		});
 	}
 
-	function storeTotalInstanceCount(nodes) {
-	 	var totalCount = 0;
+	function storeTotalIndividualCount(nodes) {
+		var totalCount = 0;
 		for (var i = 0, l = nodes.length; i < l; i++) {
-			totalCount += nodes[i].instances() || 0;
+			totalCount += nodes[i].individuals().length || 0;
 		}
-		totalInstanceCount = totalCount;
+		totalIndividualCount = totalCount;
 	}
 
 
@@ -2946,8 +3040,8 @@ webvowl.modules.statistics = function () {
 		return propertyCount;
 	};
 
-	statistics.totalInstanceCount = function () {
-		return totalInstanceCount;
+	statistics.totalIndividualCount = function () {
+		return totalIndividualCount;
 	};
 
 
@@ -2963,6 +3057,7 @@ webvowl.modules.statistics = function () {
 
 	return statistics;
 };
+
 // Source: src/js/graph/modules/subclassFilter.js
 webvowl.modules.subclassFilter = function () {
 
@@ -3162,7 +3257,8 @@ webvowl.options = function () {
 		filterModules = [],
 		minMagnification = 0.1,
 		maxMagnification = 4,
-		scaleNodesByInstances = false;
+		compactNotation = false,
+		scaleNodesByIndividuals = false;
 
 	/* Read-only properties */
 	options.defaultLinkDistance = function () {
@@ -3179,6 +3275,12 @@ webvowl.options = function () {
 	options.classDistance = function (p) {
 		if (!arguments.length) return classDistance;
 		classDistance = +p;
+		return options;
+	};
+
+	options.compactNotation = function (p) {
+		if (!arguments.length) return compactNotation;
+		compactNotation = p;
 		return options;
 	};
 
@@ -3236,9 +3338,9 @@ webvowl.options = function () {
 		return options;
 	};
 
-	options.scaleNodesByInstances = function (p) {
-		if (!arguments.length) return scaleNodesByInstances;
-		scaleNodesByInstances = p;
+	options.scaleNodesByIndividuals = function (p) {
+		if (!arguments.length) return scaleNodesByIndividuals;
+		scaleNodesByIndividuals = p;
 		return options;
 	};
 
@@ -3299,8 +3401,8 @@ webvowl.parser = function (graph) {
 		mergeRangesOfEquivalentProperties(combinedProperties, combinedClassesAndDatatypes);
 
 		// Process the graph data
-		convertTypesToUris(combinedClassesAndDatatypes, ontologyData.namespace);
-		convertTypesToUris(combinedProperties, ontologyData.namespace);
+		convertTypesToIris(combinedClassesAndDatatypes, ontologyData.namespace);
+		convertTypesToIris(combinedProperties, ontologyData.namespace);
 
 		nodes = createNodeStructure(combinedClassesAndDatatypes, classMap);
 		properties = createPropertyStructure(combinedProperties, classMap, propertyMap);
@@ -3351,16 +3453,28 @@ webvowl.parser = function (graph) {
 					addAdditionalAttributes(element, prototypes[elementType]);
 
 					var node = new prototypes[elementType](graph);
-					node.comment(element.comment)
+					node.annotations(element.annotations)
+						.comment(element.comment)
 						.complement(element.complement)
+						.description(element.description)
 						.equivalents(element.equivalent)
 						.id(element.id)
-						.instances(element.instances)
 						.intersection(element.intersection)
 						.label(element.label)
 						// .type(element.type) Ignore, because we predefined it
 						.union(element.union)
-						.uri(element.uri);
+						.iri(element.iri);
+
+					// Create node objects for all individuals
+					if (element.individuals) {
+						element.individuals.forEach(function (individual) {
+							var individualNode = new prototypes[elementType](graph);
+							individualNode.label(individual.labels)
+								.iri(individual.iri);
+
+							node.individuals().push(individualNode);
+						});
+					}
 
 					if (element.attributes) {
 						var deduplicatedAttributes = d3.set(element.attributes.concat(node.attributes()));
@@ -3403,9 +3517,11 @@ webvowl.parser = function (graph) {
 				if (elementType in prototypes) {
 					// Create the matching object and set the properties
 					var property = new prototypes[elementType](graph);
-					property.cardinality(element.cardinality)
+					property.annotations(element.annotations)
+						.cardinality(element.cardinality)
 						.comment(element.comment)
 						.domain(element.domain)
+						.description(element.description)
 						.equivalents(element.equivalent)
 						.id(element.id)
 						.inverse(element.inverse)
@@ -3416,7 +3532,7 @@ webvowl.parser = function (graph) {
 						.subproperties(element.subproperty)
 						.superproperties(element.superproperty)
 						// .type(element.type) Ignore, because we predefined it
-						.uri(element.uri);
+						.iri(element.iri);
 
 					if (element.attributes) {
 						var deduplicatedAttributes = d3.set(element.attributes.concat(property.attributes()));
@@ -3507,7 +3623,7 @@ webvowl.parser = function (graph) {
 		var i, l;
 
 		for (i = 0, l = properties.length; i < l; i++) {
-	        var property = properties[i];
+			var property = properties[i];
 			if (property.domain() === nodeId || property.range() === nodeId) {
 				return true;
 			}
@@ -3527,9 +3643,9 @@ webvowl.parser = function (graph) {
 		var nodes = [];
 
 		// Set the default values
-		var maxInstanceCount = 0;
+		var maxIndividualCount = 0;
 		rawNodes.forEach(function (node) {
-		maxInstanceCount = Math.max(maxInstanceCount, node.instances());
+			maxIndividualCount = Math.max(maxIndividualCount, node.individuals().length);
 			node.visible(true);
 		});
 
@@ -3539,7 +3655,7 @@ webvowl.parser = function (graph) {
 
 			attributeParser.parseClassAttributes(node);
 
-			node.maxInstanceCount(maxInstanceCount);
+			node.maxIndividualCount(maxIndividualCount);
 		});
 
 		// Collect all nodes that should be displayed
@@ -3738,9 +3854,9 @@ webvowl.parser = function (graph) {
 				continue;
 			}
 
-			// Check for an equal URI, if non existent compare label and type
-			if (referenceProperty.uri() && property.uri()) {
-				if (referenceProperty.uri() === property.uri()) {
+			// Check for an equal IRI, if non existent compare label and type
+			if (referenceProperty.iri() && property.iri()) {
+				if (referenceProperty.iri() === property.iri()) {
 					return property;
 				}
 			} else if (referenceProperty.type() === property.type() &&
@@ -3767,7 +3883,7 @@ webvowl.parser = function (graph) {
 					var rangeId = setIds[i],
 						property = {};
 
-					property.id = "GENERATED-"+ operatorType +"-" + domainId + "-" + rangeId + "-" + i;
+					property.id = "GENERATED-" + operatorType + "-" + domainId + "-" + rangeId + "-" + i;
 					property.type = "setOperatorProperty";
 					property.domain = domainId;
 					property.range = rangeId;
@@ -3818,14 +3934,14 @@ webvowl.parser = function (graph) {
 	}
 
 	/**
-	 * Tries to convert the type to an uri and sets it.
+	 * Tries to convert the type to an iri and sets it.
 	 * @param elements classes or properties
 	 * @param namespaces an array of namespaces
 	 */
-	function convertTypesToUris(elements, namespaces) {
+	function convertTypesToIris(elements, namespaces) {
 		elements.forEach(function (element) {
-			if (typeof element.uri() === "string") {
-				element.uri(replaceNamespace(element.uri(), namespaces));
+			if (typeof element.iri() === "string") {
+				element.iri(replaceNamespace(element.iri(), namespaces));
 			}
 		});
 	}
@@ -4284,6 +4400,10 @@ webvowl.util.languageTools = (function () {
 
 
 	languageTools.textForCurrentLanguage = function (textObject, preferredLanguage) {
+		if (typeof textObject === "undefined") {
+			return undefined;
+		}
+
 		if (typeof textObject === "string") {
 			return textObject;
 		}
@@ -4571,6 +4691,7 @@ webvowl.util.textElement = function (element) {
 		// Nothing to do if no child elements exist
 		var lineCount = getLineCount();
 		if (lineCount < 1) {
+			textBlock.attr("y", 0);
 			return;
 		}
 
