@@ -100,10 +100,6 @@ public interface OntologyService extends RemoteService {
                                         String user, String operationDescription);
 
 
-    // WebVOWL related stuff
-    String getOntologyInformation(String projectName);
-
-    String convertOntology(String projectName);
-
+    String convertOntologyForVowlVisualization(String projectName);
 
 }

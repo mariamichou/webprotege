@@ -793,15 +793,8 @@ public class OntologyServiceOWLAPIImpl extends WebProtegeRemoteServiceServlet im
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-    // TODO: Copied from bio stuff
-
-    public String getOntologyInformation(String projectName) {
-        System.out.println("Work");
-        return "success!";
-    }
-
     @Override
-    public String convertOntology(String projectName) {
+    public String convertOntologyForVowlVisualization(String projectName) {
         OWLOntology ontology = getOntology(projectName);
         String ontologyURI = getOntologyURI(projectName);
         Owl2Vowl owl2Vowl = new Owl2Vowl(ontology, ontologyURI);

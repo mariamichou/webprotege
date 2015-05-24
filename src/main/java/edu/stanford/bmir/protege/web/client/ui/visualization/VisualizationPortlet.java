@@ -22,7 +22,7 @@ public class VisualizationPortlet extends AbstractOWLEntityPortlet {
 		add(graphContainer);
 
 		OntologyServiceManager.getInstance()
-				.convertOntology(getProjectId(), new AsyncCallback<String>() {
+				.convertForVowlVisualization(getProjectId(), new AsyncCallback<String>() {
 					@Override public void onFailure(Throwable caught) {
 						// TODO
 					}
