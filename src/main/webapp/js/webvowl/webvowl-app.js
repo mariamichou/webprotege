@@ -5,13 +5,12 @@ var webvowlApp = webvowlApp || {};
 webvowlApp.version = "0.4.0";
 
 // Source: src/js/app/app.js
-webvowlApp.app = function () {
+webvowlApp.app = function (graphContainerSelector) {
 
 	var app = {},
 		graph = webvowl.graph(),
 		options = graph.graphOptions(),
 		languageTools = webvowl.util.languageTools(),
-		graphSelector = "#graph-container",
 		cachedConversions = {},
 	// Graph modules
 		statistics = webvowl.modules.statistics(),
@@ -26,7 +25,7 @@ webvowlApp.app = function () {
 		pickAndPin = webvowl.modules.pickAndPin();
 
 	app.initialize = function () {
-		options.graphContainerSelector(graphSelector);
+		options.graphContainerSelector(graphContainerSelector);
 		options.selectionModules().push(focuser);
 		options.selectionModules().push(pickAndPin);
 		options.filterModules().push(statistics);
@@ -92,7 +91,7 @@ webvowlApp.app = function () {
 	}
 
 	function adjustSize() {
-		var graphContainer = d3.select(graphSelector),
+		var graphContainer = d3.select(graphContainerSelector),
 			svg = graphContainer.select("svg"),
 			height = parseInt(graphContainer.style("height"), 10),
 			width = parseInt(graphContainer.style("width"), 10);

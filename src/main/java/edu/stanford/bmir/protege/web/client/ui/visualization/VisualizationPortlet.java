@@ -10,16 +10,28 @@ import edu.stanford.bmir.protege.web.client.ui.portlet.AbstractOWLEntityPortlet;
 
 public class VisualizationPortlet extends AbstractOWLEntityPortlet {
 
+	private static final String VOWL_GRAPH_ATTRIBUTE = "data-vowl-graph";
+
 	public VisualizationPortlet(Project project) {
 		super(project);
 	}
 
 	@Override public void initialize() {
 		Widget graphContainer = new HTML();
-		graphContainer.getElement().setId("graph-container");
+		// Setting the id strangely doesn't work with multiple ontologies, so we select by an attribute
+		graphContainer.getElement().setAttribute(VOWL_GRAPH_ATTRIBUTE, getVowlGraphAttributeValue());
 		add(graphContainer);
 
 		injectD3JsAndWebVowl();
+	}
+
+	private String getGraphContainerSelector() {
+		return "[" + VOWL_GRAPH_ATTRIBUTE + "=" + getVowlGraphAttributeValue() + "]";
+	}
+
+	private String getVowlGraphAttributeValue() {
+		// the value has to begin with a letter to be valid for selecting the element
+		return "project-id-" + getProjectId().getId() + "-" + hashCode();
 	}
 
 	/**
@@ -64,7 +76,7 @@ public class VisualizationPortlet extends AbstractOWLEntityPortlet {
 						Window.alert("Script load failed.");
 					}
 					public void onSuccess(Void result) {
-						initializeWebVowlApp();
+						initializeWebVowlApp(getGraphContainerSelector());
 					}
 				}).inject();
 	}
@@ -72,10 +84,10 @@ public class VisualizationPortlet extends AbstractOWLEntityPortlet {
 	/**
 	 * Temporary solution until we can find out when the graph container element is created.
 	 */
-	native void initializeWebVowlApp() /*-{
+	native void initializeWebVowlApp(String graphContainerSelector) /*-{
 	  var intervalId = $wnd.setInterval(function () {
-		  if ($doc.getElementById("graph-container")) {
-			  $wnd.webvowlApp.app().initialize();
+		  if ($doc.querySelector(graphContainerSelector)) {
+			  $wnd.webvowlApp.app(graphContainerSelector).initialize();
 			  $wnd.clearInterval(intervalId);
 		  }
 	  }, 100);
