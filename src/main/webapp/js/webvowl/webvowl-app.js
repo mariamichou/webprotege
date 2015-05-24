@@ -5,7 +5,7 @@ var webvowlApp = webvowlApp || {};
 webvowlApp.version = "0.4.0";
 
 // Source: src/js/app/app.js
-webvowlApp.app = function (graphContainerSelector) {
+webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 
 	var app = {},
 		graph = webvowl.graph(),
@@ -42,48 +42,13 @@ webvowlApp.app = function (graphContainerSelector) {
 		adjustSize();
 		d3.select(window).on("resize", adjustSize);
 
-		loadOntologyFromUri("/js/data/foaf.json", "/js/data/foaf.json");
+		loadOntologyFromText(convertedOntology);
 	};
 
-	function loadOntologyFromUri(relativePath, requestedUri) {
-		var cachedOntology = cachedConversions[relativePath];
-		var trimmedRequestedUri = requestedUri.replace(/\/$/g, "");
-		var filename = trimmedRequestedUri.slice(trimmedRequestedUri.lastIndexOf("/") + 1);
-
-		if (cachedOntology) {
-			loadOntologyFromText(cachedOntology, undefined, filename);
-		} else {
-			//displayLoadingIndicators(); TODO
-			d3.xhr(relativePath, "application/json", function (error, request) {
-				var loadingSuccessful = !error;
-
-				var jsonText;
-				if (loadingSuccessful) {
-					jsonText = request.responseText;
-					cachedConversions[relativePath] = jsonText;
-				}
-
-				loadOntologyFromText(jsonText, undefined, filename);
-			});
-		}
-	}
-
-	function loadOntologyFromText(jsonText, filename, alternativeFilename) {
+	function loadOntologyFromText(jsonText) {
 		var data;
 		if (jsonText) {
 			data = JSON.parse(jsonText);
-
-			if (!filename) {
-				// First look if an ontology title exists, otherwise take the alternative filename
-				var ontologyNames = data.header ? data.header.title : undefined;
-				var ontologyName = languageTools.textForCurrentLanguage(ontologyNames);
-
-				if (ontologyName) {
-					filename = ontologyName;
-				} else {
-					filename = alternativeFilename;
-				}
-			}
 		}
 
 		options.data(data);

@@ -1,11 +1,10 @@
 package edu.stanford.bmir.protege.web.client.ui.visualization;
 
-import com.google.gwt.core.client.Callback;
-import com.google.gwt.core.client.ScriptInjector;
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import edu.stanford.bmir.protege.web.client.project.Project;
+import edu.stanford.bmir.protege.web.client.rpc.OntologyServiceManager;
 import edu.stanford.bmir.protege.web.client.ui.portlet.AbstractOWLEntityPortlet;
 
 public class VisualizationPortlet extends AbstractOWLEntityPortlet {
@@ -22,7 +21,16 @@ public class VisualizationPortlet extends AbstractOWLEntityPortlet {
 		graphContainer.getElement().setAttribute(VOWL_GRAPH_ATTRIBUTE, getVowlGraphAttributeValue());
 		add(graphContainer);
 
-		initializeWebVowlApp(getGraphContainerSelector());
+		OntologyServiceManager.getInstance()
+				.convertOntology(getProjectId(), new AsyncCallback<String>() {
+					@Override public void onFailure(Throwable caught) {
+						// TODO
+					}
+
+					@Override public void onSuccess(String convertedOntology) {
+						initializeWebVowlApp(getGraphContainerSelector(), convertedOntology);
+					}
+				});
 	}
 
 	private String getGraphContainerSelector() {
@@ -37,10 +45,10 @@ public class VisualizationPortlet extends AbstractOWLEntityPortlet {
 	/**
 	 * Temporary solution until we can find out when the graph container element is created.
 	 */
-	native void initializeWebVowlApp(String graphContainerSelector) /*-{
+	native void initializeWebVowlApp(String graphContainerSelector, String convertedOntology) /*-{
 	  var intervalId = $wnd.setInterval(function () {
 		  if ($doc.querySelector(graphContainerSelector)) {
-			  $wnd.webvowlApp.app(graphContainerSelector).initialize();
+			  $wnd.webvowlApp.app(graphContainerSelector, convertedOntology).initialize();
 			  $wnd.clearInterval(intervalId);
 		  }
 	  }, 100);

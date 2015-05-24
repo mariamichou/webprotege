@@ -804,11 +804,8 @@ public class OntologyServiceOWLAPIImpl extends WebProtegeRemoteServiceServlet im
     public String convertOntology(String projectName) {
         OWLOntology ontology = getOntology(projectName);
         String ontologyURI = getOntologyURI(projectName);
-
         Owl2Vowl owl2Vowl = new Owl2Vowl(ontology, ontologyURI);
 
-        System.out.println(owl2Vowl.getJsonAsString());
-
-        return null;
+        return owl2Vowl.getJsonAsString();
     }
 }
