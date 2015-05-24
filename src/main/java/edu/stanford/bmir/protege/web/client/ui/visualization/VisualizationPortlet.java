@@ -22,7 +22,7 @@ public class VisualizationPortlet extends AbstractOWLEntityPortlet {
 		graphContainer.getElement().setAttribute(VOWL_GRAPH_ATTRIBUTE, getVowlGraphAttributeValue());
 		add(graphContainer);
 
-		injectD3JsAndWebVowl();
+		initializeWebVowlApp(getGraphContainerSelector());
 	}
 
 	private String getGraphContainerSelector() {
@@ -32,53 +32,6 @@ public class VisualizationPortlet extends AbstractOWLEntityPortlet {
 	private String getVowlGraphAttributeValue() {
 		// the value has to begin with a letter to be valid for selecting the element
 		return "project-id-" + getProjectId().getId() + "-" + hashCode();
-	}
-
-	/**
-	 * Injects the d3.js code.
-	 */
-	private void injectD3JsAndWebVowl() {
-		ScriptInjector.fromUrl("js/webvowl/d3.min.js").setWindow(ScriptInjector.TOP_WINDOW)
-				.setCallback(new Callback<Void, Exception>() {
-					public void onFailure(Exception reason) {
-						Window.alert("Script load failed.");
-					}
-					public void onSuccess(Void result) {
-						injectWebVowlGraphAndApp();
-					}
-				}).inject();
-	}
-
-	/**
-	 * Injects the WebVOWL graph code.
-	 * Requires d3.js code to be injected previously with {@link #injectD3JsAndWebVowl()}.
-	 */
-	private void injectWebVowlGraphAndApp() {
-		ScriptInjector.fromUrl("js/webvowl/webvowl.js").setWindow(ScriptInjector.TOP_WINDOW)
-				.setCallback(new Callback<Void, Exception>() {
-					public void onFailure(Exception reason) {
-						Window.alert("Script load failed.");
-					}
-					public void onSuccess(Void result) {
-						injectWebVowlApp();
-					}
-				}).inject();
-	}
-
-	/**
-	 * Injects the WebVOWL app code.
-	 * Requires the WebVOWL graph to be injected previously with {@link #injectWebVowlGraphAndApp()}.
-	 */
-	private void injectWebVowlApp() {
-		ScriptInjector.fromUrl("js/webvowl/webvowl-app.js").setWindow(ScriptInjector.TOP_WINDOW)
-				.setCallback(new Callback<Void, Exception>() {
-					public void onFailure(Exception reason) {
-						Window.alert("Script load failed.");
-					}
-					public void onSuccess(Void result) {
-						initializeWebVowlApp(getGraphContainerSelector());
-					}
-				}).inject();
 	}
 
 	/**
