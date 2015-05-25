@@ -6,25 +6,29 @@ import com.google.gwt.user.client.ui.Widget;
 import edu.stanford.bmir.protege.web.client.project.Project;
 import edu.stanford.bmir.protege.web.client.rpc.OntologyServiceManager;
 import edu.stanford.bmir.protege.web.client.ui.portlet.AbstractOWLEntityPortlet;
+import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
 
 public class VisualizationPortlet extends AbstractOWLEntityPortlet {
 
-	public VisualizationPortlet(Project project) {
-		super(project);
+	public VisualizationPortlet(SelectionModel selectionModel, Project project) {
+		super(selectionModel, project);
 	}
 
-	@Override public void initialize() {
+	@Override
+	public void initialize() {
 		Widget graphContainer = new HTML();
 		graphContainer.getElement().setId(getGraphContainerId());
 		add(graphContainer);
 
 		OntologyServiceManager.getInstance()
 				.convertForVowlVisualization(getProjectId(), new AsyncCallback<String>() {
-					@Override public void onFailure(Throwable caught) {
+					@Override
+					public void onFailure(Throwable caught) {
 						// TODO
 					}
 
-					@Override public void onSuccess(String convertedOntology) {
+					@Override
+					public void onSuccess(String convertedOntology) {
 						initializeWebVowlApp(getGraphContainerSelector(), convertedOntology);
 					}
 				});

@@ -168,7 +168,7 @@ public class UIFactory {
                 return new OWLEntityDescriptionEditorPortlet(selectionModel, project);
             }
             else if (portletJavaClassName.endsWith(VisualizationPortlet.class.getName())) {
-                return new VisualizationPortlet(project);
+                return new VisualizationPortlet(selectionModel, project);
             }
             else {
                 GWT.log("Portlet not found: " + portletJavaClassName);
