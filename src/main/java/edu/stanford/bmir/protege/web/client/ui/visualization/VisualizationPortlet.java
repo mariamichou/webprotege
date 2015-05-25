@@ -9,16 +9,13 @@ import edu.stanford.bmir.protege.web.client.ui.portlet.AbstractOWLEntityPortlet;
 
 public class VisualizationPortlet extends AbstractOWLEntityPortlet {
 
-	private static final String VOWL_GRAPH_ATTRIBUTE = "data-vowl-graph";
-
 	public VisualizationPortlet(Project project) {
 		super(project);
 	}
 
 	@Override public void initialize() {
 		Widget graphContainer = new HTML();
-		// Setting the id strangely doesn't work with multiple ontologies, so we select by an attribute
-		graphContainer.getElement().setAttribute(VOWL_GRAPH_ATTRIBUTE, getVowlGraphAttributeValue());
+		graphContainer.getElement().setId(getGraphContainerId());
 		add(graphContainer);
 
 		OntologyServiceManager.getInstance()
@@ -34,12 +31,15 @@ public class VisualizationPortlet extends AbstractOWLEntityPortlet {
 	}
 
 	private String getGraphContainerSelector() {
-		return "[" + VOWL_GRAPH_ATTRIBUTE + "=" + getVowlGraphAttributeValue() + "]";
+		return "#" + getGraphContainerId();
 	}
 
-	private String getVowlGraphAttributeValue() {
-		// the value has to begin with a letter to be valid for selecting the element
-		return "project-id-" + getProjectId().getId() + "-" + hashCode();
+	private String getGraphContainerId() {
+		/* The value has to begin with a letter to be valid for selecting the element.
+		 * It is also important to use not only the project id, because this class is instantiated
+		 * sometimes multiple times for the same project.
+		 */
+		return "project-id-" + getProjectId().getId() + "-hash-code-" + hashCode();
 	}
 
 	/**
