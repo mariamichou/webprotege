@@ -10,8 +10,7 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 	var app = {},
 		graph = webvowl.graph(),
 		options = graph.graphOptions(),
-		languageTools = webvowl.util.languageTools(),
-		cachedConversions = {},
+		data,
 	// Graph modules
 		statistics = webvowl.modules.statistics(),
 		focuser = webvowl.modules.focuser(),
@@ -42,16 +41,25 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		adjustSize();
 		d3.select(window).on("resize", adjustSize);
 
-		loadOntologyFromText(convertedOntology);
+		app.data(convertedOntology);
+
+		return app;
 	};
 
-	function loadOntologyFromText(jsonText) {
-		var data;
-		if (jsonText) {
-			data = JSON.parse(jsonText);
-		}
+	app.data = function (convertedOntology) {
+		if (!arguments.length) return data;
+		data = convertedOntology;
+		updateGraph();
 
-		options.data(data);
+		return app;
+	};
+
+	function updateGraph() {
+		var dataAsJson;
+		if (data) {
+			dataAsJson = JSON.parse(data);
+		}
+		options.data(dataAsJson);
 		graph.reload();
 	}
 
