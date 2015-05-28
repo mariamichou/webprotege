@@ -52,6 +52,19 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet {
 		timer.scheduleRepeating(100);
 	}
 
+	@Override protected void onRefresh() {
+		OntologyServiceManager.getInstance()
+				.convertForVowlVisualization(getProjectId(), new AsyncCallback<String>() {
+					@Override public void onFailure(Throwable caught) {
+						// TODO
+					}
+
+					@Override public void onSuccess(String convertedOntology) {
+						visualizationJso.setData(convertedOntology);
+					}
+				});
+	}
+
 	private String getContainerId() {
 		/* The value has to begin with a letter to be valid for selecting the element.
 		 * It is also important to use not only the project id, because this class is instantiated
