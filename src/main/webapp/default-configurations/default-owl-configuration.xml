@@ -294,7 +294,7 @@
                     <width>1</width>
                     <portlets>
                         <portlet>
-                            <name>edu.stanford.bmir.protege.web.client.ui.visualization.VOWLVisualizationPortlet</name>
+                            <name>edu.stanford.bmir.protege.web.client.ui.visualization.vowl.VOWLVisualizationPortlet</name>
                             <height>570</height>
                         </portlet>
                     </portlets>

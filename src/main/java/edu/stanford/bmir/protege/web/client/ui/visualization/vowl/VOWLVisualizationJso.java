@@ -3,7 +3,7 @@
  *
  */
 
-package edu.stanford.bmir.protege.web.client.ui.visualization;
+package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
