@@ -285,23 +285,23 @@
         <!--         Visualization Tab          -->
         <!-- ********************************** -->
         <tab>
-            <name>edu.stanford.bmir.protege.web.client.ui.tab.UserDefinedTab</name>
+            <name>edu.stanford.bmir.protege.web.client.ui.ontology.visualization.VisualizationTab</name>
             <label>Visualization</label>
             <columns>
 
-                <!-- Column 1 -->
+                <!-- Column 1 Standard visualization is VOWL -->
                 <column>
                     <width>1</width>
                     <portlets>
                         <portlet>
                             <name>edu.stanford.bmir.protege.web.client.ui.visualization.VOWLVisualizationPortlet</name>
                             <height>570</height>
-                            <width>0</width>
                         </portlet>
                     </portlets>
                 </column>
 
             </columns>
+            <controllingPortlet reference="../columns/column/portlets/portlet"/>
         </tab>
 
 

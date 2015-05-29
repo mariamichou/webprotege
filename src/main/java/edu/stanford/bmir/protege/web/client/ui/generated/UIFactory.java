@@ -13,6 +13,7 @@ import edu.stanford.bmir.protege.web.client.ui.obo.*;
 import edu.stanford.bmir.protege.web.client.ui.ontology.annotations.OntologyAnnotationsPortlet;
 import edu.stanford.bmir.protege.web.client.ui.ontology.changes.ChangeSummaryPortlet;
 import edu.stanford.bmir.protege.web.client.change.ChangesPortlet;
+import edu.stanford.bmir.protege.web.client.ui.ontology.visualization.VisualizationTab;
 import edu.stanford.bmir.protege.web.client.watches.WatchedEntitiesPortlet;
 import edu.stanford.bmir.protege.web.client.ui.ontology.classes.*;
 import edu.stanford.bmir.protege.web.client.ui.ontology.id.OntologyIdPortlet;
@@ -76,6 +77,9 @@ public class UIFactory {
         }
         else if (tabJavaClassName.equals(UserDefinedTab.class.getName())) {
             return new UserDefinedTab(selectionModel, project);
+        }
+        else if (tabJavaClassName.equals(VisualizationTab.class.getName())) {
+            return new VisualizationTab(selectionModel, project);
         }
         return null;
     }
@@ -187,7 +191,7 @@ public class UIFactory {
          *
          */
         String[] tabs = {ClassesTab.class.getName(), PropertiesTab.class.getName(), IndividualsTab.class.getName(),
-                MetadataTab.class.getName()};
+                MetadataTab.class.getName(), VisualizationTab.class.getName()};
         return Arrays.asList(tabs);
     }
 
