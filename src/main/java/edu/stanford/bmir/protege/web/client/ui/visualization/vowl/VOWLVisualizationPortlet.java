@@ -14,12 +14,14 @@ import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
 public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet {
 
 	private VOWLVisualizationJso visualizationJso;
+	protected static final String vowlTitle = "VOWL";
 
 	public VOWLVisualizationPortlet(SelectionModel selectionModel, Project project) {
 		super(selectionModel, project);
 	}
 
 	@Override public void initialize() {
+		setTitle(vowlTitle);
 		Widget graphContainer = new HTML();
 		graphContainer.getElement().setId(getContainerId());
 		add(graphContainer);
