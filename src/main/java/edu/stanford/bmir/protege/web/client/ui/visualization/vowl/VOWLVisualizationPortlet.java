@@ -5,9 +5,13 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
+import com.gwtext.client.widgets.Panel;
+import com.gwtext.client.widgets.TabPanel;
+import com.gwtext.client.widgets.form.Label;
 import edu.stanford.bmir.protege.web.client.project.Project;
 import edu.stanford.bmir.protege.web.client.rpc.OntologyServiceManager;
 import edu.stanford.bmir.protege.web.client.ui.portlet.AbstractOWLEntityPortlet;
+import edu.stanford.bmir.protege.web.client.ui.util.AbstractValidatableTab;
 import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
 
 
@@ -81,4 +85,36 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet {
 		return "project-id-" + getProjectId().getId() + "-hash-code-" + hashCode();
 	}
 
+	@Override
+	protected TabPanel getConfigurationPanel() {
+		TabPanel configurationPanel = super.getConfigurationPanel();
+		// Add new tab to gear window.
+		configurationPanel.add(createVOWlPanel());
+		return configurationPanel;
+	}
+
+	/**
+	 * @return New panel for the information tab in the gear window.
+	 */
+	protected Panel createVOWlPanel() {
+
+		// TODO think of correct class
+		Panel generalPanel = new AbstractValidatableTab() {
+			@Override
+			public void onSave() {
+			}
+
+			@Override
+			public boolean isValid() {
+				return true;
+			}
+		};
+
+		generalPanel.setTitle("Info");
+		generalPanel.setPaddings(10);
+		generalPanel.add(new Label("WebVOWL Version 0.4.0"));
+		generalPanel.add(new HTML("<a target=\"_blank\" href=\"http://vowl.visualdataweb.org/\">Check visualdataweb</a>"));
+
+		return generalPanel;
+	}
 }
