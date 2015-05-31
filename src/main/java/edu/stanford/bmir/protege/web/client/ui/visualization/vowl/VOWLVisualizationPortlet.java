@@ -26,11 +26,13 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet {
 
 		OntologyServiceManager.getInstance()
 				.convertForVowlVisualization(getProjectId(), new AsyncCallback<String>() {
-					@Override public void onFailure(Throwable caught) {
+					@Override
+					public void onFailure(Throwable caught) {
 						// TODO
 					}
 
-					@Override public void onSuccess(String convertedOntology) {
+					@Override
+					public void onSuccess(String convertedOntology) {
 						initializeVisualizationWhenElementExists(convertedOntology);
 					}
 				});
@@ -41,7 +43,8 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet {
 	 */
 	private void initializeVisualizationWhenElementExists(final String convertedOntology) {
 		Timer timer = new Timer() {
-			@Override public void run() {
+			@Override
+			public void run() {
 				if (Document.get().getElementById(getContainerId()) != null) {
 					cancel();
 					visualizationJso = VOWLVisualizationJso.initialize(getContainerId(), convertedOntology);
@@ -52,14 +55,17 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet {
 		timer.scheduleRepeating(100);
 	}
 
-	@Override protected void onRefresh() {
+	@Override
+	protected void onRefresh() {
 		OntologyServiceManager.getInstance()
 				.convertForVowlVisualization(getProjectId(), new AsyncCallback<String>() {
-					@Override public void onFailure(Throwable caught) {
+					@Override
+					public void onFailure(Throwable caught) {
 						// TODO
 					}
 
-					@Override public void onSuccess(String convertedOntology) {
+					@Override
+					public void onSuccess(String convertedOntology) {
 						visualizationJso.setData(convertedOntology);
 					}
 				});
