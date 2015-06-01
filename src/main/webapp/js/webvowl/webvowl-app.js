@@ -21,7 +21,8 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		setOperatorFilter = webvowl.modules.setOperatorFilter(),
 		nodeScalingSwitch = webvowl.modules.nodeScalingSwitch(graph),
 		compactNotationSwitch = webvowl.modules.compactNotationSwitch(graph),
-		pickAndPin = webvowl.modules.pickAndPin();
+		pickAndPin = webvowl.modules.pickAndPin(),
+		resizeTimeout = 200;
 
 	app.initialize = function () {
 		options.graphContainerSelector(graphContainerSelector);
@@ -39,7 +40,9 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		graph.start();
 
 		adjustSize();
-		d3.select(window).on("resize", adjustSize);
+		d3.select(window).on("resize", function(){
+			setTimeout(adjustSize, resizeTimeout);
+		});
 
 		app.data(convertedOntology);
 
