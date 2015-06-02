@@ -53,7 +53,9 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet {
 			public void run() {
 				if (Document.get().getElementById(getContainerId()) != null) {
 					cancel();
-					visualizationJso = VOWLVisualizationJso.initialize(getContainerId(), convertedOntology);
+					if (VOWLVisualizationJso.isBrowserCompatible(getContainerId())) {
+						visualizationJso = VOWLVisualizationJso.initialize(getContainerId(), convertedOntology);
+					}
 				}
 			}
 		};

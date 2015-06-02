@@ -19,4 +19,16 @@ public class VOWLVisualizationJso extends JavaScriptObject {
 	public final native void setData(String data) /*-{
 	  this.data(data);
   }-*/;
+
+	/**
+	 * If not compatible shows an error message in given container.
+	 * @return True if not IE.
+	 */
+	public static native boolean isBrowserCompatible(String containerId) /*-{
+		var supported = $wnd.webvowlApp.browserWarning("#" + containerId).isSupported();
+		if (!supported) {
+			$wnd.webvowlApp.browserWarning("#" + containerId).showError();
+		}
+		return supported;
+	}-*/;
 }

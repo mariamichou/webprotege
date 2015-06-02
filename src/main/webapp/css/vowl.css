@@ -104,3 +104,17 @@ marker path {
        Use any value that is larger than the length of the marker path. */
     stroke-dasharray: 50;
 }
+
+#browserCheck {
+    /* checking for IE where WebVOWl is not working */
+    background-color: #f00;
+    padding: 5px 0;
+    text-align: center;
+    width: 100%;
+}
+#browserCheck a {
+    color: #fff;
+}
+#browserCheck a:hover {
+    text-decoration: underline;
+}
