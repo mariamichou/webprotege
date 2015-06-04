@@ -3,6 +3,7 @@ package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtext.client.widgets.Panel;
@@ -11,21 +12,20 @@ import com.gwtext.client.widgets.form.Label;
 import edu.stanford.bmir.protege.web.client.project.Project;
 import edu.stanford.bmir.protege.web.client.rpc.OntologyServiceManager;
 import edu.stanford.bmir.protege.web.client.ui.portlet.AbstractOWLEntityPortlet;
-import edu.stanford.bmir.protege.web.client.ui.util.AbstractValidatableTab;
 import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
 
 
 public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet {
 
+	private static final String VOWL_TITLE = "WebVOWL 0.4.0";
 	private VOWLVisualizationJso visualizationJso;
-	protected static final String vowlTitle = "VOWL";
 
 	public VOWLVisualizationPortlet(SelectionModel selectionModel, Project project) {
 		super(selectionModel, project);
 	}
 
 	@Override public void initialize() {
-		setTitle(vowlTitle);
+		setTitle(VOWL_TITLE);
 		Widget graphContainer = new HTML();
 		graphContainer.getElement().setId(getContainerId());
 		add(graphContainer);
@@ -91,32 +91,21 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet {
 	protected TabPanel getConfigurationPanel() {
 		TabPanel configurationPanel = super.getConfigurationPanel();
 		// Add new tab to gear window.
-		configurationPanel.add(createVOWlPanel());
+		configurationPanel.add(createVOWLPanel());
 		return configurationPanel;
 	}
 
 	/**
 	 * @return New panel for the information tab in the gear window.
 	 */
-	protected Panel createVOWlPanel() {
+	protected Panel createVOWLPanel() {
+		Panel infoPanel = new Panel();
+		infoPanel.setTitle("Info");
+		infoPanel.setPaddings(10);
+		infoPanel.add(new Label("Visualized with WebVOWL 0.4.0 ("));
+		infoPanel.add(new Anchor("VOWL homepage", "http://vowl.visualdataweb.org/", "_blank"));
+		infoPanel.add(new Label(")"));
 
-		// TODO think of correct class
-		Panel generalPanel = new AbstractValidatableTab() {
-			@Override
-			public void onSave() {
-			}
-
-			@Override
-			public boolean isValid() {
-				return true;
-			}
-		};
-
-		generalPanel.setTitle("Info");
-		generalPanel.setPaddings(10);
-		generalPanel.add(new Label("WebVOWL Version 0.4.0"));
-		generalPanel.add(new HTML("<a target=\"_blank\" href=\"http://vowl.visualdataweb.org/\">Check visualdataweb</a>"));
-
-		return generalPanel;
+		return infoPanel;
 	}
 }
