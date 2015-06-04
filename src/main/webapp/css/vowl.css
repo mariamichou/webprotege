@@ -118,3 +118,7 @@ marker path {
 #browserCheck a:hover {
     text-decoration: underline;
 }
+
+.vowlGraph .label {
+    font-weight: normal;
+}
