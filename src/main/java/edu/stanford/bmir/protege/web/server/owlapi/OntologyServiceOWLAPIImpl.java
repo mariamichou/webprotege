@@ -346,10 +346,12 @@ public class OntologyServiceOWLAPIImpl extends WebProtegeRemoteServiceServlet im
         RenderingManager rm = project.getRenderingManager();
         AssertedClassHierarchyProvider hierarchyProvider = project.getClassHierarchyProvider();
         OWLClass cls = rm.getEntity(className, EntityType.CLASS);
+        
+        int totalSubclassAnnotations = 0;
 
         boolean checkForDeprecated = project.getRootOntology().containsAnnotationPropertyInSignature(OWLRDFVocabulary.OWL_DEPRECATED.getIRI());
         for (OWLClass subclass : new ArrayList<OWLClass>(hierarchyProvider.getChildren(cls))) {
-            boolean deprecated = false;
+        	boolean deprecated = false;
             if(checkForDeprecated) {
                 deprecated = project.isDeprecated(subclass);
             }
@@ -361,8 +363,20 @@ public class OntologyServiceOWLAPIImpl extends WebProtegeRemoteServiceServlet im
                 SubclassEntityData data = new SubclassEntityData(name, browserText, new HashSet<EntityData>(0), subClassSubClassesCount);
                 data.setDeprecated(deprecated);
                 int directNotesCount = project.getNotesManager().getIndirectNotesCount(subclass);
+                
+                /*int childrenNotesCount = 0;
+                for(OWLClass child : children) {
+                	childrenNotesCount += project.getNotesManager().getIndirectNotesCount(child);
+                }*/
 //                int indirectNotesCount = project.getNotesManager().getIndirectNotesCount(cls);
+                
                 data.setLocalAnnotationsCount(directNotesCount);
+                //int childrenNotesCount = getTotalSubclassAnnotations(subclass, project, hierarchyProvider);
+                //data.setChildrenAnnotationsCount(childrenNotesCount);
+                int totalNotesCount = getTotalSubclassAnnotations(subclass, project, hierarchyProvider);
+                data.setChildrenAnnotationsCount(totalNotesCount - directNotesCount);
+                
+                
             Set<Watch<?>> directWatches = project.getWatchManager().getDirectWatches(subclass, getUserId());
             if(!directWatches.isEmpty()) {
                 data.setWatches(directWatches);
@@ -394,6 +408,18 @@ public class OntologyServiceOWLAPIImpl extends WebProtegeRemoteServiceServlet im
         });
         return result;
     }
+    
+    
+    private int getTotalSubclassAnnotations(OWLClass cls, OWLAPIProject project, AssertedClassHierarchyProvider hierarchyProvider) {
+
+    	int total = project.getNotesManager().getIndirectNotesCount(cls);
+    	for(OWLClass child : hierarchyProvider.getChildren(cls)) {
+    		total += getTotalSubclassAnnotations(child, project, hierarchyProvider);
+    	}
+    	return total;
+
+    }
+  
 
     public List<EntityData> moveCls(String projectName, String clsName, String oldParentName, String newParentName, boolean checkForCycles, String user, String operationDescription) {
         // Why check for cycles here and nowhere else?

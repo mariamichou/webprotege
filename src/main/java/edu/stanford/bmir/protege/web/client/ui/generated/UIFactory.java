@@ -2,6 +2,7 @@ package edu.stanford.bmir.protege.web.client.ui.generated;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gwt.core.client.GWT;
+
 import edu.stanford.bmir.protege.web.client.metrics.MetricsPortlet;
 import edu.stanford.bmir.protege.web.client.project.Project;
 import edu.stanford.bmir.protege.web.client.renderer.OWLEntityDescriptionBrowserPortlet;
@@ -14,6 +15,8 @@ import edu.stanford.bmir.protege.web.client.ui.ontology.changes.ChangeSummaryPor
 import edu.stanford.bmir.protege.web.client.change.ChangesPortlet;
 import edu.stanford.bmir.protege.web.client.watches.WatchedEntitiesPortlet;
 import edu.stanford.bmir.protege.web.client.ui.ontology.classes.*;
+import edu.stanford.bmir.protege.web.client.ui.ontology.discussions.DiscussionsTab;
+import edu.stanford.bmir.protege.web.client.ui.ontology.discussions.ExtendedClassTreePortlet;
 import edu.stanford.bmir.protege.web.client.ui.ontology.id.OntologyIdPortlet;
 import edu.stanford.bmir.protege.web.client.ui.ontology.individuals.IndividualsListPortlet;
 import edu.stanford.bmir.protege.web.client.ui.ontology.individuals.IndividualsTab;
@@ -74,6 +77,9 @@ public class UIFactory {
         }
         else if (tabJavaClassName.equals(UserDefinedTab.class.getName())) {
             return new UserDefinedTab(selectionModel, project);
+        }
+        else if (tabJavaClassName.equals(DiscussionsTab.class.getName())) {
+            return new DiscussionsTab(selectionModel, project);
         }
         return null;
     }
@@ -165,6 +171,9 @@ public class UIFactory {
             else if (portletJavaClassName.endsWith(OWLEntityDescriptionEditorPortlet.class.getName())) {
                 return new OWLEntityDescriptionEditorPortlet(selectionModel, project);
             }
+            else if (portletJavaClassName.endsWith(ExtendedClassTreePortlet.class.getName())) {
+                return new ExtendedClassTreePortlet(selectionModel, project);
+            }
             else {
                 GWT.log("Portlet not found: " + portletJavaClassName);
             }
@@ -182,7 +191,7 @@ public class UIFactory {
          *
          */
         String[] tabs = {ClassesTab.class.getName(), PropertiesTab.class.getName(), IndividualsTab.class.getName(),
-                MetadataTab.class.getName()};
+                MetadataTab.class.getName(), DiscussionsTab.class.getName()};
         return Arrays.asList(tabs);
     }
 
@@ -207,7 +216,7 @@ public class UIFactory {
                 OBOTermRelationshipPortlet.class.getName(), OBOTermSynonymsPortlet.class.getName(),
                 OBOTermIdEditorPortlet.class.getName(),
                 OBOTermDefinitionPortlet.class.getName(), OBOTermXRefsEditorPortlet.class.getName(),
-                RevisionsPortlet.class.getName()};
+                RevisionsPortlet.class.getName(), ExtendedClassTreePortlet.class.getName()};
 
         List<String> portletsList = Arrays.asList(portlets);
         Collections.sort(portletsList, new Comparator<String>() {

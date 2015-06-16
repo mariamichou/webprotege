@@ -1,4 +1,4 @@
-package edu.stanford.bmir.protege.web.client.ui.ontology.classes;
+package edu.stanford.bmir.protege.web.client.ui.ontology.discussions;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
@@ -30,6 +30,7 @@ import com.gwtext.client.widgets.tree.event.DefaultSelectionModelListenerAdapter
 import com.gwtext.client.widgets.tree.event.MultiSelectionModelListener;
 import com.gwtext.client.widgets.tree.event.TreeNodeListenerAdapter;
 import com.gwtext.client.widgets.tree.event.TreePanelListenerAdapter;
+
 import edu.stanford.bmir.protege.web.client.Application;
 import edu.stanford.bmir.protege.web.client.csv.CSVImportDialogController;
 import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceCallback;
@@ -66,6 +67,7 @@ import edu.stanford.bmir.protege.web.shared.renderer.GetEntityDataAction;
 import edu.stanford.bmir.protege.web.shared.renderer.GetEntityDataResult;
 import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
 import edu.stanford.bmir.protege.web.shared.watches.*;
+
 import org.semanticweb.owlapi.model.EntityType;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLEntity;
@@ -82,12 +84,12 @@ import static edu.stanford.bmir.protege.web.resources.WebProtegeClientBundle.BUN
  *
  * @author Tania Tudorache <tudorache@stanford.edu>
  */
-public class ClassTreePortlet extends AbstractOWLEntityPortlet {
+public class ExtendedClassTreePortlet extends AbstractOWLEntityPortlet {
 
     private static final String SUFFIX_ID_LOCAL_ANNOTATION_COUNT = "_locAnnCnt";
 
     private static final String SUFFIX_ID_LOCAL_ANNOTATION_IMG = "_locAnnImg";
-    
+
     protected static final String WATCH_ICON_STYLE_STRING = "style=\"position:relative; top:3px; left:2px;\"";
 
     private static final String PLACE_HOLDER_PANEL = "placeHolderPanel";
@@ -131,11 +133,11 @@ public class ClassTreePortlet extends AbstractOWLEntityPortlet {
     */
     private static Set<EntityData> nodesWithNotesOpen = new HashSet<EntityData>();
 
-    public ClassTreePortlet(SelectionModel selectionModel, final Project project) {
+    public ExtendedClassTreePortlet(SelectionModel selectionModel, final Project project) {
         this(selectionModel, project, true, true, true, true, null);
     }
 
-    public ClassTreePortlet(SelectionModel selectionModel, final Project project, final boolean showToolbar, final boolean showTitle, final boolean showTools, final boolean allowsMultiSelection, final String topClass) {
+    public ExtendedClassTreePortlet(SelectionModel selectionModel, final Project project, final boolean showToolbar, final boolean showTitle, final boolean showTools, final boolean allowsMultiSelection, final String topClass) {
         super(selectionModel, project, false);
         this.showToolbar = showToolbar;
         this.showTitle = showTitle;
@@ -1335,26 +1337,6 @@ public class ClassTreePortlet extends AbstractOWLEntityPortlet {
         String text = "";
 
         final int localAnnotationsCount = entityData.getLocalAnnotationsCount();
-        if (localAnnotationsCount > 0) {
-            final String idLocalAnnotationImg = node.getId() + SUFFIX_ID_LOCAL_ANNOTATION_IMG;
-            final String idLocalAnnotationCnt = node.getId() + SUFFIX_ID_LOCAL_ANNOTATION_COUNT;
-
-            // TODO: add a css for this
-            text = text + "<span style=\"padding-left: 2px;\"><img id=\"" + idLocalAnnotationImg + "\" src=\"" + BUNDLE.commentSmallFilledIcon().getSafeUri().asString() + "\" title=\"" + UIUtil.getNiceNoteCountText(localAnnotationsCount) + " on this category. \nClick on the icon to see and edit the notes\" /></span>" + "<span id=\"" + idLocalAnnotationCnt + "\" style=\"font-size:95%;color:#15428B;font-weight:bold;\">" + localAnnotationsCount + "</span>";
-        }
-
-        final int childrenAnnotationsCount = entityData.getChildrenAnnotationsCount();
-        if (childrenAnnotationsCount > 0) {
-            text = text + " <span style=\"padding-left: 2px;\"><img src=\"" + BUNDLE.commentSmallIcon().getSafeUri().asString() + "\" title=\"" + UIUtil.getNiceNoteCountText(childrenAnnotationsCount) + " on the children of this category\" /></span>" + "<span style=\"font-size:90%;color:#999999;\">" + childrenAnnotationsCount + "</span>";
-        }
-
-        return text;
-    }
-    
-    /*protected String createNodeNoteCount(EntityData entityData, TreeNode node) {
-        String text = "";
-
-        final int localAnnotationsCount = entityData.getLocalAnnotationsCount();
         final int childrenAnnotationsCount = entityData.getChildrenAnnotationsCount();
         final int totalAnnotationsCount = localAnnotationsCount + childrenAnnotationsCount;
         
@@ -1371,7 +1353,7 @@ public class ClassTreePortlet extends AbstractOWLEntityPortlet {
         }
 
         return text;
-    }*/
+    }
 
     protected String createNodeWatchLabel(EntityData cls) {
         Set<Watch<?>> w = cls.getWatches();
@@ -1379,10 +1361,10 @@ public class ClassTreePortlet extends AbstractOWLEntityPortlet {
             return "";
         }
         if (w.iterator().next() instanceof EntityFrameWatch) {
-            return "<img src=\"" + BUNDLE.eyeIcon().getSafeUri().asString() + "\" " + ClassTreePortlet.WATCH_ICON_STYLE_STRING + " title=\"" + " Watched\"></img>";
+            return "<img src=\"" + BUNDLE.eyeIcon().getSafeUri().asString() + "\" " + ExtendedClassTreePortlet.WATCH_ICON_STYLE_STRING + " title=\"" + " Watched\"></img>";
         }
         else {
-            return "<img src=\"" + BUNDLE.eyeDownIcon().getSafeUri().asString() + "\" " + ClassTreePortlet.WATCH_ICON_STYLE_STRING + " title=\"" + " Watched branch\"></img>";
+            return "<img src=\"" + BUNDLE.eyeDownIcon().getSafeUri().asString() + "\" " + ExtendedClassTreePortlet.WATCH_ICON_STYLE_STRING + " title=\"" + " Watched branch\"></img>";
         }
     }
 

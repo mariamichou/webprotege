@@ -53,7 +53,55 @@
             </columns>
             <controllingPortlet reference="../columns/column/portlets/portlet"/>
         </tab>
+        
+        
+        <!-- ********************************** -->
+        <!--          Discussions Tab               -->
+        <!-- ********************************** -->
+        <tab>
+            <name>edu.stanford.bmir.protege.web.client.ui.ontology.discussions.DiscussionsTab</name>
+            <label>MyDiscussions</label>
+            <columns>
 
+                <!-- Column 1 -->
+                <column>
+                    <width>0.25</width>
+                    <portlets>
+                        <portlet>
+                            <name>edu.stanford.bmir.protege.web.client.ui.ontology.discussions.ExtendedTreePortlet</name>
+                            <height>570</height>
+                            <width>200</width>
+                        </portlet>
+                    </portlets>
+                </column>
+
+                <!-- Column 2 -->
+                <column>
+                    <width>0.50</width>
+                    <portlets>
+                        <portlet>
+                            <name>edu.stanford.bmir.protege.web.client.ui.editor.EditorPortlet</name>
+                            <height>570</height>
+                            <width>0</width>
+                        </portlet>
+                    </portlets>
+                </column>
+
+                <!-- Column 3 -->
+                <column>
+                    <width>0.25</width>
+                    <portlets>
+                        <portlet>
+                            <name>edu.stanford.bmir.protege.web.client.ui.notes.DiscussionThreadPortlet</name>
+                            <height>570</height>
+                            <width>0</width>
+                        </portlet>
+                    </portlets>
+                </column>
+
+            </columns>
+            <controllingPortlet reference="../columns/column/portlets/portlet"/>
+        </tab>
 
         <!-- ********************************** -->
         <!--          Properties Tab            -->
