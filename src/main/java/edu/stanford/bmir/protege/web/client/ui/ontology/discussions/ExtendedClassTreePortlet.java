@@ -1338,7 +1338,6 @@ public class ExtendedClassTreePortlet extends AbstractOWLEntityPortlet {
 
         final int localAnnotationsCount = entityData.getLocalAnnotationsCount();
         final int childrenAnnotationsCount = entityData.getChildrenAnnotationsCount();
-        final int totalAnnotationsCount = localAnnotationsCount + childrenAnnotationsCount;
         
         if (localAnnotationsCount > 0) {
             final String idLocalAnnotationImg = node.getId() + SUFFIX_ID_LOCAL_ANNOTATION_IMG;

@@ -17,6 +17,7 @@ import edu.stanford.bmir.protege.web.client.watches.WatchedEntitiesPortlet;
 import edu.stanford.bmir.protege.web.client.ui.ontology.classes.*;
 import edu.stanford.bmir.protege.web.client.ui.ontology.discussions.DiscussionsTab;
 import edu.stanford.bmir.protege.web.client.ui.ontology.discussions.ExtendedClassTreePortlet;
+import edu.stanford.bmir.protege.web.client.ui.ontology.discussions.ExtendedPropertiesTreePortlet;
 import edu.stanford.bmir.protege.web.client.ui.ontology.id.OntologyIdPortlet;
 import edu.stanford.bmir.protege.web.client.ui.ontology.individuals.IndividualsListPortlet;
 import edu.stanford.bmir.protege.web.client.ui.ontology.individuals.IndividualsTab;
@@ -174,6 +175,9 @@ public class UIFactory {
             else if (portletJavaClassName.endsWith(ExtendedClassTreePortlet.class.getName())) {
                 return new ExtendedClassTreePortlet(selectionModel, project);
             }
+            else if(portletJavaClassName.endsWith(ExtendedPropertiesTreePortlet.class.getName())) {
+            	return new ExtendedPropertiesTreePortlet(selectionModel, project);
+            }
             else {
                 GWT.log("Portlet not found: " + portletJavaClassName);
             }
@@ -216,7 +220,7 @@ public class UIFactory {
                 OBOTermRelationshipPortlet.class.getName(), OBOTermSynonymsPortlet.class.getName(),
                 OBOTermIdEditorPortlet.class.getName(),
                 OBOTermDefinitionPortlet.class.getName(), OBOTermXRefsEditorPortlet.class.getName(),
-                RevisionsPortlet.class.getName(), ExtendedClassTreePortlet.class.getName()};
+                RevisionsPortlet.class.getName(), ExtendedClassTreePortlet.class.getName(), ExtendedPropertiesTreePortlet.class.getName()};
 
         List<String> portletsList = Arrays.asList(portlets);
         Collections.sort(portletsList, new Comparator<String>() {
