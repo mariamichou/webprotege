@@ -99,7 +99,4 @@ public interface OntologyService extends RemoteService {
                                         EntityData oldValueEntityData,
                                         String user, String operationDescription);
 
-
-    String convertOntologyForVowlVisualization(String projectName);
-
 }

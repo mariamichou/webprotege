@@ -162,10 +162,4 @@ public class OntologyServiceManager {
         proxy.replaceExternalReference(projectId.getId(), entityName, bpRefData, oldValueEntityData, userId.getUserName(), operationDescription, cb);
     }
 
-
-    public void convertForVowlVisualization(ProjectId projectId, AsyncCallback<String> cb) {
-        proxy.convertOntologyForVowlVisualization(projectId.getId(), cb);
-    }
-
-
 }

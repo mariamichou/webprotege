@@ -1,6 +1,5 @@
 package edu.stanford.bmir.protege.web.server.owlapi;
 
-import de.uni_stuttgart.vis.vowl.owl2vowl.Owl2Vowl;
 import edu.stanford.bmir.protege.web.client.rpc.OntologyService;
 import edu.stanford.bmir.protege.web.client.rpc.data.*;
 import edu.stanford.bmir.protege.web.server.PaginationServerUtil;
@@ -792,19 +791,5 @@ public class OntologyServiceOWLAPIImpl extends WebProtegeRemoteServiceServlet im
             firstSep = false;
         }
         return res;
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    @Override
-    public String convertOntologyForVowlVisualization(String projectName) {
-        OWLOntology ontology = getOntology(projectName);
-        String ontologyURI = getOntologyURI(projectName);
-        Owl2Vowl owl2Vowl = new Owl2Vowl(ontology, ontologyURI);
-
-        return owl2Vowl.getJsonAsString();
     }
 }
