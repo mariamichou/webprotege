@@ -7,12 +7,15 @@
         .button-bar-style {
             padding: 2px;
         }
+        .middle-panel-style {
+			position: inherit !important;
+		}
     </ui:style>
     <g:HTMLPanel height="100%" width="100%" addStyleNames="{style.thread-style}">
         <g:HTMLPanel addStyleNames="{style.button-bar-style}">
             <g:Button ui:field="postNewTopicButton" text="Post new topic" addStyleNames="button-style"/>
         </g:HTMLPanel>
-        <g:ScrollPanel height="100%" width="100%">
+        <g:ScrollPanel height="100%" width="100%" addStyleNames="{style.middle-panel-style}">
             <g:FlexTable ui:field="notesList"  height="100%" width="100%"/>
         </g:ScrollPanel>
     </g:HTMLPanel>
