@@ -712,6 +712,16 @@ public class ExtendedPropertiesTreePortlet extends AbstractOWLEntityPortlet {
     private String getNodeText(EntityData entityData) {
         String text = entityData.getBrowserText();
         int localAnnotationsCount = entityData.getLocalAnnotationsCount();
+        int localUnresolvedNotesCount = entityData.getLocalUnresolvedNotesCount();
+        int totalUnresolvedNotesCount = entityData.getTotalUnresolvedNotesCount();
+        String localUnresolvedStr = "";
+        String totalUnresolvedStr = "";
+        
+        if(localUnresolvedNotesCount > 0)
+        	localUnresolvedStr = " (" + localUnresolvedNotesCount + " unresolved)";
+        if(totalUnresolvedNotesCount > 0)
+        	totalUnresolvedStr = " (" + totalUnresolvedNotesCount + " unresolved)";
+        
         TreeNode node = findTreeNode(entityData.getName());
         if (localAnnotationsCount > 0) {
         	//final String idLocalAnnotationImg = node.getId() + SUFFIX_ID_LOCAL_ANNOTATION_IMG;
@@ -719,15 +729,17 @@ public class ExtendedPropertiesTreePortlet extends AbstractOWLEntityPortlet {
             
             //text = text + "<img src=\"" + WebProtegeClientBundle.BUNDLE.commentSmallFilledIcon().getSafeUri().asString() + "\" />" + " " + localAnnotationsCount;
             //text = text + "<span style=\"padding-left: 2px;\"><img id=\"" + idLocalAnnotationImg + "\" src=\"" + BUNDLE.commentSmallFilledIcon().getSafeUri().asString() + "\" title=\"" + UIUtil.getNiceNoteCountText(localAnnotationsCount) + " on this category. \nClick on the icon to see and edit the notes\" /></span>" + "<span id=\"" + idLocalAnnotationCnt + "\" style=\"font-size:95%;color:#15428B;font-weight:bold;\">" + localAnnotationsCount + "</span>";
-        	text = text + "<span style=\"padding-left: 2px;\"><img src=\"" + BUNDLE.commentSmallFilledIcon().getSafeUri().asString() + "\" title=\"" + UIUtil.getNiceNoteCountText(localAnnotationsCount) + " on this category. \nClick on the icon to see and edit the notes\" /></span>" + "<span style=\"font-size:95%;color:#15428B;font-weight:bold;\">" + localAnnotationsCount + "</span>";
-            
+        	text = text + "<span style=\"padding-left: 2px;\"><img src=\"" + BUNDLE.commentSmallFilledIcon().getSafeUri().asString() + "\" title=\"" + UIUtil.getNiceNoteCountText(localAnnotationsCount) + " on this category" + localUnresolvedStr + ". \nClick on the icon to see and edit the notes\" /></span>" + "<span style=\"font-size:95%;color:#15428B;font-weight:bold;\">" + localAnnotationsCount + "</span>";
+        	if(localUnresolvedNotesCount > 0)
+        		text = text + "<span \" style=\"font-size:95%;color:maroon;font-weight:bold;\">(:" + localUnresolvedNotesCount +")</span>";
         }
         int childrenAnnotationsCount = entityData.getChildrenAnnotationsCount();
         if (childrenAnnotationsCount > 0) {
             //text = text + " chd: " + childrenAnnotationsCount;
         	
-        	text = text + " <span style=\"padding-left: 2px;\"><img src=\"" + BUNDLE.commentSmallIcon().getSafeUri().asString() + "\" title=\"" + UIUtil.getNiceNoteCountText(childrenAnnotationsCount) + " on the children of this category\" /></span>" + "<span style=\"font-size:90%;color:#e35305;\">" + childrenAnnotationsCount + "</span>";
-            
+        	text = text + " <span style=\"padding-left: 2px;\"><img src=\"" + BUNDLE.commentSmallIcon().getSafeUri().asString() + "\" title=\"" + UIUtil.getNiceNoteCountText(childrenAnnotationsCount) + " on the children of this category " + totalUnresolvedStr + ".\" /></span>" + "<span style=\"font-size:90%;color:#15428B;\">" + childrenAnnotationsCount + "</span>";
+        	if(totalUnresolvedNotesCount > 0)
+        		text = text +"<span \" style=\"font-size:95%;color:maroon;\">(:" + totalUnresolvedNotesCount +")</span>";
         }
         return text;
     }

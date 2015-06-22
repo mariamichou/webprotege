@@ -131,4 +131,13 @@ public final class DiscussionThread implements Serializable {
         DiscussionThread other = (DiscussionThread) obj;
         return this.replyToMap.equals(other.replyToMap);
     }
+    
+    public int getLocalUnresolvedNotes() {
+    	int total = 0;
+    	for(Note note:getNotes()) {
+    		if (note.getContent().getNoteStatus().get() == NoteStatus.OPEN)
+    			total += 1;
+    	}
+    	return total;
+    }
 }

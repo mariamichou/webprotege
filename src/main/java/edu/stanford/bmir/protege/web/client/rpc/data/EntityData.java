@@ -13,6 +13,8 @@ public class EntityData implements Serializable {
     private String browserText;
     private int localAnnotationsCount;
     private int childrenAnnotationsCount;
+    private int localUnresolvedNotesCount;
+    private int totalUnresolvedNotesCount;
     private Collection<EntityData> types;
     private ValueType valueType;
 //    private WatchType watchType;
@@ -134,6 +136,22 @@ public class EntityData implements Serializable {
 
     public void setChildrenAnnotationsCount(int childrenAnnotationsCount) {
         this.childrenAnnotationsCount = childrenAnnotationsCount;
+    }
+    
+    public int getLocalUnresolvedNotesCount() {
+        return localUnresolvedNotesCount;
+    }
+    
+    public void setLocalUnresolvedNotes(int localUnresolvedNotesCount) {
+        this.localUnresolvedNotesCount = localUnresolvedNotesCount;
+    }
+    
+    public int getTotalUnresolvedNotesCount() {
+        return totalUnresolvedNotesCount;
+    }
+    
+    public void setTotalUnresolvedNotes(int totalUnresolvedNotesCount) {
+        this.totalUnresolvedNotesCount = totalUnresolvedNotesCount;
     }
 
 //    public WatchType getWatchType() {

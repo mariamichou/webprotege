@@ -63,6 +63,7 @@ import edu.stanford.bmir.protege.web.shared.hierarchy.ClassHierarchyParentAddedE
 import edu.stanford.bmir.protege.web.shared.hierarchy.ClassHierarchyParentAddedHandler;
 import edu.stanford.bmir.protege.web.shared.hierarchy.ClassHierarchyParentRemovedEvent;
 import edu.stanford.bmir.protege.web.shared.hierarchy.ClassHierarchyParentRemovedHandler;
+import edu.stanford.bmir.protege.web.shared.notes.Note;
 import edu.stanford.bmir.protege.web.shared.renderer.GetEntityDataAction;
 import edu.stanford.bmir.protege.web.shared.renderer.GetEntityDataResult;
 import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
@@ -1338,17 +1339,30 @@ public class ExtendedClassTreePortlet extends AbstractOWLEntityPortlet {
 
         final int localAnnotationsCount = entityData.getLocalAnnotationsCount();
         final int childrenAnnotationsCount = entityData.getChildrenAnnotationsCount();
+        final int localUnresolvedNotesCount = entityData.getLocalUnresolvedNotesCount();
+        final int totalUnresolvedNotesCount = entityData.getTotalUnresolvedNotesCount();
+        String localUnresolvedStr = "";
+        String totalUnresolvedStr = "";
+        
+        if(localUnresolvedNotesCount > 0)
+        	localUnresolvedStr = " (" + localUnresolvedNotesCount + " unresolved)";
+        if(totalUnresolvedNotesCount > 0)
+        	totalUnresolvedStr = " (" + totalUnresolvedNotesCount + " unresolved)";
         
         if (localAnnotationsCount > 0) {
             final String idLocalAnnotationImg = node.getId() + SUFFIX_ID_LOCAL_ANNOTATION_IMG;
             final String idLocalAnnotationCnt = node.getId() + SUFFIX_ID_LOCAL_ANNOTATION_COUNT;
 
             // TODO: add a css for this
-            text = text + "<span style=\"padding-left: 2px;\"><img id=\"" + idLocalAnnotationImg + "\" src=\"" + BUNDLE.commentSmallFilledIcon().getSafeUri().asString() + "\" title=\"" + UIUtil.getNiceNoteCountText(localAnnotationsCount) + " on this category. \nClick on the icon to see and edit the notes\" /></span>" + "<span id=\"" + idLocalAnnotationCnt + "\" style=\"font-size:95%;color:#15428B;font-weight:bold;\">" + localAnnotationsCount + "</span>";
+            text = text + "<span style=\"padding-left: 2px;\"><img id=\"" + idLocalAnnotationImg + "\" src=\"" + BUNDLE.commentSmallFilledIcon().getSafeUri().asString() + "\" title=\"" + UIUtil.getNiceNoteCountText(localAnnotationsCount) + " on this category" + localUnresolvedStr + ". \nClick on the icon to see and edit the notes\" /></span>" + "<span id=\"" + idLocalAnnotationCnt + "\" style=\"font-size:95%;color:#15428B;font-weight:bold;\">" + localAnnotationsCount +"</span>";
+            if(localUnresolvedNotesCount > 0)
+                text = text + "<span \" style=\"font-size:95%;color:maroon;font-weight:bold;\">(:" + localUnresolvedNotesCount +")</span>"; 
         }
 
         if (childrenAnnotationsCount > 0) {
-        	text = text + " <span style=\"padding-left: 2px;\"><img src=\"" + BUNDLE.commentSmallIcon().getSafeUri().asString() + "\" title=\"" + UIUtil.getNiceNoteCountText(childrenAnnotationsCount) + " on the children of this category\" /></span>" + "<span style=\"font-size:90%;color:#e35305;\">" + childrenAnnotationsCount + "</span>";
+        	text = text + " <span style=\"padding-left: 2px;\"><img src=\"" + BUNDLE.commentSmallIcon().getSafeUri().asString() + "\" title=\"" + UIUtil.getNiceNoteCountText(childrenAnnotationsCount) + " on the children of this category" + totalUnresolvedStr + ".\" /></span>" + "<span style=\"font-size:90%;color:#15428B;\">" + childrenAnnotationsCount + "</span>";
+        	if(totalUnresolvedNotesCount > 0)
+        		text = text + "<span \" style=\"font-size:95%;color:maroon;\">(:" + totalUnresolvedNotesCount +")</span>";
         }
 
         return text;

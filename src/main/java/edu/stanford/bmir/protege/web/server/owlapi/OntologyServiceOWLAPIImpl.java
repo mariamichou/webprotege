@@ -10,10 +10,12 @@ import edu.stanford.bmir.protege.web.server.hierarchy.OWLAnnotationPropertyHiera
 import edu.stanford.bmir.protege.web.server.hierarchy.OWLDataPropertyHierarchyProvider;
 import edu.stanford.bmir.protege.web.server.hierarchy.OWLObjectPropertyHierarchyProvider;
 import edu.stanford.bmir.protege.web.server.inject.WebProtegeInjector;
+import edu.stanford.bmir.protege.web.shared.notes.Note;
 import edu.stanford.bmir.protege.web.shared.project.ProjectId;
 import edu.stanford.bmir.protege.web.shared.user.UserId;
 import edu.stanford.bmir.protege.web.shared.watches.Watch;
 import edu.stanford.smi.protege.util.Log;
+
 import org.ncbo.stanford.bean.concept.ClassBean;
 import org.ncbo.stanford.util.BioPortalServerConstants;
 import org.ncbo.stanford.util.BioPortalUtil;
@@ -347,8 +349,6 @@ public class OntologyServiceOWLAPIImpl extends WebProtegeRemoteServiceServlet im
         AssertedClassHierarchyProvider hierarchyProvider = project.getClassHierarchyProvider();
         OWLClass cls = rm.getEntity(className, EntityType.CLASS);
         
-        int totalSubclassAnnotations = 0;
-
         boolean checkForDeprecated = project.getRootOntology().containsAnnotationPropertyInSignature(OWLRDFVocabulary.OWL_DEPRECATED.getIRI());
         for (OWLClass subclass : new ArrayList<OWLClass>(hierarchyProvider.getChildren(cls))) {
         	boolean deprecated = false;
@@ -376,6 +376,11 @@ public class OntologyServiceOWLAPIImpl extends WebProtegeRemoteServiceServlet im
                 int totalNotesCount = getTotalSubclassAnnotations(subclass, project, hierarchyProvider);
                 data.setChildrenAnnotationsCount(totalNotesCount - directNotesCount);
                 
+                int localUnresolvedNotesCount = project.getNotesManager().getDiscusssionThread(subclass).getLocalUnresolvedNotes();
+                data.setLocalUnresolvedNotes(localUnresolvedNotesCount);
+                
+                int totalUnresolvedNotesCount = getTotalUnresolvedNotesCount(subclass, project, hierarchyProvider);
+                data.setTotalUnresolvedNotes(totalUnresolvedNotesCount);
                 
             Set<Watch<?>> directWatches = project.getWatchManager().getDirectWatches(subclass, getUserId());
             if(!directWatches.isEmpty()) {
@@ -409,6 +414,47 @@ public class OntologyServiceOWLAPIImpl extends WebProtegeRemoteServiceServlet im
         return result;
     }
     
+    private int getTotalUnresolvedNotesCount(OWLClass cls, OWLAPIProject project, AssertedClassHierarchyProvider hierarchyProvider) {
+    	int total = 0;
+    	//int total = project.getNotesManager().getDiscusssionThread(cls).getLocalUnresolvedNotes();
+    	
+    	for(OWLClass child : hierarchyProvider.getChildren(cls)) {
+    		total += project.getNotesManager().getDiscusssionThread(child).getLocalUnresolvedNotes() + getTotalUnresolvedNotesCount(child, project, hierarchyProvider);	
+    	}
+    	
+    	return total;
+    }
+    
+    
+    private int getTotalUnresolvedNotesCount(OWLObjectProperty prop, OWLAPIProject project, OWLObjectPropertyHierarchyProvider hierarchyProvider) {
+    	int total = 0;
+    	
+    	for(OWLObjectProperty child : hierarchyProvider.getChildren(prop.asOWLObjectProperty())) {
+    		total += project.getNotesManager().getDiscusssionThread(child).getLocalUnresolvedNotes() + getTotalUnresolvedNotesCount(child, project, hierarchyProvider);	
+    	}
+    	
+    	return total;
+    }
+    
+    private int getTotalUnresolvedNotesCount(OWLDataProperty prop, OWLAPIProject project, OWLDataPropertyHierarchyProvider hierarchyProvider) {
+    	int total = 0;
+    	
+    	for(OWLDataProperty child : hierarchyProvider.getChildren(prop.asOWLDataProperty())) {
+    		total += project.getNotesManager().getDiscusssionThread(child).getLocalUnresolvedNotes() + getTotalUnresolvedNotesCount(child, project, hierarchyProvider);	
+    	}
+    	
+    	return total;
+    }
+    
+    private int getTotalUnresolvedNotesCount(OWLAnnotationProperty prop, OWLAPIProject project, OWLAnnotationPropertyHierarchyProvider hierarchyProvider) {
+    	int total = 0;
+    	
+    	for(OWLAnnotationProperty child : hierarchyProvider.getChildren(prop.asOWLAnnotationProperty())) {
+    		total += project.getNotesManager().getDiscusssionThread(child).getLocalUnresolvedNotes() + getTotalUnresolvedNotesCount(child, project, hierarchyProvider);	
+    	}
+    	
+    	return total;
+    }
     
     private int getTotalSubclassAnnotations(OWLClass cls, OWLAPIProject project, AssertedClassHierarchyProvider hierarchyProvider) {
 
@@ -521,9 +567,14 @@ public class OntologyServiceOWLAPIImpl extends WebProtegeRemoteServiceServlet im
                     int notesCount = project.getNotesManager().getIndirectNotesCount(subProperty);
                     entityData.setLocalAnnotationsCount(notesCount);
                     
-                    int totalNotesCount = getTotalSubpropertyAnnotations(subProperty, project, hierarchyProvider);
+                    int totalNotesCount = getTotalObjectPropertyAnnotations(subProperty, project, hierarchyProvider);
                     entityData.setChildrenAnnotationsCount(totalNotesCount - notesCount);
                     
+                    int localUnresolvedNotesCount = project.getNotesManager().getDiscusssionThread(subProperty).getLocalUnresolvedNotes();
+                    entityData.setLocalUnresolvedNotes(localUnresolvedNotesCount);
+                    
+                    int totalUnresolvedNotesCount = getTotalUnresolvedNotesCount(subProperty, project, hierarchyProvider);
+                    entityData.setTotalUnresolvedNotes(totalUnresolvedNotesCount);
                     
                     result.add(entityData);
                 }
@@ -535,6 +586,16 @@ public class OntologyServiceOWLAPIImpl extends WebProtegeRemoteServiceServlet im
                     final EntityData entityData = rm.getEntityData(subProperty);
                     int notesCount = project.getNotesManager().getDirectNotesCount(subProperty);
                     entityData.setLocalAnnotationsCount(notesCount);
+                    
+                    int totalNotesCount = getTotalDataPropertyAnnotations(subProperty, project, hierarchyProvider);
+                    entityData.setChildrenAnnotationsCount(totalNotesCount - notesCount);
+                    
+                    int localUnresolvedNotesCount = project.getNotesManager().getDiscusssionThread(subProperty).getLocalUnresolvedNotes();
+                    entityData.setLocalUnresolvedNotes(localUnresolvedNotesCount);
+                    
+                    int totalUnresolvedNotesCount = getTotalUnresolvedNotesCount(subProperty, project, hierarchyProvider);
+                    entityData.setTotalUnresolvedNotes(totalUnresolvedNotesCount);
+                    
                     result.add(entityData);
                 }
             }
@@ -545,6 +606,16 @@ public class OntologyServiceOWLAPIImpl extends WebProtegeRemoteServiceServlet im
                     final EntityData entityData = rm.getEntityData(subProperty);
                     int notesCount = project.getNotesManager().getDirectNotesCount(subProperty);
                     entityData.setLocalAnnotationsCount(notesCount);
+                    
+                    int totalNotesCount = getTotalAnnotationPropertyAnnotations(subProperty, project, hierarchyProvider);
+                    entityData.setChildrenAnnotationsCount(totalNotesCount - notesCount);
+                    
+                    int localUnresolvedNotesCount = project.getNotesManager().getDiscusssionThread(subProperty).getLocalUnresolvedNotes();
+                    entityData.setLocalUnresolvedNotes(localUnresolvedNotesCount);
+                    
+                    int totalUnresolvedNotesCount = getTotalUnresolvedNotesCount(subProperty, project, hierarchyProvider);
+                    entityData.setTotalUnresolvedNotes(totalUnresolvedNotesCount);
+                    
                     result.add(entityData);
                 }
             }
@@ -553,14 +624,31 @@ public class OntologyServiceOWLAPIImpl extends WebProtegeRemoteServiceServlet im
         return result;
     }
     
-    private int getTotalSubpropertyAnnotations(OWLObjectProperty entity, OWLAPIProject project, OWLObjectPropertyHierarchyProvider hierarchyProvider) {
+    private int getTotalObjectPropertyAnnotations(OWLObjectProperty entity, OWLAPIProject project, OWLObjectPropertyHierarchyProvider hierarchyProvider) {
 
     	int total = project.getNotesManager().getIndirectNotesCount(entity);
     	for(OWLObjectProperty child : hierarchyProvider.getChildren(entity.asOWLObjectProperty())) {
-    		total += getTotalSubpropertyAnnotations(child, project, hierarchyProvider);
+    		total += getTotalObjectPropertyAnnotations(child, project, hierarchyProvider);
     	}
     	return total;
+    }
+    
+    private int getTotalDataPropertyAnnotations(OWLDataProperty entity, OWLAPIProject project, OWLDataPropertyHierarchyProvider hierarchyProvider) {
 
+    	int total = project.getNotesManager().getIndirectNotesCount(entity);
+    	for(OWLDataProperty child : hierarchyProvider.getChildren(entity.asOWLDataProperty())) {
+    		total += getTotalDataPropertyAnnotations(child, project, hierarchyProvider);
+    	}
+    	return total;
+    }
+    
+    private int getTotalAnnotationPropertyAnnotations(OWLAnnotationProperty entity, OWLAPIProject project, OWLAnnotationPropertyHierarchyProvider hierarchyProvider) {
+
+    	int total = project.getNotesManager().getIndirectNotesCount(entity);
+    	for(OWLAnnotationProperty child : hierarchyProvider.getChildren(entity.asOWLAnnotationProperty())) {
+    		total += getTotalAnnotationPropertyAnnotations(child, project, hierarchyProvider);
+    	}
+    	return total;
     }
 
     private void sortListOfEntityData(List<EntityData> result) {
