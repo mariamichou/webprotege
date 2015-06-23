@@ -8,7 +8,10 @@ public class GetGraphSelectionDetailsResult implements Result {
 	
 	private Map<String, ? extends Object> detailsMap;
 	
-	GetGraphSelectionDetailsResult() {
+	/**
+     * For serialization purposes only
+     */
+	private GetGraphSelectionDetailsResult() {
 		
 	}
 	

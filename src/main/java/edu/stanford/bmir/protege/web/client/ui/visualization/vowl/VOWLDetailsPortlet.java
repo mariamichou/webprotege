@@ -3,7 +3,9 @@ package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 import java.util.Collection;
 import java.util.Map;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
@@ -39,6 +41,8 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 
 	@Override
 	public void initialize() {
+		GWT.log("[MESSAGE] ****************** start of initialize ***********************");
+		
 		setTitle(DETAILS_TITLE);
 
 		/*Widget graphContainer = new HTML();
@@ -68,7 +72,8 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 		
 		
 		// Set up dynamic info panel
-		dynamicInfoPanel = new DecoratedStackPanel();
+		dynamicInfoPanel = new StackPanel();
+		dynamicInfoPanel.setTitle("Dynamic panel");
 		
 		mainPanel.add(staticInfoPanel);
 		mainPanel.add(dynamicInfoPanel);
@@ -79,9 +84,11 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 	}
 
 	public void initializeView() {
-		DispatchServiceManager.get().execute(new GetGraphSelectionDetailsAction(JSONParser.parseStrict(VOWLVisualizationPortlet.ontologyAsJSONStr)), new DispatchServiceCallback<GetGraphSelectionDetailsResult>() {
+		JSONValue value = JSONParser.parseStrict(VOWLVisualizationPortlet.ontologyAsJSONStr);
+		DispatchServiceManager.get().execute(new GetGraphSelectionDetailsAction(value), new DispatchServiceCallback<GetGraphSelectionDetailsResult>() {
 			@Override
 			public void handleSuccess(GetGraphSelectionDetailsResult result) {
+				GWT.log("[MESSAGE] ****************** Parsed JSON ontology object as string ***********************");
 				Map<String, ? extends Object> detailsMap = result.getDetailsMap();
 				//TODO set panel, widgets, etc
 			}

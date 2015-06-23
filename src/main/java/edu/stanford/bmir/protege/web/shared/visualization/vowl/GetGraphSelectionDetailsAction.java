@@ -9,7 +9,10 @@ public class GetGraphSelectionDetailsAction implements
 	
 	private JSONValue selectedJSONValue;
 	
-	GetGraphSelectionDetailsAction() {
+	/**
+     * For serialization purposes only
+     */
+	private GetGraphSelectionDetailsAction() {
 		
 	}
 	

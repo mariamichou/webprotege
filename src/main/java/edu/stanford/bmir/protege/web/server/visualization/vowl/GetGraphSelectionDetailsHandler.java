@@ -1,9 +1,12 @@
 package edu.stanford.bmir.protege.web.server.visualization.vowl;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONValue;
 import com.google.inject.Inject;
+
 import edu.stanford.bmir.protege.web.server.dispatch.ActionHandler;
 import edu.stanford.bmir.protege.web.server.dispatch.ExecutionContext;
 import edu.stanford.bmir.protege.web.server.dispatch.RequestContext;
@@ -40,8 +43,10 @@ public class GetGraphSelectionDetailsHandler
 			GetGraphSelectionDetailsAction action,
 			ExecutionContext executionContext) {
 		JSONValue selectedJSONValue = action.getSelectedJSONValue();
+		GWT.log("[MESSAGE] ****************** inside Handler's execute ***********************");
 		
-		Map<String, ? extends Object> detailsMap = null;
+		Map<String, Object> detailsMap = new HashMap<String, Object>();
+		detailsMap.put("key", "value");
 		//TODO: REMOVE null value from map and convert json object to a map and return it
 		return new GetGraphSelectionDetailsResult(detailsMap);
 	}
