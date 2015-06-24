@@ -1,5 +1,8 @@
 package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Anchor;
@@ -8,22 +11,31 @@ import com.google.gwt.user.client.ui.Widget;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
 import com.gwtext.client.widgets.form.Label;
+
 import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceCallback;
 import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceManager;
 import edu.stanford.bmir.protege.web.client.project.Project;
 import edu.stanford.bmir.protege.web.client.ui.portlet.AbstractOWLEntityPortlet;
+import edu.stanford.bmir.protege.web.client.ui.visualization.selection.Selectable;
+import edu.stanford.bmir.protege.web.client.ui.visualization.selection.SelectionEvent;
+import edu.stanford.bmir.protege.web.client.ui.visualization.selection.SelectionListener;
 import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
 import edu.stanford.bmir.protege.web.shared.visualization.vowl.*;
 
 
 @SuppressWarnings("unchecked")
-public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet {
+public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implements Selectable {
 
 	private static final String VOWL_TITLE = "WebVOWL 0.4.0";
 	private VOWLVisualizationJso visualizationJso;
+	public static String ontologyAsJSONStr;
+	
+	// Listeners to selection events in this portlet
+	private Collection<SelectionListener> listeners;
 
 	public VOWLVisualizationPortlet(SelectionModel selectionModel, Project project) {
 		super(selectionModel, project);
+		this.listeners = new ArrayList<SelectionListener>();
 	}
 
 	@Override 
@@ -42,8 +54,17 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet {
 			public void handleSuccess(ConvertOntologyResult result) {
 				String ontologyAsJSONStr = result.getOntologyasJSONStr();
 				initializeVisualizationWhenElementExists(ontologyAsJSONStr);
+				setOntologyAsJSONString(ontologyAsJSONStr);
 			}
 		});
+	}
+	
+	String getOntologyAsJSONString() {
+		return VOWLVisualizationPortlet.ontologyAsJSONStr;
+	}
+	
+	void setOntologyAsJSONString(String ontologyAsJSONStr) {
+		VOWLVisualizationPortlet.ontologyAsJSONStr = ontologyAsJSONStr;
 	}
 
 	/**
@@ -107,5 +128,34 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet {
 		infoPanel.add(new Label(")"));
 
 		return infoPanel;
+	}
+	
+	/* ---- Selectable implementation methods by Karl Hammar ----*/
+	@Override
+	public void notifySelectionListeners(final SelectionEvent selectionEvent) {
+		for (SelectionListener listener: listeners) {
+			listener.selectionChanged(new SelectionEvent(this));
+		}
+	}
+	
+	@Override
+	public void addSelectionListener(SelectionListener listener) {
+		listeners.add(listener);
+	}
+
+	@Override
+	public void removeSelectionListener(SelectionListener listener) {
+		listeners.remove(listener);
+	}
+
+	@Override
+	public void setSelection(Collection<? extends Object> selection) {
+		// We don't allow external sources to modify the selection of this portlet.
+	}
+
+	@Override
+	public Collection<? extends Object> getSelection() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

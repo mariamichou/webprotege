@@ -48,6 +48,7 @@ import edu.stanford.bmir.protege.web.server.user.CreateUserAccountActionHandler;
 import edu.stanford.bmir.protege.web.server.user.GetUserIdsActionHandler;
 import edu.stanford.bmir.protege.web.server.user.LogOutUserActionHandler;
 import edu.stanford.bmir.protege.web.server.visualization.vowl.ConvertOntologyHandler;
+import edu.stanford.bmir.protege.web.server.visualization.vowl.GetGraphSelectionDetailsHandler;
 import edu.stanford.bmir.protege.web.server.watches.AddWatchActionHandler;
 import edu.stanford.bmir.protege.web.server.watches.RemoveWatchActionHandler;
 import edu.stanford.bmir.protege.web.server.project.SetUIConfigurationActionHandler;
@@ -180,5 +181,6 @@ public class ActionHandlersModule extends AbstractModule {
         multibinder.addBinding().to(GetPersonIdItemsActionHandler.class);
         
         multibinder.addBinding().to(ConvertOntologyHandler.class);
+        multibinder.addBinding().to(GetGraphSelectionDetailsHandler.class);
     }
 }
