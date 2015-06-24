@@ -84,13 +84,16 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 	}
 
 	public void initializeView() {
-		JSONValue value = JSONParser.parseStrict(VOWLVisualizationPortlet.ontologyAsJSONStr);
-		DispatchServiceManager.get().execute(new GetGraphSelectionDetailsAction(value), new DispatchServiceCallback<GetGraphSelectionDetailsResult>() {
+		//JSONValue value = JSONParser.parseStrict(VOWLVisualizationPortlet.ontologyAsJSONStr);
+		String value = "test0";
+		
+		DispatchServiceManager.get().execute(new GetGraphSelectionDetailsAction(getProjectId()), new DispatchServiceCallback<GetGraphSelectionDetailsResult>() {
 			@Override
 			public void handleSuccess(GetGraphSelectionDetailsResult result) {
 				GWT.log("[MESSAGE] ****************** Parsed JSON ontology object as string ***********************");
 				//Map<String, ? extends Object> detailsMap = result.getDetailsMap();
 				String res = result.getDetailsMap();
+				//JSONValue res = result.getDetailsMap();
 				//TODO set panel, widgets, etc
 			}
 		});

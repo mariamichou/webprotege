@@ -2,6 +2,8 @@ package edu.stanford.bmir.protege.web.shared.visualization.vowl;
 
 import java.util.Map;
 
+import com.google.gwt.json.client.JSONValue;
+
 import edu.stanford.bmir.protege.web.shared.dispatch.Result;
 
 public class GetGraphSelectionDetailsResult implements Result {
