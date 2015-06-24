@@ -89,7 +89,8 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 			@Override
 			public void handleSuccess(GetGraphSelectionDetailsResult result) {
 				GWT.log("[MESSAGE] ****************** Parsed JSON ontology object as string ***********************");
-				Map<String, ? extends Object> detailsMap = result.getDetailsMap();
+				//Map<String, ? extends Object> detailsMap = result.getDetailsMap();
+				String res = result.getDetailsMap();
 				//TODO set panel, widgets, etc
 			}
 		});

@@ -6,21 +6,35 @@ import edu.stanford.bmir.protege.web.shared.dispatch.Result;
 
 public class GetGraphSelectionDetailsResult implements Result {
 	
-	private Map<String, ? extends Object> detailsMap;
+	/**
+	 * 
+	 */
+	//private static final long serialVersionUID = 1L;
+	//private Map<String, ? extends Object> detailsMap;
+	//just for testing purposes, still trying to find the error
+	private String detailsMap;
 	
 	/**
      * For serialization purposes only
      */
-	private GetGraphSelectionDetailsResult() {
+	GetGraphSelectionDetailsResult() {
 		
 	}
 	
-	public GetGraphSelectionDetailsResult(Map<String, ? extends Object> detailsMap) {
+	public GetGraphSelectionDetailsResult(String detailsMap) {
+		this.detailsMap = detailsMap;
+	}
+	
+	public String getDetailsMap() {
+		return detailsMap;
+	}
+	
+	/*public GetGraphSelectionDetailsResult(Map<String, ? extends Object> detailsMap) {
 		this.detailsMap = detailsMap;
 	}
 	
 	public Map<String, ? extends Object> getDetailsMap() {
 		return detailsMap;
-	}
+	}*/
 
 }

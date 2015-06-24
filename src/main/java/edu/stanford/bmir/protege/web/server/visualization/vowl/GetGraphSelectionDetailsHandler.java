@@ -45,8 +45,9 @@ public class GetGraphSelectionDetailsHandler
 		JSONValue selectedJSONValue = action.getSelectedJSONValue();
 		GWT.log("[MESSAGE] ****************** inside Handler's execute ***********************");
 		
-		Map<String, Object> detailsMap = new HashMap<String, Object>();
-		detailsMap.put("key", "value");
+		/*Map<String, Object> detailsMap = new HashMap<String, Object>();
+		detailsMap.put("key", "value");*/
+		String detailsMap = "test";
 		//TODO: REMOVE null value from map and convert json object to a map and return it
 		return new GetGraphSelectionDetailsResult(detailsMap);
 	}

@@ -4,15 +4,14 @@ import com.google.gwt.json.client.JSONValue;
 
 import edu.stanford.bmir.protege.web.shared.dispatch.Action;
 
-public class GetGraphSelectionDetailsAction implements
-		Action<GetGraphSelectionDetailsResult> {
+public class GetGraphSelectionDetailsAction implements Action<GetGraphSelectionDetailsResult> {
 	
 	private JSONValue selectedJSONValue;
 	
 	/**
      * For serialization purposes only
      */
-	private GetGraphSelectionDetailsAction() {
+	GetGraphSelectionDetailsAction() {
 		
 	}
 	
