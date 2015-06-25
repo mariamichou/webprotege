@@ -1,20 +1,10 @@
 package edu.stanford.bmir.protege.web.shared.visualization.vowl;
 
-import java.util.Map;
-
-import com.google.gwt.json.client.JSONValue;
-
 import edu.stanford.bmir.protege.web.shared.dispatch.Result;
 
 public class GetGraphSelectionDetailsResult implements Result {
 	
-	/**
-	 * 
-	 */
-	//private static final long serialVersionUID = 1L;
-	//private Map<String, ? extends Object> detailsMap;
-	//just for testing purposes, still trying to find the error
-	private String detailsMap;
+	private GraphDetails graphDetails;
 	
 	/**
      * For serialization purposes only
@@ -23,19 +13,22 @@ public class GetGraphSelectionDetailsResult implements Result {
 		
 	}
 	
-	public GetGraphSelectionDetailsResult(String detailsMap) {
+	public GetGraphSelectionDetailsResult(GraphDetails graphDetails) {
+		
+		this.graphDetails = graphDetails;
+	} 
+	
+	public GraphDetails getGraphDetails() {
+		return graphDetails;
+	}
+	
+	/* to be tested
+	public GetGraphSelectionDetailsResult(HashMap<String, ValueDetails> detailsMap) {
+	
 		this.detailsMap = detailsMap;
 	}
 	
-	public String getDetailsMap() {
-		return detailsMap;
-	}
-	
-	/*public GetGraphSelectionDetailsResult(Map<String, ? extends Object> detailsMap) {
-		this.detailsMap = detailsMap;
-	}
-	
-	public Map<String, ? extends Object> getDetailsMap() {
+	public HashMap<String, ValueDetails> getDetailsMap() {
 		return detailsMap;
 	}*/
 

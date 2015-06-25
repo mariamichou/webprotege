@@ -1,11 +1,7 @@
 package edu.stanford.bmir.protege.web.server.visualization.vowl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONValue;
 import com.google.inject.Inject;
 
 import edu.stanford.bmir.protege.web.server.dispatch.ActionHandler;
@@ -17,13 +13,15 @@ import edu.stanford.bmir.protege.web.server.owlapi.OWLAPIProjectManager;
 import edu.stanford.bmir.protege.web.shared.project.ProjectId;
 import edu.stanford.bmir.protege.web.shared.visualization.vowl.GetGraphSelectionDetailsAction;
 import edu.stanford.bmir.protege.web.shared.visualization.vowl.GetGraphSelectionDetailsResult;
+import edu.stanford.bmir.protege.web.shared.visualization.vowl.GraphDetails;
+import edu.stanford.bmir.protege.web.shared.visualization.vowl.ValueDetails;
 
 public class GetGraphSelectionDetailsHandler
 		implements
 		ActionHandler<GetGraphSelectionDetailsAction, GetGraphSelectionDetailsResult> {
 
 	private OWLAPIProjectManager projectManager;
-	
+		
 	@Inject
 	public GetGraphSelectionDetailsHandler(OWLAPIProjectManager projectManager) {
 		this.projectManager = projectManager;
@@ -46,20 +44,22 @@ public class GetGraphSelectionDetailsHandler
 			ExecutionContext executionContext) {
 		//JSONValue selectedJSONValue = action.getSelectedJSONValue();
 		ProjectId projectId = action.getProjectId();
-		String convertedOntologyasJSON = VisualizationAPI.convertOntologyForVowlVisualization(projectId, projectManager);
 		
-		GWT.log("[MESSAGE] ****************** inside Handler's execute ***********************");
+		//String convertedOntologyasJSON = VisualizationAPI.convertOntologyForVowlVisualization(projectId, projectManager);
 		
-		//Map<String, Object> detailsMap = new HashMap<String, Object>();
-		//detailsMap.put("key", "value");
-		String detailsMap = "test";
-		/*JSONValue detailsMap = JSONParser.parseStrict("{\"employees\":[\r\n" + 
-				"    {\"firstName\":\"John\", \"lastName\":\"Doe\"},\r\n" + 
-				"    {\"firstName\":\"Anna\", \"lastName\":\"Smith\"},\r\n" + 
-				"    {\"firstName\":\"Peter\", \"lastName\":\"Jones\"}\r\n" + 
-				"]}");*/
+		//test
+		ArrayList<String> array = new ArrayList<String>();
+		array.add("1");
+		array.add("2");
+		ValueDetails valueDetails = new ValueDetails(array);
+		ValueDetails valueDetails2 = new ValueDetails("3");
+		HashMap<String, ValueDetails> detailsMap = new HashMap<String, ValueDetails>();
+		detailsMap.put("Maria", valueDetails);
+		detailsMap.put("Michou", valueDetails2);
+		GraphDetails graphDetails = new GraphDetails(detailsMap);
+		
 		//TODO: REMOVE null value from map and convert json object to a map and return it
-		return new GetGraphSelectionDetailsResult(detailsMap);
+		return new GetGraphSelectionDetailsResult(graphDetails);
 	}
 
 }
