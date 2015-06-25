@@ -2,7 +2,6 @@ package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Anchor;
@@ -32,6 +31,8 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 	
 	// Listeners to selection events in this portlet
 	private Collection<SelectionListener> listeners;
+	
+	private Widget graphContainer;
 
 	public VOWLVisualizationPortlet(SelectionModel selectionModel, Project project) {
 		super(selectionModel, project);
@@ -41,7 +42,9 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 	@Override 
 	public void initialize() {
 		setTitle(VOWL_TITLE);
-		Widget graphContainer = new HTML();
+		//Widget graphContainer = new HTML();
+		graphContainer = new HTML();
+		
 		graphContainer.getElement().setId(getContainerId());
 		add(graphContainer);
 		
@@ -155,7 +158,6 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 
 	@Override
 	public Collection<? extends Object> getSelection() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

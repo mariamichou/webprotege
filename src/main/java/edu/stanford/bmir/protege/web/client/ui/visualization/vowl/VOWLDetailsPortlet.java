@@ -1,21 +1,12 @@
 package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 
-import java.util.Collection;
-import java.util.Map;
-
+import com.google.common.base.Optional;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.Grid;
-import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.LayoutPanel;
-import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceCallback;
 import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceManager;
@@ -26,6 +17,7 @@ import edu.stanford.bmir.protege.web.client.ui.visualization.selection.Selection
 import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
 import edu.stanford.bmir.protege.web.shared.visualization.vowl.GetGraphSelectionDetailsAction;
 import edu.stanford.bmir.protege.web.shared.visualization.vowl.GetGraphSelectionDetailsResult;
+import edu.stanford.bmir.protege.web.shared.visualization.vowl.GraphDetails;
 
 public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements SelectionListener {
 
@@ -33,7 +25,8 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 	private VerticalPanel mainPanel;
 	//private FlexTable staticInfoPanel;
 	private Grid staticInfoPanel;
-	private StackPanel dynamicInfoPanel;
+	//private StackPanel dynamicInfoPanel;
+	private DecoratedStackPanel dynamicInfoPanel;
 
 	public VOWLDetailsPortlet(SelectionModel selectionModel, Project project) {
 		super(selectionModel, project);
@@ -41,18 +34,13 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 
 	@Override
 	public void initialize() {
-		GWT.log("[MESSAGE] ****************** start of initialize ***********************");
-		
-		setTitle(DETAILS_TITLE);
 
-		/*Widget graphContainer = new HTML();
-		graphContainer.getElement().setId(getContainerId());
-		add(graphContainer);*/
+		setTitle(DETAILS_TITLE);
 
 		// Set up main panel
 		mainPanel = new VerticalPanel();  
-		
-		// Set up static info panel
+
+		// Set up static info panel (contains name, IRI, version, author(s) and language)
 		staticInfoPanel = new Grid(5, 1);
 		staticInfoPanel.setCellSpacing(5);
 		staticInfoPanel.setCellPadding(3);
@@ -63,38 +51,75 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 		staticInfoPanel.setWidget(3, 0, new Label("Author(s): "));
 		staticInfoPanel.setHTML(4, 0, 
 				"<label>\r\n" + 
-				"Language:\r\n" + 
-				"<select id=\"language\" size=\"1\" name=\"language\">\r\n" + 
-				"<option value=\"IRI-based\">IRI-based</option>\r\n" + 
-				"<option value=\"undefined\">undefined</option>\r\n" + 
-				"</select>\r\n" + 
+						"Language:\r\n" + 
+						"<select id=\"language\" size=\"1\" name=\"language\">\r\n" + 
+						"<option value=\"IRI-based\">IRI-based</option>\r\n" + 
+						"<option value=\"undefined\">undefined</option>\r\n" + 
+						"</select>\r\n" + 
 				"</label>");
-		
-		
-		// Set up dynamic info panel
-		dynamicInfoPanel = new StackPanel();
-		dynamicInfoPanel.setTitle("Dynamic panel");
-		
-		mainPanel.add(staticInfoPanel);
-		mainPanel.add(dynamicInfoPanel);
-		
-		add(mainPanel);
 
-		initializeView();
+
+		// Set up dynamic info panel
+		//dynamicInfoPanel = new StackPanel();
+		dynamicInfoPanel = new DecoratedStackPanel();
+		dynamicInfoPanel.setTitle("Dynamic panel");
+		//dynamicInfoPanel.setWidth("200px");
+		renderDetailsView(Optional.<String>absent());
 	}
 
-	public void initializeView() {
+	/**
+	 * Create the Description item.
+	 *
+	 * @return the list of Description
+	 */
+	private VerticalPanel createDescriptionItem() {
+		VerticalPanel descPanel = new VerticalPanel();
+		descPanel.setSpacing(4);
+		String[] str = {"Just", "Testing"};
+		for (String desc : str) {
+			descPanel.add(new Label(desc));
+		}
+		return descPanel;
+	}
+
+	public void renderDetailsView(Optional<String> elementId) {
 		//JSONValue value = JSONParser.parseStrict(VOWLVisualizationPortlet.ontologyAsJSONStr);
-		String value = "test0";
+
+		GetGraphSelectionDetailsAction action;
 		
-		DispatchServiceManager.get().execute(new GetGraphSelectionDetailsAction(getProjectId()), new DispatchServiceCallback<GetGraphSelectionDetailsResult>() {
+		if(elementId.isPresent())
+			action = new GetGraphSelectionDetailsAction(getProjectId(), elementId.get());
+		else
+			action = new GetGraphSelectionDetailsAction(getProjectId());
+		DispatchServiceManager.get().execute(action, new DispatchServiceCallback<GetGraphSelectionDetailsResult>() {
 			@Override
 			public void handleSuccess(GetGraphSelectionDetailsResult result) {
-				GWT.log("[MESSAGE] ****************** Parsed JSON ontology object as string ***********************");
-				//Map<String, ? extends Object> detailsMap = result.getDetailsMap();
-				String res = result.getDetailsMap();
-				//JSONValue res = result.getDetailsMap();
+
+				//to be tested
+				//Map<String, ValueDetails> detailsMap = result.getDetailsMap();
+				//It has to be a class that implements Serializable or a wrapper class that holds Serializable objects
+				// source: http://www.gwtproject.org/doc/latest/DevGuideServerCommunication.html#DevGuideSerializableTypes
+				GraphDetails graphDetails = result.getGraphDetails();
+				//logger.log(Level.INFO, "[MICHOU] DispatchServiceManager executed successfully.");
 				//TODO set panel, widgets, etc
+
+				// Add the Description item
+				dynamicInfoPanel.add(createDescriptionItem(), "Description");
+
+				// Add the Metadata item
+				//dynamicInfoPanel.add(new Label("Metadata"), "mtd");
+				dynamicInfoPanel.add(createDescriptionItem(), "Metadata");
+
+				// Add the Statistics item
+				dynamicInfoPanel.add(createDescriptionItem(), "Statistics");
+
+				// Add the Selection Details item
+				dynamicInfoPanel.add(createDescriptionItem(), "Selection Details");
+
+				mainPanel.add(staticInfoPanel);
+				mainPanel.add(dynamicInfoPanel);
+
+				add(mainPanel);
 			}
 		});
 	}
@@ -112,22 +137,14 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 	 * their selections have been updated and that listeners should refresh content. */
 	@Override
 	public void selectionChanged(SelectionEvent event) {
-		//TODO
-		Collection<? extends Object> selection = event.getSelectable().getSelection();
-		/*if (selection.size() > 0) {
-			Object selectionData = selection.iterator().next();
-			if (selectionData instanceof String) {
-				String odpUri = (String)selectionData;
+		//TODO to change the dynamic panel, only this will change
+		//Collection<? extends Object> selection = event.getSelectable().getSelection();
+		//String selectedEntity = (String)event.getSelectable().getSelection();
 
-				DispatchServiceManager.get().execute(new GetOdpDetailsAction(odpUri), new DispatchServiceCallback<GetOdpDetailsResult>() {
-					@Override
-					public void handleSuccess(GetOdpDetailsResult result) {
-						odp = result.getDetails();
-						renderOdpDetails(odp);
-					}
-				});
-			}
-		}*/
+		GWT.log("@@@@@@@@@@@ [MICHOU] Selection changed inside VOWLDetails portlet");
+		
+		//renderDetailsView(Optional.of(selectedEntity));
+		
 	}
 
 }
