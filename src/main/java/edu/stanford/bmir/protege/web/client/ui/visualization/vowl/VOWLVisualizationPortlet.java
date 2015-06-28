@@ -2,26 +2,14 @@ package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.semanticweb.owlapi.model.OWLEntity;
-
-import com.google.common.base.Optional;
-import com.google.gwt.core.shared.GWT;
-import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
@@ -35,7 +23,6 @@ import edu.stanford.bmir.protege.web.client.ui.portlet.AbstractOWLEntityPortlet;
 import edu.stanford.bmir.protege.web.client.ui.visualization.selection.Selectable;
 import edu.stanford.bmir.protege.web.client.ui.visualization.selection.SelectionEvent;
 import edu.stanford.bmir.protege.web.client.ui.visualization.selection.SelectionListener;
-import edu.stanford.bmir.protege.web.shared.entity.OWLNamedIndividualData;
 import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
 import edu.stanford.bmir.protege.web.shared.visualization.vowl.*;
 
@@ -109,18 +96,6 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 						visualizationJso = VOWLVisualizationJso.initialize(getContainerId(), convertedOntology);
 					}
 					
-					/*graphContainer.addHandler(new ClickHandler() {
-
-						@Override
-						public void onClick(ClickEvent event) {
-							Element element=  event.getNativeEvent().getEventTarget().cast();
-							if(element.getTagName().equals("circle") || element.getTagName().equals("rect")) {
-								com.google.gwt.user.client.Element gElement = (com.google.gwt.user.client.Element)element.cast();
-								Window.alert("<circle> or <rect> element with parent g id " + gElement.getParentElement().getId() + " was clicked");
-							}
-						}
-					}, ClickEvent.getType());
-					*/
 					HandlerRegistration hr = graphContainer.addDomHandler(new ClickHandler() {
 
 						@Override
@@ -133,11 +108,6 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 						}
 					}, ClickEvent.getType());
 					 
-					//hr.removeHandler();
-					// edw exei fortw8ei o container kai to dom tree, alla de mporw na paw pio va8ia kai na kanw inject clickandler 
-					// sta tags <g> pou perikleioun mesa tous ta <circle> kai <rect>
-					// prepei na kanw capture ta events sta <g> tags a posteriori, dld. afou exei fortw8ei o graph container
-					// de mporw na to 3erw a priori auto, giati einai html widget kai fortwnetai to periexomeno tou dynamically
 				}
 			}
 		};
