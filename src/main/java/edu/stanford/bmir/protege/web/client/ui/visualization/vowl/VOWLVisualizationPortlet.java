@@ -4,18 +4,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+
 import com.google.common.base.Optional;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
@@ -23,6 +22,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtext.client.widgets.Panel;
 import com.gwtext.client.widgets.TabPanel;
+
 import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceCallback;
 import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceManager;
 import edu.stanford.bmir.protege.web.client.project.Project;
@@ -68,8 +68,13 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 
 		add(graphContainer);
 
-		initializeView();
+	}
 
+	@Override
+	public void handleActivated() {
+		super.handleActivated();
+		GWT.log("[VOWL] I'm finally activated! Hooray!");
+		initializeView();
 	}
 
 	public void initializeView() {
@@ -82,7 +87,6 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 				initializeVisualizationWhenElementExists(ontologyAsJSONStr);
 				setOntologyAsJSONString(ontologyAsJSONStr);
 				jsonValue = JSONParser.parseStrict(ontologyAsJSONStr);
-				//Window.alert(jsonValue.toString());
 				//GWT.log("[VOWL] json: "+jsonValue);
 			}
 		});
@@ -103,38 +107,18 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 	 * Temporary solution until we can find out when the graph container element is created.
 	 */
 	private void initializeVisualizationWhenElementExists(final String convertedOntology) {
-		Timer timer = new Timer() {
-			@Override
-			public void run() {
-				if (Document.get().getElementById(getContainerId()) != null) {
-					cancel();
-					if (VOWLVisualizationJso.isBrowserCompatible(getContainerId())) {
-						visualizationJso = VOWLVisualizationJso.initialize(getContainerId(), convertedOntology);
-					}
 
-					HandlerRegistration hr = graphContainer.addDomHandler(new ClickHandler() {
+		if (Document.get().getElementById(getContainerId()) != null) {
 
-						@Override
-						public void onClick(ClickEvent event) {
-							Element element=  event.getNativeEvent().getEventTarget().cast();
-							if(element.getTagName().equals("circle") || element.getTagName().equals("rect")) {
-								com.google.gwt.user.client.Element gElement = (com.google.gwt.user.client.Element)element.cast();
-								selectedElement = Optional.of(gElement.getParentElement().getId());
-								// classes have value 'node', while properties have value 'property' 
-								elementType = Optional.of(gElement.getParentElement().getAttribute("class"));
-								setDetailsContent(selectedElement.get());
-								//Window.alert("<circle> or <rect> element with parent g id " + gElement.getParentElement().getId() + ", and class " + elementType.get() + " was clicked");
-								notifySelectionListeners(new SelectionEvent(VOWLVisualizationPortlet.this));
-							}
-							//event.stopPropagation();
-						}
-					}, ClickEvent.getType());
-
-				}
+			if (VOWLVisualizationJso.isBrowserCompatible(getContainerId())) {
+				visualizationJso = VOWLVisualizationJso.initialize(getContainerId(), convertedOntology);
+				// graphContainer.getElement().getInnerHTML().isEmpty() = false
+				// here we have to load static Details panel only once!
+				// obviously we have to fire some kind of event for the Details portlet to take over.
 			}
-		};
 
-		timer.scheduleRepeating(100);
+			graphContainer.addDomHandler(new MyClickHandler(), ClickEvent.getType());
+		}
 	}
 
 
@@ -147,9 +131,10 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 			public void handleSuccess(ConvertOntologyResult result) {
 				ontologyAsJSONStr = result.getOntologyasJSONStr();
 				visualizationJso.setData(ontologyAsJSONStr);
+				setOntologyAsJSONString(ontologyAsJSONStr);
+				jsonValue = JSONParser.parseStrict(ontologyAsJSONStr);
 			}
 		});
-
 	}
 
 	private String getContainerId() {
@@ -352,7 +337,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 				str += " <a href=" + name[1] + ">" + name[0] + "</a>";
 			}
 			GWT.log("\t-----> [VOWL] Returned related names: "+ str);
-			
+
 		}// does not work with owl:datatype properties (because range is a string and not an IRI)
 		else if(o.get(relationshipKey).isString() !=null) {
 			String nameId = o.get(relationshipKey).isString().stringValue();
@@ -417,5 +402,28 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 	@Override
 	public Widget getWidget() {
 		return selectionDetailsContainer;
+	}
+
+	class MyClickHandler implements ClickHandler {
+
+		@Override
+		public void onClick(ClickEvent event) {
+			{
+
+				Element element=  event.getNativeEvent().getEventTarget().cast();
+				if(element.getTagName().equals("circle") || element.getTagName().equals("rect")) {
+					com.google.gwt.user.client.Element gElement = (com.google.gwt.user.client.Element)element.cast();
+					selectedElement = Optional.of(gElement.getParentElement().getId());
+					// classes have value 'node', while properties have value 'property' 
+					elementType = Optional.of(gElement.getParentElement().getAttribute("class"));
+					setDetailsContent(selectedElement.get());
+					//Window.alert("<circle> or <rect> element with parent g id " + gElement.getParentElement().getId() + ", and class " + elementType.get() + " was clicked");
+					notifySelectionListeners(new SelectionEvent(VOWLVisualizationPortlet.this));
+				}
+				//event.stopPropagation();
+			}
+
+		}
+
 	}
 }
