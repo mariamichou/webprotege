@@ -2,6 +2,11 @@ package edu.stanford.bmir.protege.web.client.ui.visualization.selection;
 
 import java.util.Collection;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
 /**
  * Re-implementation of the {@link edu.stanford.bmir.protege.web.client.ui.selection.Selectable} interface
  * supporting more general selections (essentially any Collection of Objects).<br><br>
@@ -20,8 +25,10 @@ import java.util.Collection;
  */
 public interface Selectable {
     void addSelectionListener(SelectionListener listener);
-    void notifySelectionListeners(SelectionEvent selectionEvent);
+    void notifySelectionListeners(SelectionEvent clickEvent);
     void removeSelectionListener(SelectionListener listener);
     Collection<? extends Object> getSelection();
+    VerticalPanel getPanel();
+    Widget getWidget();
     void setSelection(Collection<? extends Object> selection);
 }

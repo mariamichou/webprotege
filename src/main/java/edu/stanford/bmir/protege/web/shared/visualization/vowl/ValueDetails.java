@@ -2,9 +2,6 @@ package edu.stanford.bmir.protege.web.shared.visualization.vowl;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import com.google.common.base.Optional;
 
 /**
  * This object will hold the values of the graph details map.
@@ -21,43 +18,58 @@ public class ValueDetails implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private Optional<String> value;
-	//private Optional<HashMap<String,String>> valueMap;
-	private Optional<ArrayList<String>> valueArray;
+	private String value="";
+	private ArrayList<String> valueArray = new ArrayList<String>();
 	
 	/**
      * For serialization purposes only
      */
-	private ValueDetails() {}
+	ValueDetails() {}
 	
 	public ValueDetails(String value) {
-		this.value = Optional.of(value);
+		//this.value = Optional.of(value);
+		this.value = value;
 	}
 	
 	public ValueDetails(ArrayList<String> valueArray) {
-		this.valueArray = Optional.of(valueArray);
+		//this.valueArray = Optional.of(valueArray);
+		this.valueArray = valueArray;
 	}
 	
 	public String getValue() {
-		return value.get();
+		//return value.isPresent()? value.get() : Optional.<String>absent().get();
+		return value;
 	}
 	
 	public ArrayList<String> getArray() {
-		return valueArray.get();
+		//return valueArray.isPresent()? valueArray.get() : Optional.<ArrayList<String>>absent().get();
+		return valueArray;
 	}
+	
 	
 	/*public ValueDetails(HashMap<String,String> valueMap) {
 		this.valueMap = Optional.of(valueMap);
 	}*/
 	
 	public String getType() {
-		return value.isPresent()? "String":"Array";
+		return value.equals("")? "Array": "String";
 	}
 	
 	/**
 	 * @return The array's size.
 	 */
 	public int size() {
-		return valueArray.get().size();
+		return getType().equals("Array") ? valueArray.size() : 1;
 	}
+	
+	@Override
+	public String toString() {
+		if(!value.equals("")) 
+			return value;
+		else if(!valueArray.isEmpty()) 
+			return valueArray.toString();
+		else
+			return "ValueDetails object absent";
+	}
+	
 }

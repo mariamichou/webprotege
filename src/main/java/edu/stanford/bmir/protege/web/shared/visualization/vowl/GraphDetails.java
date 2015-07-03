@@ -1,11 +1,7 @@
 package edu.stanford.bmir.protege.web.shared.visualization.vowl;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.Map;
 
 public class GraphDetails implements Serializable {
 	
@@ -21,7 +17,7 @@ public class GraphDetails implements Serializable {
      * As this is a flat representation of the object, we use 
      * a ValueDetails object which can be a String or an ArrayList of strings.
      */
-    private HashMap<String, ValueDetails> detailsMap;
+    private Map<String, ValueDetails> detailsMap;
     
     /**
      * For serialization purposes only
@@ -36,12 +32,22 @@ public class GraphDetails implements Serializable {
         return detailsMap.values().size();
     }
     
-    public GraphDetails(HashMap<String, ValueDetails> detailsMap) {
+    public GraphDetails(Map<String, ValueDetails> detailsMap) {
         this.detailsMap = detailsMap;
     }
     
-    public HashMap<String, ValueDetails> getMap() {
+    public Map<String, ValueDetails> getMap() {
     	return detailsMap;
+    }
+    
+    @Override
+    public String toString() {
+    	String str = "{ ";
+    	for(String key : detailsMap.keySet()) {
+    		str += "[ " + key + " : " + detailsMap.get(key).toString() + " ]";
+    	}
+    	str += " }";
+    	return str;
     }
     
     /* Not serializable!!!

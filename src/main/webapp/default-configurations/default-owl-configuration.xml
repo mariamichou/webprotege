@@ -285,7 +285,7 @@
         <!--         Visualization Tab          -->
         <!-- ********************************** -->
         <tab>
-            <name>edu.stanford.bmir.protege.web.client.ui.ontology.visualization.VisualizationTab</name>
+            <name>edu.stanford.bmir.protege.web.client.ui.visualization.vowl.VisualizationTab</name>
             <label>Visualization</label>
             <columns>
 
