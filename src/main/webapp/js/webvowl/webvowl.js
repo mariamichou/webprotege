@@ -2567,14 +2567,14 @@ webvowl.modules.nodeDegreeFilter = function () {
 	var filter = {},
 		nodes,
 		properties,
-		enabled = true,
+		enabled = false,
 		filteredNodes,
 		filteredProperties,
 		maxDegreeSetter,
 		degreeQueryFunction,
 		filterTools = webvowl.util.filterTools();
 
-
+	
 	/**
 	 * If enabled, all nodes are filter by their node degree.
 	 * @param untouchedNodes
