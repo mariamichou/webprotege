@@ -15,7 +15,7 @@ public class GetGraphSelectionDetailsAction implements Action<GetGraphSelectionD
 	 *  Holds the id of the selected entity, e.g. "class13", "literal4", etc
 	 *  as represented in the JSON converted ontology.
 	 */
-	private Optional<String> entityId;
+	private String entityId;
 	
 	/**
      * For serialization purposes only
@@ -24,21 +24,22 @@ public class GetGraphSelectionDetailsAction implements Action<GetGraphSelectionD
 		
 	}
 	
-	public GetGraphSelectionDetailsAction(ProjectId projectId) {
+	/*public GetGraphSelectionDetailsAction(ProjectId projectId) {
 		this.projectId = projectId;
-	}
+	}*/
 	
 	public GetGraphSelectionDetailsAction(ProjectId projectId, String entityId) {
 		this.projectId = projectId;
-		this.entityId = Optional.of(entityId);
+		//this.entityId = Optional.of(entityId);
+		this.entityId = entityId;
 	}
 	
 	public ProjectId getProjectId() {
 		return projectId;
 	}
 	
-	public Optional<String> getEntityId() {
-		return entityId.or(Optional.<String>absent());
+	public String getEntityId() {
+		return entityId;
 	}
 	
 	/*

@@ -1,13 +1,16 @@
 package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 
-import com.google.common.base.Optional;
+import java.util.Collection;
+import java.util.Map;
+
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
-
 import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceCallback;
 import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceManager;
 import edu.stanford.bmir.protege.web.client.project.Project;
@@ -17,7 +20,7 @@ import edu.stanford.bmir.protege.web.client.ui.visualization.selection.Selection
 import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
 import edu.stanford.bmir.protege.web.shared.visualization.vowl.GetGraphSelectionDetailsAction;
 import edu.stanford.bmir.protege.web.shared.visualization.vowl.GetGraphSelectionDetailsResult;
-import edu.stanford.bmir.protege.web.shared.visualization.vowl.GraphDetails;
+import edu.stanford.bmir.protege.web.shared.visualization.vowl.ValueDetails;
 
 public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements SelectionListener {
 
@@ -27,6 +30,9 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 	private Grid staticInfoPanel;
 	//private StackPanel dynamicInfoPanel;
 	private DecoratedStackPanel dynamicInfoPanel;
+	private JSONValue jsonValue;
+	public static String ontologyAsJSONStr;
+	public static int count=0;
 
 	public VOWLDetailsPortlet(SelectionModel selectionModel, Project project) {
 		super(selectionModel, project);
@@ -37,8 +43,12 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 
 		setTitle(DETAILS_TITLE);
 
+
 		// Set up main panel
 		mainPanel = new VerticalPanel();  
+
+
+
 
 		// Set up static info panel (contains name, IRI, version, author(s) and language)
 		staticInfoPanel = new Grid(5, 1);
@@ -64,64 +74,160 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 		dynamicInfoPanel = new DecoratedStackPanel();
 		dynamicInfoPanel.setTitle("Dynamic panel");
 		//dynamicInfoPanel.setWidth("200px");
-		renderDetailsView(Optional.<String>absent());
+
+
+		mainPanel.add(staticInfoPanel);
+		//renderDetailsView(Optional.<String>absent());
+		//mainPanel.add(dynamicInfoPanel);
+
+		add(mainPanel);
+
+
+		/*DispatchServiceManager.get().execute(new GetDetailsAction(getProjectId()), new DispatchServiceCallback<GetDetailsResult>() {
+			@Override
+			public void handleSuccess(GetDetailsResult result) {
+				ontologyAsJSONStr = result.getOntologyasJSONStr();
+				GWT.log("[VOWL] Inside DetailsPortlet->handleSuccess");
+			}
+		});
+
+		this.jsonValue = JSONParser.parseStrict(ontologyAsJSONStr);
+		 */
 	}
+
 
 	/**
 	 * Create the Description item.
 	 *
 	 * @return the list of Description
 	 */
-	private VerticalPanel createDescriptionItem() {
+	/*private void renderDynamicItems(Map<String, ValueDetails> details) {
+		dynamicInfoPanel.add(new Label("TEST2.2"));
 		VerticalPanel descPanel = new VerticalPanel();
 		descPanel.setSpacing(4);
-		String[] str = {"Just", "Testing"};
-		for (String desc : str) {
-			descPanel.add(new Label(desc));
+		//dynamicInfoPanel.add(new Label("TEST3.0: " + details.toString()));
+		for(String key : details.keySet()) {
+			ValueDetails valueDetails = details.get(key);
+			if(valueDetails.getType().equals("String")) {
+				dynamicInfoPanel.add(new Label("TEST3.1"));
+				descPanel.add(new Label(valueDetails.getValue()));
+			}
+			else {
+				dynamicInfoPanel.add(new Label("TEST3.2"));
+				for (String desc : valueDetails.getArray()) {
+					descPanel.add(new Label(desc));
+				}
+			}
 		}
-		return descPanel;
+
+		dynamicInfoPanel.add(descPanel);
+
+		//String[] str = {"Just", "Testing"};
+
+	}*/
+
+
+	private void renderDynamicItems(Map<String, ValueDetails> details) {
+		dynamicInfoPanel.add(new Label("TEST2.2"));
+		//VerticalPanel descPanel = new VerticalPanel();
+		//descPanel.setSpacing(4);
+		//dynamicInfoPanel.add(new Label("TEST3.0: " + details.toString()));
+		dynamicInfoPanel.add(new Label("map is empty? "+details.isEmpty()));
+
+		dynamicInfoPanel.add(new Label("map --> "+details.toString()));
+		dynamicInfoPanel.add(new Label("  keys --> "+details.keySet().toString()));
+		dynamicInfoPanel.add(new Label("  values --> "+details.values().toString()));
+		//for(String key : details.keySet()) {
+		//dynamicInfoPanel.add(new Label(key + ": " + details.get(key)));
+		/*ValueDetails valueDetails = details.get(key);
+			if(valueDetails.getType().equals("String")) {
+				dynamicInfoPanel.add(new Label("TEST3.1"));
+				//descPanel.add(new Label(valueDetails.getValue()));
+			}
+			else {
+				dynamicInfoPanel.add(new Label("TEST3.2"));
+				for (String desc : valueDetails.getArray()) {
+					//descPanel.add(new Label(desc));
+				}
+			}*/
+		//}
+
+		//dynamicInfoPanel.add(descPanel);
+
+		//String[] str = {"Just", "Testing"};
+
 	}
 
-	public void renderDetailsView(Optional<String> elementId) {
-		//JSONValue value = JSONParser.parseStrict(VOWLVisualizationPortlet.ontologyAsJSONStr);
-
-		GetGraphSelectionDetailsAction action;
-		
-		if(elementId.isPresent())
-			action = new GetGraphSelectionDetailsAction(getProjectId(), elementId.get());
-		else
-			action = new GetGraphSelectionDetailsAction(getProjectId());
+	public void renderDetailsView(String elementId) {
+		GetGraphSelectionDetailsAction action = new GetGraphSelectionDetailsAction(getProjectId(), elementId);
 		DispatchServiceManager.get().execute(action, new DispatchServiceCallback<GetGraphSelectionDetailsResult>() {
 			@Override
 			public void handleSuccess(GetGraphSelectionDetailsResult result) {
-
 				//to be tested
 				//Map<String, ValueDetails> detailsMap = result.getDetailsMap();
 				//It has to be a class that implements Serializable or a wrapper class that holds Serializable objects
 				// source: http://www.gwtproject.org/doc/latest/DevGuideServerCommunication.html#DevGuideSerializableTypes
-				GraphDetails graphDetails = result.getGraphDetails();
-				//logger.log(Level.INFO, "[MICHOU] DispatchServiceManager executed successfully.");
+
+				//douleuei
+				mainPanel.add(new Label("TEST2"));
+				Map<String,ValueDetails> detailsMap = result.getDetailsMap();
+				//null kapou edw
+				//Window.alert(" map: "+ detailsMap.toString());
+				String msg = detailsMap.size()==0?"empty":String.valueOf(detailsMap.size());
+				mainPanel.add(new Label("TEST2.1 map size: " + msg));
+				GWT.log("[VOWL] map: " + detailsMap.toString());
+				//logger.log(Level.INFO, "[VOWL] DispatchServiceManager executed successfully.");
 				//TODO set panel, widgets, etc
 
+				dynamicInfoPanel.clear();
+
 				// Add the Description item
-				dynamicInfoPanel.add(createDescriptionItem(), "Description");
+				//mainPanel.remove(dynamicInfoPanel);
 
-				// Add the Metadata item
-				//dynamicInfoPanel.add(new Label("Metadata"), "mtd");
-				dynamicInfoPanel.add(createDescriptionItem(), "Metadata");
+				//uparxei provlhma me auta, den ta kanei draw kai xalaei kai ta apo katw pou douleuoun
+				//dynamicInfoPanel.add(createDescriptionItem(graphDetails.getMap()));
+				//Window.alert("Egine add 1 item");
+				//dynamicInfoPanel.add(createDescriptionItem(graphDetails.getMap()));
 
-				// Add the Statistics item
-				dynamicInfoPanel.add(createDescriptionItem(), "Statistics");
+				//renderDynamicItems(detailsMap);
+				dynamicInfoPanel.add(new Label("map is fucking empty? "+detailsMap.isEmpty()));
 
-				// Add the Selection Details item
-				dynamicInfoPanel.add(createDescriptionItem(), "Selection Details");
+				//dynamicInfoPanel.add(new Label("map "+detailsMap.toString()));
+				//dynamicInfoPanel.add(new Label("  keys "+detailsMap.keySet().toString()));
+				//dynamicInfoPanel.add(new Label("  values "+detailsMap.values().toString()));
 
-				mainPanel.add(staticInfoPanel);
+				for (String key : detailsMap.keySet()) {
+					dynamicInfoPanel.add(createItem(detailsMap, key), key, false);
+
+				}
+				GWT.log("[VOWL] map keys: " + detailsMap.keySet().toString());
+				GWT.log("[VOWL] map values: " + detailsMap.values().toString());
+
+
 				mainPanel.add(dynamicInfoPanel);
+				mainPanel.add(new Label("TEST4"));
 
-				add(mainPanel);
+				String str = "{\r\n" + 
+						"    \"id\": 1,\r\n" + 
+						"    \"name\": \"A green door\",\r\n" + 
+						"    \"price\": 12.50,\r\n" + 
+						"    \"tags\": [\"home\", \"green\"]\r\n" + 
+						"}";
+
+				JSONValue jsonObj = JSONParser.parseStrict(str);
+				Double s = jsonObj.isObject().get("id").isNumber().doubleValue();
+				GWT.log("[VOWL] id value of key 'id':"+ s);
+
 			}
 		});
+		//}
+	}
+
+	private VerticalPanel createItem(Map<String, ValueDetails> map, String key) {
+		VerticalPanel filtersPanel = new VerticalPanel();
+		filtersPanel.setSpacing(4);
+		filtersPanel.add(new Label(map.get(key).toString()));
+		return filtersPanel;
 	}
 
 	private String getContainerId() {
@@ -137,14 +243,29 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 	 * their selections have been updated and that listeners should refresh content. */
 	@Override
 	public void selectionChanged(SelectionEvent event) {
-		//TODO to change the dynamic panel, only this will change
-		//Collection<? extends Object> selection = event.getSelectable().getSelection();
-		//String selectedEntity = (String)event.getSelectable().getSelection();
+		//mainPanel.clear();
+		//mainPanel.add(new Label("count: "+ count++));
+		//Window.alert("Selection is changed");
 
-		GWT.log("@@@@@@@@@@@ [MICHOU] Selection changed inside VOWLDetails portlet");
-		
-		//renderDetailsView(Optional.of(selectedEntity));
-		
+		 
+
+		Collection<? extends Object> selection = event.getSelectable().getSelection();
+
+		if (selection.size() > 0) {
+			Object selectionData = selection.iterator().next();
+			if (selectionData instanceof String) {
+				String selectedEntity = (String)selectionData;
+				//Window.alert("Selection is changed: "+ selectedEntity);
+				GWT.log("----> [VOWL] Selection is changed: "+ selectedEntity);
+
+				dynamicInfoPanel.clear();
+				mainPanel.remove(dynamicInfoPanel);
+				dynamicInfoPanel.add(event.getSelectable().getPanel(), "<h3>Selection Details</h3>", true);
+				mainPanel.add(dynamicInfoPanel);
+				//renderDetailsView(selectedEntity);
+			}
+		}
+
 	}
 
 }
