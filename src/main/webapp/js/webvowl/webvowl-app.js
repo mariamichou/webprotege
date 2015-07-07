@@ -11,6 +11,7 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		graph = webvowl.graph(),
 		options = graph.graphOptions(),
 		data,
+		classCount,
 	// Graph modules
 		statistics = webvowl.modules.statistics(),
 		focuser = webvowl.modules.focuser(),
@@ -38,6 +39,7 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		options.filterModules().push(compactNotationSwitch);
 
 		graph.start();
+		classCount = statistics.classCount();
 
 		adjustSize();
 		d3.select(window).on("resize", function(){
@@ -48,6 +50,10 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 
 		return app;
 	};
+	
+	app.getClassCount = function () {
+		return statistics.classCount();
+	};
 
 	app.data = function (convertedOntology) {
 		if (!arguments.length) return data;
@@ -56,7 +62,7 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 
 		return app;
 	};
-
+	
 	function updateGraph() {
 		var dataAsJson;
 		if (data) {

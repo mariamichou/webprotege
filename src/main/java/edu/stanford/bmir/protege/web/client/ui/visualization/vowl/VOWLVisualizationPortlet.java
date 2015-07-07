@@ -202,7 +202,10 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		JSONArray array;
 		detailsDynamicPanel = new VerticalPanel();
 		detailsDynamicPanel.setSpacing(4);
-
+		//Test if it will show classes
+		GWT.log("[MICHOU] Statistics:");
+		GWT.log(String.valueOf(VOWLVisualizationJso.statistics(getContainerId(), VOWLVisualizationPortlet.ontologyAsJSONStr)));
+		
 		String nameStr = "";
 		String typeStr = "";;
 		String equivalentStr = "";
