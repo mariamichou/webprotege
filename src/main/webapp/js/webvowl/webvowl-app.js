@@ -13,7 +13,7 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		data,
 	// Graph modules
 		statistics = webvowl.modules.statistics(),
-		classCount,
+		//selectionDetailDisplayer = webvowl.modules.selectionDetailsDisplayer(sidebar.updateSelectionInformation),
 		focuser = webvowl.modules.focuser(),
 		datatypeFilter = webvowl.modules.datatypeFilter(),
 		subclassFilter = webvowl.modules.subclassFilter(),
@@ -28,6 +28,7 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 	app.initialize = function () {
 		options.graphContainerSelector(graphContainerSelector);
 		options.selectionModules().push(focuser);
+		//options.selectionModules().push(selectionDetailDisplayer);
 		options.selectionModules().push(pickAndPin);
 		options.filterModules().push(statistics);
 		options.filterModules().push(datatypeFilter);
@@ -39,8 +40,7 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		options.filterModules().push(compactNotationSwitch);
 
 		graph.start();
-		//classCount = statistics.classCount();
-
+		
 		adjustSize();
 		d3.select(window).on("resize", function(){
 			setTimeout(adjustSize, resizeTimeout);
@@ -51,15 +51,23 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		return app;
 	};
 	
-	/*auto epistrefei sunarthsh oute undefined oute 0. na kanw run, 
-	 * giati den vlepei alliws diafores
-	 * app.classCount = function () {
+	/* it works */
+	/*app.classCount = function () {
 		return statistics.classCount();
 	};*/
-
-	app.classCount = function () {
-		return statistics.classCount();
+	
+	app.metrics = function() {
+		return statistics.classCount() +" "+ statistics.objectPropertyCount() +" "+ statistics.datatypePropertyCount() +" "+ statistics.totalIndividualCount() +" "
+		+ statistics.nodeCount() +" "+ statistics.edgeCount();
 	};
+	
+	//returns an object, it shows in Firebug, but its functions aren't accessible
+	//app.stats = statistics;
+	
+	/* the same as above
+	app.stats = function () {
+		return statistics;
+	};*/
 	
 	app.data = function (convertedOntology) {
 		if (!arguments.length) return data;

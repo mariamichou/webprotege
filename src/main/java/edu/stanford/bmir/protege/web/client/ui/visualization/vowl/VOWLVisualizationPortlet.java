@@ -40,6 +40,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 
 	private static final String VOWL_TITLE = "WebVOWL 0.4.0";
 	private VOWLVisualizationJso visualizationJso;
+	private VOWLDetailsJso detailsJso;
 	public static String ontologyAsJSONStr;
 	public static JSONValue jsonValue;
 	private static Optional<String> selectedElement;
@@ -115,6 +116,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 				// graphContainer.getElement().getInnerHTML().isEmpty() = false
 				// here we have to load static Details panel only once!
 				// obviously we have to fire some kind of event for the Details portlet to take over.
+				detailsJso = VOWLDetailsJso.statistics(getContainerId(), convertedOntology);
 			}
 
 			graphContainer.addDomHandler(new MyClickHandler(), ClickEvent.getType());
@@ -203,9 +205,18 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		detailsDynamicPanel = new VerticalPanel();
 		detailsDynamicPanel.setSpacing(4);
 		//Test if it will show classes
-		GWT.log("[MICHOU] Statistics:");
-		//GWT.log(String.valueOf(VOWLVisualizationJso.statistics(getContainerId(), VOWLVisualizationPortlet.ontologyAsJSONStr)));
-		GWT.log(String.valueOf(visualizationJso.statistics()));
+		//GWT.log("[MICHOU] Statistics:");
+		//GWT.log(String.valueOf(visualizationJso.statistics()));
+		GWT.log(visualizationJso.metrics());
+		GWT.log("What it holds: "+detailsJso.toString());
+		GWT.log("classes: "+ String.valueOf(detailsJso.getClassCount()));
+		/*GWT.log("classes: "+ String.valueOf(detailsJso.getClassCount()));
+		GWT.log("obj props: "+ String.valueOf(detailsJso.getObjectPropertyCount()));
+		GWT.log("data props: "+ String.valueOf(detailsJso.getDatatypePropertyCount()));
+		GWT.log("individuals: "+ String.valueOf(detailsJso.getIndividualCount()));
+		GWT.log("nodes: "+ String.valueOf(detailsJso.getNodeCount()));
+		GWT.log("edges: "+ String.valueOf(detailsJso.getEdgeCount()));
+		*/
 		
 		//VOWLVisualizationJso.alert("dummy msg");
 		

@@ -36,6 +36,10 @@ public class VOWLVisualizationJso extends JavaScriptObject {
 		return this.classCount();
 	}-*/;
 	
+	public final native String metrics()  /*-{
+		return this.metrics();
+	}-*/;
+	
 	public static native void alert(String msg) /*-{
 	  $wnd.alert(msg);
 	}-*/;
