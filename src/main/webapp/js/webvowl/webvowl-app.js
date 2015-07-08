@@ -11,8 +11,8 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		graph = webvowl.graph(),
 		options = graph.graphOptions(),
 		data,
+		statistics,
 	// Graph modules
-		statistics = webvowl.modules.statistics(),
 		focuser = webvowl.modules.focuser(),
 		datatypeFilter = webvowl.modules.datatypeFilter(),
 		subclassFilter = webvowl.modules.subclassFilter(),
@@ -33,7 +33,6 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		options.selectionModules().push(focuser);
 		options.selectionModules().push(pickAndPin);
 		options.selectionModules().push(selectionDetailDisplayer);
-		options.filterModules().push(statistics);
 		options.filterModules().push(datatypeFilter);
 		options.filterModules().push(subclassFilter);
 		options.filterModules().push(disjointFilter);
@@ -54,23 +53,9 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		return app;
 	};
 
-	/* it works */
-	/*app.classCount = function () {
-		return statistics.classCount();
-	};*/
-
-	app.metrics = function() {
-		return statistics.classCount() +" "+ statistics.objectPropertyCount() +" "+ statistics.datatypePropertyCount() +" "+ statistics.totalIndividualCount() +" "
-		+ statistics.nodeCount() +" "+ statistics.edgeCount();
-	};
-
-	//returns an object, it shows in Firebug, but its functions aren't accessible
-	//app.stats = statistics;
-
-	/* the same as above
-	app.stats = function () {
+	app.statistics = function() {
 		return statistics;
-	};*/
+	};
 
 	app.selectedLabel = function() {
 		return selectedLabel;
@@ -84,6 +69,9 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		if (!arguments.length) return data;
 		data = convertedOntology;
 		updateGraph();
+
+		// use the statistics delievered from the converter
+		statistics = options.data().metrics;
 
 		return app;
 	};
