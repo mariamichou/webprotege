@@ -32,9 +32,11 @@ public class VOWLVisualizationJso extends JavaScriptObject {
 		return supported;
 	}-*/;
 	
-	public static native int statistics(String containerId, String data)  /*-{
-		var count = $wnd.webvowlApp.app("#" + containerId, data).getClassCount();
-		
-		return count || 0;
+	public final native int statistics()  /*-{
+		return this.classCount();
+	}-*/;
+	
+	public static native void alert(String msg) /*-{
+	  $wnd.alert(msg);
 	}-*/;
 }

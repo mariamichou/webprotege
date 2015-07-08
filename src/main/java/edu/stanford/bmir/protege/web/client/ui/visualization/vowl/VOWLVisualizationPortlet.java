@@ -204,7 +204,11 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		detailsDynamicPanel.setSpacing(4);
 		//Test if it will show classes
 		GWT.log("[MICHOU] Statistics:");
-		GWT.log(String.valueOf(VOWLVisualizationJso.statistics(getContainerId(), VOWLVisualizationPortlet.ontologyAsJSONStr)));
+		//GWT.log(String.valueOf(VOWLVisualizationJso.statistics(getContainerId(), VOWLVisualizationPortlet.ontologyAsJSONStr)));
+		GWT.log(String.valueOf(visualizationJso.statistics()));
+		
+		//VOWLVisualizationJso.alert("dummy msg");
+		
 		
 		String nameStr = "";
 		String typeStr = "";;

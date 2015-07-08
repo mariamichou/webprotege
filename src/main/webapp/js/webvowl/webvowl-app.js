@@ -11,9 +11,9 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		graph = webvowl.graph(),
 		options = graph.graphOptions(),
 		data,
-		classCount,
 	// Graph modules
 		statistics = webvowl.modules.statistics(),
+		classCount,
 		focuser = webvowl.modules.focuser(),
 		datatypeFilter = webvowl.modules.datatypeFilter(),
 		subclassFilter = webvowl.modules.subclassFilter(),
@@ -39,7 +39,7 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		options.filterModules().push(compactNotationSwitch);
 
 		graph.start();
-		classCount = statistics.classCount();
+		//classCount = statistics.classCount();
 
 		adjustSize();
 		d3.select(window).on("resize", function(){
@@ -51,10 +51,16 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		return app;
 	};
 	
-	app.getClassCount = function () {
+	/*auto epistrefei sunarthsh oute undefined oute 0. na kanw run, 
+	 * giati den vlepei alliws diafores
+	 * app.classCount = function () {
+		return statistics.classCount();
+	};*/
+
+	app.classCount = function () {
 		return statistics.classCount();
 	};
-
+	
 	app.data = function (convertedOntology) {
 		if (!arguments.length) return data;
 		data = convertedOntology;
