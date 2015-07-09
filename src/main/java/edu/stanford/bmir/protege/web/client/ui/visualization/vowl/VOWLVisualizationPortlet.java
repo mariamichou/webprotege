@@ -15,6 +15,7 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
@@ -417,11 +418,17 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		detailsDynamicPanel = new VerticalPanel();
 		detailsDynamicPanel.setSpacing(4);
 		//Test if it will show classes
-		GWT.log("[MICHOU] Statistics:");
 		GWT.log("[VOWL] Node count: " + visualizationJso.getStatistics().getNodeCount());
 		GWT.log("[VOWL] classes: "+ visualizationJso.getStatistics().getClassCount());
 		
-		detailsDynamicPanel.add(new HTML("<b>Statistics:</b>"));
+		
+		//detailsDynamicPanel.add(new Label("Version: "+ visualizationJso.getStaticData().getVersion()));
+		//Window.alert("Version: "+ visualizationJso.getVersion());
+		
+		//detailsDynamicPanel.add(new HTML("<b>Description:</b>"+visualizationJso.getStaticData().getDescription()));
+		detailsDynamicPanel.add(new HTML("<b>Metadata</b>"));
+		
+		detailsDynamicPanel.add(new HTML("<b>Statistics</b>"));
 		
 		detailsDynamicPanel.add(new HTML("Classes: <i>"+visualizationJso.getStatistics().getClassCount()+"</i>"));
 		detailsDynamicPanel.add(new HTML("Object prop.: <i>"+visualizationJso.getStatistics().getObjectPropertyCount()+"</i>"));
@@ -430,14 +437,18 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		detailsDynamicPanel.add(new HTML("Nodes: <i>"+visualizationJso.getStatistics().getNodeCount()+"</i>"));
 		detailsDynamicPanel.add(new HTML("Edges: <i>"+visualizationJso.getStatistics().getAxiomCount()+"</i>"));
 		
-		detailsDynamicPanel.add(new HTML("<b>Selection Details:</b>"));
+		detailsDynamicPanel.add(new HTML("<b>Selection Details</b>"));
+		
 		if(elementType.get().equals("node")) {
-			GWT.log("[VOWL] selected node: "+ visualizationJso.getSelectedNode().toString());
+			//GWT.log("[VOWL] selected node: "+ visualizationJso.getSelectedNode().getLabel());
 			detailsDynamicPanel.add(new HTML("Selected element: <i>"+visualizationJso.getSelectedNode().getLabel()+"</i>"));
 		}
 		else {
-			GWT.log("[VOWL] selected label: "+ visualizationJso.getSelectedLabel().toString());
-			detailsDynamicPanel.add(new HTML("Selected element: <i>"+visualizationJso.getSelectedLabel().getDomain()+"</i>"));
+			//GWT.log("[VOWL] selected label: "+ visualizationJso.getSelectedLabel().getDomain().getLabel());
+			
+			detailsDynamicPanel.add(new HTML("Domain: <a href=\""+visualizationJso.getSelectedLabel().getDomain().getIri()+"\">"+visualizationJso.getSelectedLabel().getDomain().getLabel()+"</a>"));
+			detailsDynamicPanel.add(new HTML("Range: <a href=\""+visualizationJso.getSelectedLabel().getRange().getIri()+"\">"+visualizationJso.getSelectedLabel().getDomain().getLabel()+"</a>"));
+			
 		}
 	}
 

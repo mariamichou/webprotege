@@ -9,7 +9,7 @@ public class VOWLLabelJso extends VOWLElementJso {
   }-*/;
 
 	public final native VOWLNodeJso getRange() /*-{
-	  return this.range()
+	  return this.range();
   }-*/;
 
 }
