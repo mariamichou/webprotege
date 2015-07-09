@@ -34,8 +34,16 @@ public class VOWLDetailsJso extends JavaScriptObject {
 	public final native int getAxiomCount()  /*-{
 	  return this.axiomCount;
   }-*/;
+	
+	public final native int getEdgeCount()  /*-{
+	  return this.edgeCount;
+}-*/;
 
 	public final native int getIndividualCount() /*-{
 	  return this.individualCount;
   }-*/;
+	
+	public final native int getTotalIndividualCount() /*-{
+	  return this.totalIndividualCount;
+}-*/;
 }

@@ -201,7 +201,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 	}
 
 	//it can either be a property (i.e. label) or a class (i.e. node)
-	private void setDetailsContent(String entityId) {
+	private void setDetailsContent2(String entityId) {
 		JSONArray array;
 		detailsDynamicPanel = new VerticalPanel();
 		detailsDynamicPanel.setSpacing(4);
@@ -414,7 +414,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		return typeStr;
 	}
 	
-	private void setDetailsContent2(Element selectedElement) {
+	private void setDetailsContent() {
 		detailsDynamicPanel = new VerticalPanel();
 		detailsDynamicPanel.setSpacing(4);
 		//Test if it will show classes
@@ -439,16 +439,26 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		
 		detailsDynamicPanel.add(new HTML("<b>Selection Details</b>"));
 		
+		//TODO: add a loop
 		if(elementType.get().equals("node")) {
 			//GWT.log("[VOWL] selected node: "+ visualizationJso.getSelectedNode().getLabel());
-			detailsDynamicPanel.add(new HTML("Selected element: <i>"+visualizationJso.getSelectedNode().getLabel()+"</i>"));
+			detailsDynamicPanel.add(new HTML("Name: <a href=\""+visualizationJso.getSelectedNode().getIri()+"\">"+visualizationJso.getSelectedNode().getLabel()+"</a>"));
+			detailsDynamicPanel.add(new Label("Type: "+visualizationJso.getSelectedNode().getType()));
+			String comment = visualizationJso.getSelectedNode().getComment();
+			if(!comment.isEmpty())
+				detailsDynamicPanel.add(new Label("Comment: "+comment));
+			
 		}
 		else {
 			//GWT.log("[VOWL] selected label: "+ visualizationJso.getSelectedLabel().getDomain().getLabel());
+			detailsDynamicPanel.add(new HTML("Name: <a href=\""+visualizationJso.getSelectedLabel().getIri()+"\">"+visualizationJso.getSelectedLabel().getLabel()+"</a>"));
+			detailsDynamicPanel.add(new Label("Type: "+visualizationJso.getSelectedLabel().getType()));
 			
 			detailsDynamicPanel.add(new HTML("Domain: <a href=\""+visualizationJso.getSelectedLabel().getDomain().getIri()+"\">"+visualizationJso.getSelectedLabel().getDomain().getLabel()+"</a>"));
-			detailsDynamicPanel.add(new HTML("Range: <a href=\""+visualizationJso.getSelectedLabel().getRange().getIri()+"\">"+visualizationJso.getSelectedLabel().getDomain().getLabel()+"</a>"));
-			
+			detailsDynamicPanel.add(new HTML("Range: <a href=\""+visualizationJso.getSelectedLabel().getRange().getIri()+"\">"+visualizationJso.getSelectedLabel().getRange().getLabel()+"</a>"));
+			String comment = visualizationJso.getSelectedLabel().getComment();
+			if(!comment.isEmpty())
+				detailsDynamicPanel.add(new Label("Comment: "+comment));
 		}
 	}
 
@@ -475,7 +485,8 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 					// classes have value 'node', while properties have value 'property' 
 					elementType = Optional.of(gElement.getParentElement().getAttribute("class"));
 					//setDetailsContent(selectedElement.get());
-					setDetailsContent2(gElement.getParentElement());
+					//setDetailsContent(gElement.getParentElement());
+					setDetailsContent();
 					//Window.alert("<circle> or <rect> element with parent g id " + gElement.getParentElement().getId() + ", and class " + elementType.get() + " was clicked");
 					notifySelectionListeners(new SelectionEvent(VOWLVisualizationPortlet.this));
 				}
