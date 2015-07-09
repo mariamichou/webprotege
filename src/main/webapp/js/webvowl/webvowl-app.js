@@ -11,9 +11,8 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		graph = webvowl.graph(),
 		options = graph.graphOptions(),
 		data,
+		statistics,
 	// Graph modules
-		statistics = webvowl.modules.statistics(),
-		//selectionDetailDisplayer = webvowl.modules.selectionDetailsDisplayer(sidebar.updateSelectionInformation),
 		focuser = webvowl.modules.focuser(),
 		datatypeFilter = webvowl.modules.datatypeFilter(),
 		subclassFilter = webvowl.modules.subclassFilter(),
@@ -23,14 +22,17 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		nodeScalingSwitch = webvowl.modules.nodeScalingSwitch(graph),
 		compactNotationSwitch = webvowl.modules.compactNotationSwitch(graph),
 		pickAndPin = webvowl.modules.pickAndPin(),
-		resizeTimeout = 200;
+		resizeTimeout = 200,
+	// selection
+		selectionDetailDisplayer = webvowl.modules.selectionDetailsDisplayer(onSelection),
+		selectedLabel,
+		selectedNode;
 
 	app.initialize = function () {
 		options.graphContainerSelector(graphContainerSelector);
 		options.selectionModules().push(focuser);
-		//options.selectionModules().push(selectionDetailDisplayer);
 		options.selectionModules().push(pickAndPin);
-		options.filterModules().push(statistics);
+		options.selectionModules().push(selectionDetailDisplayer);
 		options.filterModules().push(datatypeFilter);
 		options.filterModules().push(subclassFilter);
 		options.filterModules().push(disjointFilter);
@@ -40,7 +42,7 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		options.filterModules().push(compactNotationSwitch);
 
 		graph.start();
-		
+
 		adjustSize();
 		d3.select(window).on("resize", function(){
 			setTimeout(adjustSize, resizeTimeout);
@@ -50,33 +52,30 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 
 		return app;
 	};
-	
-	/* it works */
-	/*app.classCount = function () {
-		return statistics.classCount();
-	};*/
-	
-	app.metrics = function() {
-		return statistics.classCount() +" "+ statistics.objectPropertyCount() +" "+ statistics.datatypePropertyCount() +" "+ statistics.totalIndividualCount() +" "
-		+ statistics.nodeCount() +" "+ statistics.edgeCount();
-	};
-	
-	//returns an object, it shows in Firebug, but its functions aren't accessible
-	//app.stats = statistics;
-	
-	/* the same as above
-	app.stats = function () {
+
+	app.statistics = function() {
 		return statistics;
-	};*/
-	
+	};
+
+	app.selectedLabel = function() {
+		return selectedLabel;
+	};
+
+	app.selectedNode = function() {
+		return selectedNode;
+	};
+
 	app.data = function (convertedOntology) {
 		if (!arguments.length) return data;
 		data = convertedOntology;
 		updateGraph();
 
+		// use the statistics delievered from the converter
+		statistics = options.data().metrics;
+
 		return app;
 	};
-	
+
 	function updateGraph() {
 		var dataAsJson;
 		if (data) {
@@ -98,6 +97,24 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		options.width(width)
 			.height(height);
 		graph.updateStyle();
+	}
+
+	function onSelection(selectedElement) {
+		// Click event was prevented when dragging
+		if (d3.event && d3.event.defaultPrevented) {
+			return;
+		}
+
+		// reset selected elements
+		selectedLabel = null;
+		selectedNode = null;
+
+		// in case of selection, set the correct element
+		if (selectedElement instanceof webvowl.labels.BaseLabel) {
+			selectedLabel = selectedElement;
+		} else if (selectedElement instanceof webvowl.nodes.BaseNode) {
+			selectedNode = selectedElement;
+		}
 	}
 
 	return app;

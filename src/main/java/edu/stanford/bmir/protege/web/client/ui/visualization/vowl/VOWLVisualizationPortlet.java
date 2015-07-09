@@ -116,7 +116,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 				// graphContainer.getElement().getInnerHTML().isEmpty() = false
 				// here we have to load static Details panel only once!
 				// obviously we have to fire some kind of event for the Details portlet to take over.
-				detailsJso = VOWLDetailsJso.statistics(getContainerId(), convertedOntology);
+				detailsJso = visualizationJso.getStatistics();
 			}
 
 			graphContainer.addDomHandler(new MyClickHandler(), ClickEvent.getType());
@@ -207,7 +207,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		//Test if it will show classes
 		//GWT.log("[MICHOU] Statistics:");
 		//GWT.log(String.valueOf(visualizationJso.statistics()));
-		GWT.log(visualizationJso.metrics());
+		GWT.log("Node count: " + visualizationJso.getStatistics().getNodeCount());
 		GWT.log("What it holds: "+detailsJso.toString());
 		GWT.log("classes: "+ String.valueOf(detailsJso.getClassCount()));
 		/*GWT.log("classes: "+ String.valueOf(detailsJso.getClassCount()));

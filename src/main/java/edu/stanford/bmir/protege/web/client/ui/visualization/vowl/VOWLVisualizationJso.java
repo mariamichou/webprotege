@@ -22,25 +22,30 @@ public class VOWLVisualizationJso extends JavaScriptObject {
 
 	/**
 	 * If not compatible shows an error message in given container.
+	 *
 	 * @return True if not IE.
 	 */
 	public static native boolean isBrowserCompatible(String containerId) /*-{
-		var supported = $wnd.webvowlApp.browserWarning("#" + containerId).isSupported();
-		if (!supported) {
-			$wnd.webvowlApp.browserWarning("#" + containerId).showError();
-		}
-		return supported;
-	}-*/;
-	
-	public final native int statistics()  /*-{
-		return this.classCount();
-	}-*/;
-	
-	public final native String metrics()  /*-{
-		return this.metrics();
-	}-*/;
-	
+	  var supported = $wnd.webvowlApp.browserWarning("#" + containerId).isSupported();
+	  if (!supported) {
+		  $wnd.webvowlApp.browserWarning("#" + containerId).showError();
+	  }
+	  return supported;
+  }-*/;
+
+	public final native VOWLDetailsJso getStatistics()  /*-{
+	  return this.statistics();
+  }-*/;
+
+	public final native VOWLNodeJso getSelectedNode() /*-{
+	  return this.selectedNode();
+  }-*/;
+
+	public final native VOWLLabelJso getSelectedLabel() /*-{
+	  return this.selectedLabel();
+  }-*/;
+
 	public static native void alert(String msg) /*-{
 	  $wnd.alert(msg);
-	}-*/;
+  }-*/;
 }
