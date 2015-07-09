@@ -260,7 +260,7 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 
 				dynamicInfoPanel.clear();
 				mainPanel.remove(dynamicInfoPanel);
-				dynamicInfoPanel.add(event.getSelectable().getPanel(), "<h3>Selection Details</h3>", true);
+				dynamicInfoPanel.add(event.getSelectable().getPanel(), "<h3>Selected Elements</h3>", true);
 				mainPanel.add(dynamicInfoPanel);
 				//renderDetailsView(selectedEntity);
 			}

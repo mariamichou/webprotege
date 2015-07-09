@@ -205,20 +205,21 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		detailsDynamicPanel = new VerticalPanel();
 		detailsDynamicPanel.setSpacing(4);
 		//Test if it will show classes
-		//GWT.log("[MICHOU] Statistics:");
-		//GWT.log(String.valueOf(visualizationJso.statistics()));
-		GWT.log("Node count: " + visualizationJso.getStatistics().getNodeCount());
-		GWT.log("What it holds: "+detailsJso.toString());
-		GWT.log("classes: "+ String.valueOf(detailsJso.getClassCount()));
-		/*GWT.log("classes: "+ String.valueOf(detailsJso.getClassCount()));
-		GWT.log("obj props: "+ String.valueOf(detailsJso.getObjectPropertyCount()));
-		GWT.log("data props: "+ String.valueOf(detailsJso.getDatatypePropertyCount()));
-		GWT.log("individuals: "+ String.valueOf(detailsJso.getIndividualCount()));
-		GWT.log("nodes: "+ String.valueOf(detailsJso.getNodeCount()));
-		GWT.log("edges: "+ String.valueOf(detailsJso.getEdgeCount()));
-		*/
+		GWT.log("[MICHOU] Statistics:");
+		GWT.log("[VOWL] Node count: " + visualizationJso.getStatistics().getNodeCount());
+		GWT.log("[VOWL] classes: "+ visualizationJso.getStatistics().getClassCount());
 		
-		//VOWLVisualizationJso.alert("dummy msg");
+		detailsDynamicPanel.add(new HTML("<b>Statistics:</b>"));
+		
+		detailsDynamicPanel.add(new HTML("Classes: <i>"+visualizationJso.getStatistics().getClassCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Object prop.: <i>"+visualizationJso.getStatistics().getObjectPropertyCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Datatype prop.: <i>"+visualizationJso.getStatistics().getDatatypePropertyCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Individuals: <i>"+visualizationJso.getStatistics().getIndividualCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Nodes: <i>"+visualizationJso.getStatistics().getNodeCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Edges: <i>"+visualizationJso.getStatistics().getAxiomCount()+"</i>"));
+		
+		detailsDynamicPanel.add(new HTML("<b>Selection Details:</b>"));
+		detailsDynamicPanel.add(new HTML("Selected element: <i>"+visualizationJso.getSelectedNode().getType()+"</i>"));
 		
 		
 		String nameStr = "";
@@ -411,6 +412,34 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 
 		return typeStr;
 	}
+	
+	private void setDetailsContent2(Element selectedElement) {
+		detailsDynamicPanel = new VerticalPanel();
+		detailsDynamicPanel.setSpacing(4);
+		//Test if it will show classes
+		GWT.log("[MICHOU] Statistics:");
+		GWT.log("[VOWL] Node count: " + visualizationJso.getStatistics().getNodeCount());
+		GWT.log("[VOWL] classes: "+ visualizationJso.getStatistics().getClassCount());
+		
+		detailsDynamicPanel.add(new HTML("<b>Statistics:</b>"));
+		
+		detailsDynamicPanel.add(new HTML("Classes: <i>"+visualizationJso.getStatistics().getClassCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Object prop.: <i>"+visualizationJso.getStatistics().getObjectPropertyCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Datatype prop.: <i>"+visualizationJso.getStatistics().getDatatypePropertyCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Individuals: <i>"+visualizationJso.getStatistics().getIndividualCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Nodes: <i>"+visualizationJso.getStatistics().getNodeCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Edges: <i>"+visualizationJso.getStatistics().getAxiomCount()+"</i>"));
+		
+		detailsDynamicPanel.add(new HTML("<b>Selection Details:</b>"));
+		if(elementType.get().equals("node")) {
+			GWT.log("[VOWL] selected node: "+ visualizationJso.getSelectedNode().toString());
+			detailsDynamicPanel.add(new HTML("Selected element: <i>"+visualizationJso.getSelectedNode().getLabel()+"</i>"));
+		}
+		else {
+			GWT.log("[VOWL] selected label: "+ visualizationJso.getSelectedLabel().toString());
+			detailsDynamicPanel.add(new HTML("Selected element: <i>"+visualizationJso.getSelectedLabel().getDomain()+"</i>"));
+		}
+	}
 
 	@Override
 	public VerticalPanel getPanel() {
@@ -434,7 +463,8 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 					selectedElement = Optional.of(gElement.getParentElement().getId());
 					// classes have value 'node', while properties have value 'property' 
 					elementType = Optional.of(gElement.getParentElement().getAttribute("class"));
-					setDetailsContent(selectedElement.get());
+					//setDetailsContent(selectedElement.get());
+					setDetailsContent2(gElement.getParentElement());
 					//Window.alert("<circle> or <rect> element with parent g id " + gElement.getParentElement().getId() + ", and class " + elementType.get() + " was clicked");
 					notifySelectionListeners(new SelectionEvent(VOWLVisualizationPortlet.this));
 				}
