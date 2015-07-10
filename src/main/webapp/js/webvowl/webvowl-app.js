@@ -11,8 +11,10 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		graph = webvowl.graph(),
 		options = graph.graphOptions(),
 		data,
+		statistics,
+		version,
+		description,
 	// Graph modules
-		statistics = webvowl.modules.statistics(),
 		focuser = webvowl.modules.focuser(),
 		datatypeFilter = webvowl.modules.datatypeFilter(),
 		subclassFilter = webvowl.modules.subclassFilter(),
@@ -22,13 +24,17 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		nodeScalingSwitch = webvowl.modules.nodeScalingSwitch(graph),
 		compactNotationSwitch = webvowl.modules.compactNotationSwitch(graph),
 		pickAndPin = webvowl.modules.pickAndPin(),
-		resizeTimeout = 200;
+		resizeTimeout = 200,
+	// selection
+		selectionDetailDisplayer = webvowl.modules.selectionDetailsDisplayer(onSelection),
+		selectedLabel,
+		selectedNode;
 
 	app.initialize = function () {
 		options.graphContainerSelector(graphContainerSelector);
 		options.selectionModules().push(focuser);
 		options.selectionModules().push(pickAndPin);
-		options.filterModules().push(statistics);
+		options.selectionModules().push(selectionDetailDisplayer);
 		options.filterModules().push(datatypeFilter);
 		options.filterModules().push(subclassFilter);
 		options.filterModules().push(disjointFilter);
@@ -49,11 +55,35 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		return app;
 	};
 
+	app.statistics = function() {
+		return statistics;
+	};
+	
+	app.version = function () {
+		return version;
+	};
+	
+	app.description = function () {
+		return description;
+	};
+
+	app.selectedLabel = function() {
+		return selectedLabel;
+	};
+
+	app.selectedNode = function() {
+		return selectedNode;
+	};
+
 	app.data = function (convertedOntology) {
 		if (!arguments.length) return data;
 		data = convertedOntology;
 		updateGraph();
 
+		// use the statistics delievered from the converter
+		statistics = options.data().metrics;
+		version = options.data().version;
+		description = options.data().description;
 		return app;
 	};
 
@@ -78,6 +108,24 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		options.width(width)
 			.height(height);
 		graph.updateStyle();
+	}
+
+	function onSelection(selectedElement) {
+		// Click event was prevented when dragging
+		if (d3.event && d3.event.defaultPrevented) {
+			return;
+		}
+
+		// reset selected elements
+		selectedLabel = null;
+		selectedNode = null;
+
+		// in case of selection, set the correct element
+		if (selectedElement instanceof webvowl.labels.BaseLabel) {
+			selectedLabel = selectedElement;
+		} else if (selectedElement instanceof webvowl.nodes.BaseNode) {
+			selectedNode = selectedElement;
+		}
 	}
 
 	return app;

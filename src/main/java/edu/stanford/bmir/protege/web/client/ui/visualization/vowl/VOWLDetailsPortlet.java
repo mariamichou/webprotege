@@ -190,7 +190,7 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 				//dynamicInfoPanel.add(createDescriptionItem(graphDetails.getMap()));
 
 				//renderDynamicItems(detailsMap);
-				dynamicInfoPanel.add(new Label("map is fucking empty? "+detailsMap.isEmpty()));
+				//dynamicInfoPanel.add(new Label("map is empty? "+detailsMap.isEmpty()));
 
 				//dynamicInfoPanel.add(new Label("map "+detailsMap.toString()));
 				//dynamicInfoPanel.add(new Label("  keys "+detailsMap.keySet().toString()));
@@ -260,7 +260,7 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 
 				dynamicInfoPanel.clear();
 				mainPanel.remove(dynamicInfoPanel);
-				dynamicInfoPanel.add(event.getSelectable().getPanel(), "<h3>Selection Details</h3>", true);
+				dynamicInfoPanel.add(event.getSelectable().getPanel(), "<h3></h3>", true);
 				mainPanel.add(dynamicInfoPanel);
 				//renderDetailsView(selectedEntity);
 			}

@@ -15,6 +15,7 @@ import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
@@ -40,6 +41,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 
 	private static final String VOWL_TITLE = "WebVOWL 0.4.0";
 	private VOWLVisualizationJso visualizationJso;
+	private VOWLDetailsJso detailsJso;
 	public static String ontologyAsJSONStr;
 	public static JSONValue jsonValue;
 	private static Optional<String> selectedElement;
@@ -115,6 +117,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 				// graphContainer.getElement().getInnerHTML().isEmpty() = false
 				// here we have to load static Details panel only once!
 				// obviously we have to fire some kind of event for the Details portlet to take over.
+				detailsJso = visualizationJso.getStatistics();
 			}
 
 			graphContainer.addDomHandler(new MyClickHandler(), ClickEvent.getType());
@@ -198,11 +201,28 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 	}
 
 	//it can either be a property (i.e. label) or a class (i.e. node)
-	private void setDetailsContent(String entityId) {
+	private void setDetailsContent2(String entityId) {
 		JSONArray array;
 		detailsDynamicPanel = new VerticalPanel();
 		detailsDynamicPanel.setSpacing(4);
-
+		//Test if it will show classes
+		GWT.log("[MICHOU] Statistics:");
+		GWT.log("[VOWL] Node count: " + visualizationJso.getStatistics().getNodeCount());
+		GWT.log("[VOWL] classes: "+ visualizationJso.getStatistics().getClassCount());
+		
+		detailsDynamicPanel.add(new HTML("<b>Statistics:</b>"));
+		
+		detailsDynamicPanel.add(new HTML("Classes: <i>"+visualizationJso.getStatistics().getClassCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Object prop.: <i>"+visualizationJso.getStatistics().getObjectPropertyCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Datatype prop.: <i>"+visualizationJso.getStatistics().getDatatypePropertyCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Individuals: <i>"+visualizationJso.getStatistics().getIndividualCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Nodes: <i>"+visualizationJso.getStatistics().getNodeCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Edges: <i>"+visualizationJso.getStatistics().getAxiomCount()+"</i>"));
+		
+		detailsDynamicPanel.add(new HTML("<b>Selection Details:</b>"));
+		detailsDynamicPanel.add(new HTML("Selected element: <i>"+visualizationJso.getSelectedNode().getType()+"</i>"));
+		
+		
 		String nameStr = "";
 		String typeStr = "";;
 		String equivalentStr = "";
@@ -393,6 +413,66 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 
 		return typeStr;
 	}
+	
+	private void setDetailsContent() {
+		detailsDynamicPanel = new VerticalPanel();
+		detailsDynamicPanel.setSpacing(4);
+		//Test if it will show classes
+		GWT.log("[VOWL] Node count: " + visualizationJso.getStatistics().getNodeCount());
+		GWT.log("[VOWL] classes: "+ visualizationJso.getStatistics().getClassCount());
+		
+		
+		//detailsDynamicPanel.add(new Label("Version: "+ visualizationJso.getStaticData().getVersion()));
+		//Window.alert("Version: "+ visualizationJso.getVersion());
+		
+		//detailsDynamicPanel.add(new HTML("<b>Description:</b>"+visualizationJso.getStaticData().getDescription()));
+		detailsDynamicPanel.add(new HTML("<b>Metadata</b>"));
+		
+		detailsDynamicPanel.add(new HTML("<b>Statistics</b>"));
+		
+		detailsDynamicPanel.add(new HTML("Classes: <i>"+visualizationJso.getStatistics().getClassCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Object prop.: <i>"+visualizationJso.getStatistics().getObjectPropertyCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Datatype prop.: <i>"+visualizationJso.getStatistics().getDatatypePropertyCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Individuals: <i>"+visualizationJso.getStatistics().getIndividualCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Nodes: <i>"+visualizationJso.getStatistics().getNodeCount()+"</i>"));
+		detailsDynamicPanel.add(new HTML("Edges: <i>"+visualizationJso.getStatistics().getAxiomCount()+"</i>"));
+		
+		detailsDynamicPanel.add(new HTML("<b>Selection Details</b>"));
+		
+		//TODO: add a loop
+		if(elementType.get().equals("node")) {
+			//GWT.log("[VOWL] selected node: "+ visualizationJso.getSelectedNode().getLabel());
+			detailsDynamicPanel.add(new HTML("Name: <a href=\""+visualizationJso.getSelectedNode().getIri()+"\">"+visualizationJso.getSelectedNode().getLabel()+"</a>"));
+			detailsDynamicPanel.add(new Label("Type: "+visualizationJso.getSelectedNode().getType()));
+			String charStr = visualizationJso.getSelectedNode().getCharacteristics();
+			if(!charStr.isEmpty())
+				detailsDynamicPanel.add(new Label("Char.: "+ charStr));
+			String comment = visualizationJso.getSelectedNode().getComment();
+			if(!comment.isEmpty())
+				detailsDynamicPanel.add(new Label("Comment: "+comment));
+			String termStr = visualizationJso.getSelectedNode().getTermStatus();
+			if(!termStr.isEmpty())
+				detailsDynamicPanel.add(new Label("term_status: "+ termStr));
+			
+		}
+		else {
+			//GWT.log("[VOWL] selected label: "+ visualizationJso.getSelectedLabel().getDomain().getLabel());
+			detailsDynamicPanel.add(new HTML("Name: <a href=\""+visualizationJso.getSelectedLabel().getIri()+"\">"+visualizationJso.getSelectedLabel().getLabel()+"</a>"));
+			detailsDynamicPanel.add(new Label("Type: "+visualizationJso.getSelectedLabel().getType()));
+			
+			detailsDynamicPanel.add(new HTML("Domain: <a href=\""+visualizationJso.getSelectedLabel().getDomain().getIri()+"\">"+visualizationJso.getSelectedLabel().getDomain().getLabel()+"</a>"));
+			detailsDynamicPanel.add(new HTML("Range: <a href=\""+visualizationJso.getSelectedLabel().getRange().getIri()+"\">"+visualizationJso.getSelectedLabel().getRange().getLabel()+"</a>"));
+			String charStr = visualizationJso.getSelectedLabel().getCharacteristics();
+			if(!charStr.isEmpty())
+				detailsDynamicPanel.add(new Label("Char.: "+ charStr));
+			String comment = visualizationJso.getSelectedLabel().getComment();
+			if(!comment.isEmpty())
+				detailsDynamicPanel.add(new Label("Comment: "+comment));
+			String termStr = visualizationJso.getSelectedLabel().getTermStatus();
+			if(!termStr.isEmpty())
+				detailsDynamicPanel.add(new Label("term_status: "+ termStr));
+		}
+	}
 
 	@Override
 	public VerticalPanel getPanel() {
@@ -416,7 +496,9 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 					selectedElement = Optional.of(gElement.getParentElement().getId());
 					// classes have value 'node', while properties have value 'property' 
 					elementType = Optional.of(gElement.getParentElement().getAttribute("class"));
-					setDetailsContent(selectedElement.get());
+					//setDetailsContent(selectedElement.get());
+					//setDetailsContent(gElement.getParentElement());
+					setDetailsContent();
 					//Window.alert("<circle> or <rect> element with parent g id " + gElement.getParentElement().getId() + ", and class " + elementType.get() + " was clicked");
 					notifySelectionListeners(new SelectionEvent(VOWLVisualizationPortlet.this));
 				}
