@@ -20,7 +20,7 @@ public class VOWLElementJso extends JavaScriptObject {
   	}-*/;
 	
 	public final native String getCharacteristics() /*-{
-	  return "";
+	  return (this.attributes() == null) ? "" : this.attributes();
 	}-*/;
 	
 	public final native String getComment() /*-{
@@ -28,7 +28,10 @@ public class VOWLElementJso extends JavaScriptObject {
 	}-*/;
 	
 	public final native String getTermStatus() /*-{
-	  return "";
+	  var termAr = this.annotations();
+	  if(termAr == null)
+	  	return "";
+	  return termAr.term_status;
 	}-*/;
 
 }

@@ -444,9 +444,15 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 			//GWT.log("[VOWL] selected node: "+ visualizationJso.getSelectedNode().getLabel());
 			detailsDynamicPanel.add(new HTML("Name: <a href=\""+visualizationJso.getSelectedNode().getIri()+"\">"+visualizationJso.getSelectedNode().getLabel()+"</a>"));
 			detailsDynamicPanel.add(new Label("Type: "+visualizationJso.getSelectedNode().getType()));
+			String charStr = visualizationJso.getSelectedNode().getCharacteristics();
+			if(!charStr.isEmpty())
+				detailsDynamicPanel.add(new Label("Char.: "+ charStr));
 			String comment = visualizationJso.getSelectedNode().getComment();
 			if(!comment.isEmpty())
 				detailsDynamicPanel.add(new Label("Comment: "+comment));
+			String termStr = visualizationJso.getSelectedNode().getTermStatus();
+			if(!termStr.isEmpty())
+				detailsDynamicPanel.add(new Label("term_status: "+ termStr));
 			
 		}
 		else {
@@ -456,9 +462,15 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 			
 			detailsDynamicPanel.add(new HTML("Domain: <a href=\""+visualizationJso.getSelectedLabel().getDomain().getIri()+"\">"+visualizationJso.getSelectedLabel().getDomain().getLabel()+"</a>"));
 			detailsDynamicPanel.add(new HTML("Range: <a href=\""+visualizationJso.getSelectedLabel().getRange().getIri()+"\">"+visualizationJso.getSelectedLabel().getRange().getLabel()+"</a>"));
+			String charStr = visualizationJso.getSelectedLabel().getCharacteristics();
+			if(!charStr.isEmpty())
+				detailsDynamicPanel.add(new Label("Char.: "+ charStr));
 			String comment = visualizationJso.getSelectedLabel().getComment();
 			if(!comment.isEmpty())
 				detailsDynamicPanel.add(new Label("Comment: "+comment));
+			String termStr = visualizationJso.getSelectedLabel().getTermStatus();
+			if(!termStr.isEmpty())
+				detailsDynamicPanel.add(new Label("term_status: "+ termStr));
 		}
 	}
 
