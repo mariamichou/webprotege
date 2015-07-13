@@ -1,6 +1,7 @@
 package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArray;
 
 public class VOWLElementJso extends JavaScriptObject {
 
@@ -27,11 +28,16 @@ public class VOWLElementJso extends JavaScriptObject {
 	  return (this.commentForCurrentLanguage() == null) ? "" : this.commentForCurrentLanguage();
 	}-*/;
 	
+	// returns object
 	public final native String getTermStatus() /*-{
 	  var termAr = this.annotations();
 	  if(termAr == null)
 	  	return "";
 	  return termAr.term_status;
 	}-*/;
-
+	
+	public final native VOWLAnnotationJso getAnnotations(String property) /*-{
+		return (this.annotations() == null) ? null : this.annotations()[property];
+	}-*/;
+	
 }

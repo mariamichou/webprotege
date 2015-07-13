@@ -444,15 +444,26 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 			//GWT.log("[VOWL] selected node: "+ visualizationJso.getSelectedNode().getLabel());
 			detailsDynamicPanel.add(new HTML("Name: <a href=\""+visualizationJso.getSelectedNode().getIri()+"\">"+visualizationJso.getSelectedNode().getLabel()+"</a>"));
 			detailsDynamicPanel.add(new Label("Type: "+visualizationJso.getSelectedNode().getType()));
+			if(visualizationJso.getSelectedNode().getIndividuals() != null) {
+				String indStr = "";
+				for(int i=0; i<visualizationJso.getSelectedNode().getIndividuals().length(); i++)  {
+					indStr += "<a href=\""+visualizationJso.getSelectedNode().getIndividuals().get(i).getIri()+"\">"+visualizationJso.getSelectedNode().getIndividuals().get(i).getLabel()+"</a> ";
+				}
+				if(!indStr.isEmpty())
+				detailsDynamicPanel.add(new HTML("Individuals: "+ indStr));
+			}
 			String charStr = visualizationJso.getSelectedNode().getCharacteristics();
 			if(!charStr.isEmpty())
 				detailsDynamicPanel.add(new Label("Char.: "+ charStr));
 			String comment = visualizationJso.getSelectedNode().getComment();
 			if(!comment.isEmpty())
 				detailsDynamicPanel.add(new Label("Comment: "+comment));
-			String termStr = visualizationJso.getSelectedNode().getTermStatus();
-			if(!termStr.isEmpty())
-				detailsDynamicPanel.add(new Label("term_status: "+ termStr));
+			//String termStr = visualizationJso.getSelectedNode().getTermStatus();
+			if(visualizationJso.getSelectedNode().getAnnotations("term_status") != null) {
+				String termStr = visualizationJso.getSelectedNode().getAnnotations("term_status").getAnnotationProperty("value");
+				if(!termStr.isEmpty())
+					detailsDynamicPanel.add(new Label("term_status: "+ termStr));
+			}
 			
 		}
 		else {
@@ -468,9 +479,12 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 			String comment = visualizationJso.getSelectedLabel().getComment();
 			if(!comment.isEmpty())
 				detailsDynamicPanel.add(new Label("Comment: "+comment));
-			String termStr = visualizationJso.getSelectedLabel().getTermStatus();
-			if(!termStr.isEmpty())
-				detailsDynamicPanel.add(new Label("term_status: "+ termStr));
+			//String termStr = visualizationJso.getSelectedLabel().getTermStatus();
+			if(visualizationJso.getSelectedLabel().getAnnotations("term_status") != null) {
+				String termStr = visualizationJso.getSelectedLabel().getAnnotations("term_status").getAnnotationProperty("value");
+				if(!termStr.isEmpty())
+					detailsDynamicPanel.add(new Label("term_status: "+ termStr));
+			}
 		}
 	}
 
