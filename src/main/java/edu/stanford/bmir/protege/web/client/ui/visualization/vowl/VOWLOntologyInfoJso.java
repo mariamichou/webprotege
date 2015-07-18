@@ -1,0 +1,37 @@
+package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
+
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.core.client.JsArrayString;
+
+public class VOWLOntologyInfoJso extends JavaScriptObject {
+	
+	protected VOWLOntologyInfoJso() {}
+	
+	public final native JsArrayString getLanguages()  /*-{
+	  return this.languages;
+	}-*/;
+	
+	public final native String getTitle()  /*-{
+	  return (this.title == null)? "" : this.title["undefined"];
+	}-*/;
+	
+	public final native String getIRI()  /*-{
+	  return this.iri;
+	}-*/;
+	
+	public final native String getVersion()  /*-{
+	  return (this.version == null) ? "" : this.version;
+	}-*/;
+	
+	public final native JsArrayString getAuthors()  /*-{
+	  return (this.author == null) ? [] : this.author;
+	}-*/;
+	
+	public final native String getDescription()  /*-{
+	  return (this.description == null) ? "" : this.description["undefined"];
+	}-*/;
+
+	public final native String getOther()  /*-{
+	  return (this.other == null) ? "" : JSON.stringify(this.other);
+	}-*/;
+}

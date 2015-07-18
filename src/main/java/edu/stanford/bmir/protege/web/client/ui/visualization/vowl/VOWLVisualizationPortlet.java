@@ -11,11 +11,8 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.json.client.JSONArray;
-import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
@@ -28,6 +25,9 @@ import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceCallback;
 import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceManager;
 import edu.stanford.bmir.protege.web.client.project.Project;
 import edu.stanford.bmir.protege.web.client.ui.portlet.AbstractOWLEntityPortlet;
+import edu.stanford.bmir.protege.web.client.ui.visualization.loading.GraphListener;
+import edu.stanford.bmir.protege.web.client.ui.visualization.loading.GraphLoadedEvent;
+import edu.stanford.bmir.protege.web.client.ui.visualization.loading.Loadable;
 import edu.stanford.bmir.protege.web.client.ui.visualization.selection.Selectable;
 import edu.stanford.bmir.protege.web.client.ui.visualization.selection.SelectionEvent;
 import edu.stanford.bmir.protege.web.client.ui.visualization.selection.SelectionListener;
@@ -37,11 +37,12 @@ import edu.stanford.bmir.protege.web.shared.visualization.vowl.ConvertOntologyRe
 
 
 @SuppressWarnings("unchecked")
-public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implements Selectable {
+public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implements Selectable, Loadable {
 
 	private static final String VOWL_TITLE = "WebVOWL 0.4.0";
 	private VOWLVisualizationJso visualizationJso;
-	private VOWLDetailsJso detailsJso;
+	//private VOWLDetailsJso detailsJso;
+	//private VOWLOntologyInfoJso ontologyInfoJso;
 	public static String ontologyAsJSONStr;
 	public static JSONValue jsonValue;
 	private static Optional<String> selectedElement;
@@ -49,6 +50,9 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 
 	// Listeners to selection events in this portlet
 	private Collection<SelectionListener> listeners;
+	
+	// Listeners to graph loaded events in this portlet
+	private Collection<GraphListener> graphListeners;
 
 	private Widget graphContainer;
 	private VerticalPanel detailsDynamicPanel;
@@ -57,6 +61,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 	public VOWLVisualizationPortlet(SelectionModel selectionModel, Project project) {
 		super(selectionModel, project);
 		this.listeners = new ArrayList<SelectionListener>();
+		this.graphListeners = new ArrayList<GraphListener>();
 	}
 
 	@Override 
@@ -117,10 +122,14 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 				// graphContainer.getElement().getInnerHTML().isEmpty() = false
 				// here we have to load static Details panel only once!
 				// obviously we have to fire some kind of event for the Details portlet to take over.
-				detailsJso = visualizationJso.getStatistics();
+				//detailsJso = visualizationJso.getStatistics();
+				//ontologyInfoJso = visualizationJso.getOntologyInfo();
 			}
 
 			graphContainer.addDomHandler(new MyClickHandler(), ClickEvent.getType());
+			
+			notifyGraphListeners(new GraphLoadedEvent(VOWLVisualizationPortlet.this));
+			
 		}
 	}
 
@@ -161,7 +170,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 	 */
 	protected Panel createVOWLPanel() {
 		Panel infoPanel = new Panel();
-		infoPanel.setTitle("Info");
+		//infoPanel.setTitle("Info");
 		infoPanel.setPaddings(10);
 		infoPanel.add(new Label("Visualized with WebVOWL 0.4.0 ("));
 		infoPanel.add(new Anchor("VOWL homepage", "http://vowl.visualdataweb.org/", "_blank"));
@@ -200,233 +209,56 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		else return Collections.emptyList();
 	}
 
-	//it can either be a property (i.e. label) or a class (i.e. node)
-	private void setDetailsContent2(String entityId) {
-		JSONArray array;
-		detailsDynamicPanel = new VerticalPanel();
-		detailsDynamicPanel.setSpacing(4);
-		//Test if it will show classes
-		GWT.log("[MICHOU] Statistics:");
-		GWT.log("[VOWL] Node count: " + visualizationJso.getStatistics().getNodeCount());
-		GWT.log("[VOWL] classes: "+ visualizationJso.getStatistics().getClassCount());
-		
-		detailsDynamicPanel.add(new HTML("<b>Statistics:</b>"));
-		
-		detailsDynamicPanel.add(new HTML("Classes: <i>"+visualizationJso.getStatistics().getClassCount()+"</i>"));
-		detailsDynamicPanel.add(new HTML("Object prop.: <i>"+visualizationJso.getStatistics().getObjectPropertyCount()+"</i>"));
-		detailsDynamicPanel.add(new HTML("Datatype prop.: <i>"+visualizationJso.getStatistics().getDatatypePropertyCount()+"</i>"));
-		detailsDynamicPanel.add(new HTML("Individuals: <i>"+visualizationJso.getStatistics().getIndividualCount()+"</i>"));
-		detailsDynamicPanel.add(new HTML("Nodes: <i>"+visualizationJso.getStatistics().getNodeCount()+"</i>"));
-		detailsDynamicPanel.add(new HTML("Edges: <i>"+visualizationJso.getStatistics().getAxiomCount()+"</i>"));
-		
-		detailsDynamicPanel.add(new HTML("<b>Selection Details:</b>"));
-		detailsDynamicPanel.add(new HTML("Selected element: <i>"+visualizationJso.getSelectedNode().getType()+"</i>"));
-		
-		
-		String nameStr = "";
-		String typeStr = "";;
-		String equivalentStr = "";
-		String disjointStr = "";
-		String domainStr = "";
-		String rangeStr = "";
-		String inverseStr = "";
-		String superPropertyStr = "";
-		String characteristicsStr = "Charac.: ";
-		String commentStr = "";
-		String termStr = "term_status: ";
-
-		//class
-		if(elementType.get().equals("node")) {
-			array = jsonValue.isObject().get("classAttribute").isArray();
-			typeStr = findType(entityId, "class");
-		}
-		// property
-		else { //if(elementType.get().equals("label"))
-			array = jsonValue.isObject().get("propertyAttribute").isArray();
-			typeStr = findType(entityId, "property");
-		}
-
-
-		boolean found = false;
-		for (int i=0; i<array.size(); i++) {
-
-			JSONObject o = array.get(i).isObject();
-			if(o.get("id").isString().stringValue().equals(entityId)) {
-				GWT.log("----> [VOWL] FOUND ID "+ entityId);
-
-				found = true;
-
-				// for classes and properties that have this key-value pair
-				if(o.get("label").isObject().get("undefined") != null) {
-					String name = o.get("label").isObject().get("undefined").isString().stringValue();
-					if(elementType.get().equals("node")) {
-						String iri= o.get("iri").isString().toString();
-						nameStr = "Name: <a href=" + iri + ">" + name + "</a>";
-						detailsDynamicPanel.add(new HTML(nameStr));
-					}
-					else {
-						nameStr = "Name: " + name;
-						detailsDynamicPanel.add(new Label(nameStr));
-					}
-				}
-				// only for properties that have this key-pair
-				else {
-					String name = o.get("label").isObject().get("IRI-based").isString().stringValue();
-					nameStr = "Name: " + name;
-					detailsDynamicPanel.add(new Label(nameStr));
-				}
-
-				detailsDynamicPanel.add(new Label(typeStr));
-
-				if(o.get("equivalent") != null) {
-					equivalentStr = findRelatedEntities("equivalent", o, array);
-					if(!equivalentStr.isEmpty()) {
-						equivalentStr = "Equiv.:" + equivalentStr;
-						detailsDynamicPanel.add(new HTML(equivalentStr));
-					}
-				}
-
-				if(o.get("domain") != null) {
-					//jsonValue.isObject().get("classAttribute").isArray()
-					domainStr = findRelatedEntities("domain", o, array);
-					if(!domainStr.isEmpty()) {
-						domainStr = "Domain:" + domainStr;
-						detailsDynamicPanel.add(new HTML(domainStr));
-					}
-				}
-
-				if(o.get("range") != null) {
-					rangeStr = findRelatedEntities("range", o, array);
-					if(!rangeStr.isEmpty()) {
-						rangeStr = "Range:" + rangeStr;
-						detailsDynamicPanel.add(new HTML(rangeStr));
-					}
-				}
-
-				if(o.get("inverse") != null) {
-					inverseStr = findRelatedEntities("inverse", o, array);
-					if(!inverseStr.isEmpty()) {
-						inverseStr = "Inverse:" + inverseStr;
-						detailsDynamicPanel.add(new HTML(inverseStr));
-					}
-				}
-
-				if(o.get("superproperty") != null) {
-					superPropertyStr = findRelatedEntities("superproperty", o, array);
-					if(!superPropertyStr.isEmpty()) {
-						//superPropertyStr = "Superprop:" + superPropertyStr;
-						detailsDynamicPanel.add(new HTML("Superprop:" + superPropertyStr));
-					}
-				}
-
-				if(o.get("attributes") != null) {
-					JSONArray attributes = o.get("attributes").isArray();
-					for(int j=0; j<attributes.size(); j++) {
-						characteristicsStr += " " + attributes.get(j).isString().stringValue();
-					}
-					detailsDynamicPanel.add(new Label(characteristicsStr));
-					if(o.get("comment") != null) {
-						commentStr = "<i>" + o.get("comment").isObject().get("undefined").isString().stringValue() + "</i>";
-						detailsDynamicPanel.add(new HTML(commentStr));
-					}
-				}
-
-				if(o.get("annotations") != null && o.get("annotations").isObject().get("term_status") != null) {
-					JSONArray term = o.get("annotations").isObject().get("term_status").isArray();
-					for(int j=0; j < term.size(); j++) {
-						termStr += "<i>" + term.get(j).isObject().get("value").isString().stringValue() + "</i>";
-					}
-					detailsDynamicPanel.add(new Label(termStr));
-				}
-
-			}
-			if (found)
-				break;
-		}
-
+	@Override
+	public void addGraphListener(GraphListener listener) {
+		graphListeners.add(listener);
 	}
 
-	private String findRelatedEntities(String relationshipKey, JSONObject o, JSONArray array) {
-		String str="";
-		GWT.log("----> [VOWL] FOUND "+ relationshipKey);
-		if(o.get(relationshipKey).isArray() !=null) {
-			JSONArray relArray = o.get(relationshipKey).isArray();
-			for (int j=0; j<relArray.size(); j++) {
-				String nameId = relArray.get(j).isString().stringValue();
-				String[] name = findIRI(nameId, array);
-				str += " <a href=" + name[1] + ">" + name[0] + "</a>";
-			}
-			GWT.log("\t-----> [VOWL] Returned related names: "+ str);
-
-		}// does not work with owl:datatype properties (because range is a string and not an IRI)
-		else if(o.get(relationshipKey).isString() !=null) {
-			String nameId = o.get(relationshipKey).isString().stringValue();
-			GWT.log("----> [VOWL] with id "+ nameId);
-			String[] name = findIRI(nameId, jsonValue.isObject().get("classAttribute").isArray());
-			GWT.log("\t-----> [VOWL] Returned related name: "+name[0]+ " iri "+ name[1]);
-			str = " <a href=" + name[1] + ">" + name[0] + "</a>";
+	@Override
+	public void notifyGraphListeners(GraphLoadedEvent event) {
+		for (GraphListener listener: graphListeners) {
+			listener.graphLoaded(new GraphLoadedEvent(this));
 		}
-		//}
-		return str;
+		
 	}
 
-	//need it when searching for IRIs of entities that relate with current entity 
-	// e.g. disjointness, domain, range
-	private String[] findIRI(String id, JSONArray array) {
-		String name="";
-		String iri="";
-
-		boolean found = false;
-		for (int i=0; i<array.size(); i++) {
-
-			JSONObject o = array.get(i).isObject();
-			if(o.get("id").isString().stringValue().equals(id)) {
-				GWT.log("\t-----> [VOWL] FOUND related ID "+ id);
-
-				found = true;
-				if(o.get("label").isObject().get("undefined") != null)
-					name = o.get("label").isObject().get("undefined").isString().stringValue();
-				else 
-					name = o.get("label").isObject().get("IRI-based").isString().stringValue();
-				iri= o.get("iri").isString().toString();
-				GWT.log("\t-----> [VOWL] Related name: "+name+ " iri "+ iri);
-			}
-			if (found)
-				break;
-		}
-		return new String[] {name,iri};
+	@Override
+	public void removeGraphListener(GraphListener listener) {
+		graphListeners.remove(listener);
+		
 	}
 
-	private String findType(String id, String type) {
-		boolean found = false;
-		JSONArray array = jsonValue.isObject().get(type).isArray();
-		String typeStr="";
-		for (int i=0; i<array.size(); i++) {
-			JSONObject o = array.get(i).isObject();
-			if(o.get("id").isString().stringValue().equals(id)) {
-				found = true;
-				typeStr = "Type: " + o.get("type").isString().stringValue();
-			}
-			if(found) 
-				break;
-		}
-
-		return typeStr;
+	@Override
+	public VOWLVisualizationJso getVisualizationObject() {
+		return visualizationJso;
 	}
 	
 	private void setDetailsContent() {
 		detailsDynamicPanel = new VerticalPanel();
 		detailsDynamicPanel.setSpacing(4);
-		//Test if it will show classes
-		GWT.log("[VOWL] Node count: " + visualizationJso.getStatistics().getNodeCount());
-		GWT.log("[VOWL] classes: "+ visualizationJso.getStatistics().getClassCount());
+		/*
+		detailsDynamicPanel.add(new Label(visualizationJso.getOntologyInfo().getTitle()));
 		
+		detailsDynamicPanel.add(new HTML("<a href=\"" + visualizationJso.getOntologyInfo().getIRI() + "\">"+visualizationJso.getOntologyInfo().getIRI()+"</a>"));
+		detailsDynamicPanel.add(new Label("Version: "+ visualizationJso.getOntologyInfo().getVersion()));
 		
-		//detailsDynamicPanel.add(new Label("Version: "+ visualizationJso.getStaticData().getVersion()));
-		//Window.alert("Version: "+ visualizationJso.getVersion());
+		GWT.log("[VOWL] authors: "+visualizationJso.getOntologyInfo().getAuthors().toString());
+		detailsDynamicPanel.add(new Label("Author(s): "+ visualizationJso.getOntologyInfo().getAuthors().join()));
+			
 		
-		//detailsDynamicPanel.add(new HTML("<b>Description:</b>"+visualizationJso.getStaticData().getDescription()));
+		String langStr="";
+		for(int i=0; i< visualizationJso.getOntologyInfo().getLanguages().length(); i++) {
+			langStr += "<option value=\""+visualizationJso.getOntologyInfo().getLanguages().get(i)+"\">"+visualizationJso.getOntologyInfo().getLanguages().get(i)+"</option>";
+		}
+		if(!langStr.isEmpty())
+			detailsDynamicPanel.add(new HTML("Language: <select>"+ langStr + "</select>"));
+		
+		detailsDynamicPanel.add(new HTML("<b>Description</b>"));
+		detailsDynamicPanel.add(new Label(visualizationJso.getOntologyInfo().getDescription()));
+		
 		detailsDynamicPanel.add(new HTML("<b>Metadata</b>"));
+		detailsDynamicPanel.add(new Label(visualizationJso.getOntologyInfo().getOther()));
+		
 		
 		detailsDynamicPanel.add(new HTML("<b>Statistics</b>"));
 		
@@ -436,6 +268,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		detailsDynamicPanel.add(new HTML("Individuals: <i>"+visualizationJso.getStatistics().getIndividualCount()+"</i>"));
 		detailsDynamicPanel.add(new HTML("Nodes: <i>"+visualizationJso.getStatistics().getNodeCount()+"</i>"));
 		detailsDynamicPanel.add(new HTML("Edges: <i>"+visualizationJso.getStatistics().getAxiomCount()+"</i>"));
+		*/
 		
 		detailsDynamicPanel.add(new HTML("<b>Selection Details</b>"));
 		
@@ -444,9 +277,13 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 			//GWT.log("[VOWL] selected node: "+ visualizationJso.getSelectedNode().getLabel());
 			detailsDynamicPanel.add(new HTML("Name: <a href=\""+visualizationJso.getSelectedNode().getIri()+"\">"+visualizationJso.getSelectedNode().getLabel()+"</a>"));
 			detailsDynamicPanel.add(new Label("Type: "+visualizationJso.getSelectedNode().getType()));
+			//GWT.log("[VOWL] individuals: "+ visualizationJso.getSelectedNode().getIndividual().getAnnotation());
+			
 			if(visualizationJso.getSelectedNode().getIndividuals() != null) {
 				String indStr = "";
+				
 				for(int i=0; i<visualizationJso.getSelectedNode().getIndividuals().length(); i++)  {
+					
 					indStr += "<a href=\""+visualizationJso.getSelectedNode().getIndividuals().get(i).getIri()+"\">"+visualizationJso.getSelectedNode().getIndividuals().get(i).getLabel()+"</a> ";
 				}
 				if(!indStr.isEmpty())
@@ -471,8 +308,33 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 			detailsDynamicPanel.add(new HTML("Name: <a href=\""+visualizationJso.getSelectedLabel().getIri()+"\">"+visualizationJso.getSelectedLabel().getLabel()+"</a>"));
 			detailsDynamicPanel.add(new Label("Type: "+visualizationJso.getSelectedLabel().getType()));
 			
+			if(visualizationJso.getSelectedLabel().getInverse() != null)
+				detailsDynamicPanel.add(new HTML("Inverse: <a href=\""+visualizationJso.getSelectedLabel().getInverse().getIri() + "\">" + visualizationJso.getSelectedLabel().getInverse().getLabel()+"</a>"));
+			
 			detailsDynamicPanel.add(new HTML("Domain: <a href=\""+visualizationJso.getSelectedLabel().getDomain().getIri()+"\">"+visualizationJso.getSelectedLabel().getDomain().getLabel()+"</a>"));
 			detailsDynamicPanel.add(new HTML("Range: <a href=\""+visualizationJso.getSelectedLabel().getRange().getIri()+"\">"+visualizationJso.getSelectedLabel().getRange().getLabel()+"</a>"));
+			
+			if(visualizationJso.getSelectedLabel().getCardinality() != null)
+				detailsDynamicPanel.add(new Label("Cardinality: "+visualizationJso.getSelectedLabel().getCardinality()));
+			
+			
+			if(visualizationJso.getSelectedLabel().getSubproperties() != null) {
+				String subs="";
+				for(int i=0; i<visualizationJso.getSelectedLabel().getSubproperties().length(); i++) {
+					subs += "<a href=\""+visualizationJso.getSelectedLabel().getSubproperties().get(i).getIri() + "\">" + visualizationJso.getSelectedLabel().getSubproperties().get(i).getLabel()+"</a> ";
+				}
+				if(!subs.isEmpty())
+					detailsDynamicPanel.add(new HTML("Subprop.:"+subs));
+			}
+			if(visualizationJso.getSelectedLabel().getSuperproperties() != null) {
+				String sups="";
+				for(int i=0; i<visualizationJso.getSelectedLabel().getSuperproperties().length(); i++) {
+					sups += "<a href=\""+visualizationJso.getSelectedLabel().getSuperproperties().get(i).getIri() + "\">" + visualizationJso.getSelectedLabel().getSuperproperties().get(i).getLabel()+"</a> ";
+				}
+				if(!sups.isEmpty())
+					detailsDynamicPanel.add(new HTML("Superprop.:"+sups));
+			}
+			
 			String charStr = visualizationJso.getSelectedLabel().getCharacteristics();
 			if(!charStr.isEmpty())
 				detailsDynamicPanel.add(new Label("Char.: "+ charStr));
@@ -522,4 +384,5 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		}
 
 	}
+
 }

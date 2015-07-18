@@ -12,8 +12,7 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		options = graph.graphOptions(),
 		data,
 		statistics,
-		version,
-		description,
+		ontologyInfo,
 	// Graph modules
 		focuser = webvowl.modules.focuser(),
 		datatypeFilter = webvowl.modules.datatypeFilter(),
@@ -59,13 +58,9 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		return statistics;
 	};
 	
-	app.version = function () {
-		return version;
-	};
-	
-	app.description = function () {
-		return description;
-	};
+	app.ontologyInfo = function() {
+		return ontologyInfo;
+	}
 
 	app.selectedLabel = function() {
 		return selectedLabel;
@@ -82,8 +77,7 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 
 		// use the statistics delievered from the converter
 		statistics = options.data().metrics;
-		version = options.data().version;
-		description = options.data().description;
+		ontologyInfo = options.data().header;
 		return app;
 	};
 

@@ -33,6 +33,7 @@ public class VisualizationTab extends AbstractTab {
 
 		// Hook up details portlet to listen to changes in visualization (graph) portlet
 		vowlVisualizationPortlet.addSelectionListener(vowlDetailsPortlet);
+		vowlVisualizationPortlet.addGraphListener(vowlDetailsPortlet);
 
 	}
 }
