@@ -10,9 +10,6 @@ public class VOWLNodeJso extends VOWLElementJso {
 	  return this.individuals();
 	}-*/;
 	
-	public final native VOWLNodeJso getIndividual() /*-{
-	  return this["individuals"];
-	}-*/;
 	
 	public final native String getAnnotation() /*-{
 	  //$wnd.alert(JSON.stringify(this.annotations) + " "+JSON.stringify(this.annotations[p]));

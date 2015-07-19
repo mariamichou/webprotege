@@ -57,6 +57,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 	private Widget graphContainer;
 	private VerticalPanel detailsDynamicPanel;
 	private Widget selectionDetailsContainer;
+	private boolean initialized = false;
 
 	public VOWLVisualizationPortlet(SelectionModel selectionModel, Project project) {
 		super(selectionModel, project);
@@ -81,7 +82,8 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 	public void handleActivated() {
 		super.handleActivated();
 		GWT.log("[VOWL] I'm finally activated! Hooray!");
-		initializeView();
+		if(!initialized)
+			initializeView();
 	}
 
 	public void initializeView() {
@@ -97,7 +99,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 				//GWT.log("[VOWL] json: "+jsonValue);
 			}
 		});
-
+		initialized = true;
 	}
 
 	String getOntologyAsJSONString() {
@@ -145,8 +147,11 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 				visualizationJso.setData(ontologyAsJSONStr);
 				setOntologyAsJSONString(ontologyAsJSONStr);
 				jsonValue = JSONParser.parseStrict(ontologyAsJSONStr);
+				
 			}
 		});
+		//graphContainer.addDomHandler(new MyClickHandler(), ClickEvent.getType());
+		//notifyGraphListeners(new GraphLoadedEvent(VOWLVisualizationPortlet.this));
 	}
 
 	private String getContainerId() {
@@ -270,7 +275,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		detailsDynamicPanel.add(new HTML("Edges: <i>"+visualizationJso.getStatistics().getAxiomCount()+"</i>"));
 		*/
 		
-		detailsDynamicPanel.add(new HTML("<b>Selection Details</b>"));
+		//detailsDynamicPanel.add(new HTML("<b>Selection Details</b>"));
 		
 		//TODO: add a loop
 		if(elementType.get().equals("node")) {
@@ -289,6 +294,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 				if(!indStr.isEmpty())
 				detailsDynamicPanel.add(new HTML("Individuals: "+ indStr));
 			}
+			
 			String charStr = visualizationJso.getSelectedNode().getCharacteristics();
 			if(!charStr.isEmpty())
 				detailsDynamicPanel.add(new Label("Char.: "+ charStr));

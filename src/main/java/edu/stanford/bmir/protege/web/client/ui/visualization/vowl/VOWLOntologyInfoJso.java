@@ -31,7 +31,8 @@ public class VOWLOntologyInfoJso extends JavaScriptObject {
 	  return (this.description == null) ? "" : this.description["undefined"];
 	}-*/;
 
-	public final native String getOther()  /*-{
-	  return (this.other == null) ? "" : JSON.stringify(this.other);
+	//metadata
+	public final native VOWLMetadataJso getOther()  /*-{
+	  return this.other;
 	}-*/;
 }

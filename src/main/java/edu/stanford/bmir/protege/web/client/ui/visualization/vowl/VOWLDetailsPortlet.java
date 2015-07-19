@@ -6,6 +6,7 @@ import java.util.Map;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
@@ -41,6 +42,7 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 	public static String ontologyAsJSONStr;
 	public VOWLVisualizationJso visualizationJso;
 	public static int count=0;
+	private boolean loaded = false;
 
 	public VOWLDetailsPortlet(SelectionModel selectionModel, Project project) {
 		super(selectionModel, project);
@@ -55,40 +57,31 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 		// Set up main panel
 		mainPanel = new VerticalPanel();  
 
-
-		/*
-
 		// Set up static info panel (contains name, IRI, version, author(s) and language)
 		staticInfoPanel = new Grid(5, 1);
 		staticInfoPanel.setCellSpacing(5);
 		staticInfoPanel.setCellPadding(3);
 		staticInfoPanel.getCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);
-		staticInfoPanel.setTitle("Ontology Name");
-		staticInfoPanel.setHTML(1, 0, "<a id=\"about\" href=\"http://xmlns.com/foaf/0.1/\" target=\"_blank\">http://xmlns.com/foaf/0.1/</a>");
-		staticInfoPanel.setText(2, 0, "Version: ");
-		staticInfoPanel.setWidget(3, 0, new Label("Author(s): "));
-		staticInfoPanel.setHTML(4, 0, 
-				"<label>\r\n" + 
-						"Language:\r\n" + 
-						"<select id=\"language\" size=\"1\" name=\"language\">\r\n" + 
-						"<option value=\"IRI-based\">IRI-based</option>\r\n" + 
-						"<option value=\"undefined\">undefined</option>\r\n" + 
-						"</select>\r\n" + 
-				"</label>");
+
+		descriptionPanel = new VerticalPanel();
+		//descriptionPanel.add(new HTML("<b>Description</b>"));
+
+		metadataPanel = new VerticalPanel();
+		//metadataPanel.add(new HTML("<b>Metadata</b>"));
+
+		statisticsPanel = new VerticalPanel();
+		//statisticsPanel.add(new HTML("<b>Statistics</b>"));
 
 
-		// Set up dynamic info panel
-		//dynamicInfoPanel = new StackPanel();
 		dynamicInfoPanel = new DecoratedStackPanel();
 		dynamicInfoPanel.setTitle("Dynamic panel");
-		//dynamicInfoPanel.setWidth("200px");
-
-
-		mainPanel.add(staticInfoPanel);
-		//renderDetailsView(Optional.<String>absent());
+		dynamicInfoPanel.add(descriptionPanel, "<h3>Description</h3>", true);
+		dynamicInfoPanel.add(metadataPanel, "<h3>Metadata</h3>", true);
+		dynamicInfoPanel.add(statisticsPanel, "<h3>Metrics</h3>", true);
+		dynamicInfoPanel.showStack(2);
+		//mainPanel.add(staticInfoPanel);
 		//mainPanel.add(dynamicInfoPanel);
 
-		*/
 		add(mainPanel);
 
 		/*DispatchServiceManager.get().execute(new GetDetailsAction(getProjectId()), new DispatchServiceCallback<GetDetailsResult>() {
@@ -109,8 +102,13 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 		super.handleActivated();
 		GWT.log("[VOWL] Details portlet: I'm finally activated! Hooray!");
 		//visualizationJso = VOWLVisualizationJso.getObject();
+
 	}
 
+	@Override
+	protected void onRefresh() {
+
+	}
 
 	/**
 	 * Create the Description item.
@@ -276,10 +274,15 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 
 				//dynamicInfoPanel.clear();
 				//mainPanel.remove(dynamicInfoPanel);
-				dynamicInfoPanel.add(event.getSelectable().getPanel(), "<h3></h3>", true);
-				//int idx = mainPanel.getWidgetIndex(dynamicInfoPanel);
-			
+				//dynamicInfoPanel.remove(3);
+				if(dynamicInfoPanel.getWidgetCount() == 4)
+					dynamicInfoPanel.remove(3);
+				dynamicInfoPanel.add(event.getSelectable().getPanel(), "<h3>Selection Details</h3>", true);
+				dynamicInfoPanel.showStack(3);
 				
+				//int idx = mainPanel.getWidgetIndex(dynamicInfoPanel);
+
+
 			}
 		}
 
@@ -292,20 +295,26 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 
 		visualizationJso = event.getLoadable().getVisualizationObject();
 		GWT.log("[VOWL] Graph is loaded, IRI: "+ visualizationJso.getOntologyInfo().getIRI());
-		setDetailsStaticInfo();
+		if(!loaded)
+			setDetailsStaticInfo();
+
 	}
 
 	public void setDetailsStaticInfo() {
+
+		mainPanel.remove(staticInfoPanel);
+		mainPanel.remove(dynamicInfoPanel);
 		// Set up main panel
 		//mainPanel = new VerticalPanel();  
 
 
 		// Set up static info panel (contains name, IRI, version, author(s) and language)
-		staticInfoPanel = new Grid(5, 1);
-		staticInfoPanel.setCellSpacing(5);
-		staticInfoPanel.setCellPadding(3);
-		staticInfoPanel.getCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);
-		staticInfoPanel.setTitle(visualizationJso.getOntologyInfo().getTitle());
+		//staticInfoPanel = new Grid(5, 1);
+		//staticInfoPanel.setCellSpacing(5);
+		//staticInfoPanel.setCellPadding(3);
+		//staticInfoPanel.getCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);
+		//staticInfoPanel.setTitle(visualizationJso.getOntologyInfo().getTitle());
+		staticInfoPanel.setHTML(0, 0, "<h1>" + visualizationJso.getOntologyInfo().getTitle() + "</h1>");
 		staticInfoPanel.setHTML(1, 0, "<a href=\"" + visualizationJso.getOntologyInfo().getIRI() + "\">"+visualizationJso.getOntologyInfo().getIRI()+"</a>");
 		staticInfoPanel.setText(2, 0, "Version: "+String.valueOf(visualizationJso.getOntologyInfo().getVersion()));
 		staticInfoPanel.setWidget(3, 0, new Label("Author(s): "+ visualizationJso.getOntologyInfo().getAuthors().join()));
@@ -320,17 +329,15 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 							langStr +
 					"</select>");
 
-		
-		descriptionPanel = new VerticalPanel();
-		descriptionPanel.add(new HTML("<b>Description</b>"));
+
+		//descriptionPanel = new VerticalPanel();
+		//descriptionPanel.add(new HTML("<b>Description</b>"));
 		descriptionPanel.add(new Label(visualizationJso.getOntologyInfo().getDescription()));
 
-		metadataPanel = new VerticalPanel();
-		metadataPanel.add(new HTML("<b>Metadata</b>"));
-		metadataPanel.add(new Label(visualizationJso.getOntologyInfo().getOther()));
+		//metadataPanel.add(new Label(visualizationJso.getOntologyInfo().getOther()));
 
-		statisticsPanel = new VerticalPanel();
-		statisticsPanel.add(new HTML("<b>Statistics</b>"));
+		//statisticsPanel = new VerticalPanel();
+		//statisticsPanel.add(new HTML("<b>Statistics</b>"));
 
 		statisticsPanel.add(new HTML("Classes: <i>"+visualizationJso.getStatistics().getClassCount()+"</i>"));
 		statisticsPanel.add(new HTML("Object prop.: <i>"+visualizationJso.getStatistics().getObjectPropertyCount()+"</i>"));
@@ -338,20 +345,21 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 		statisticsPanel.add(new HTML("Individuals: <i>"+visualizationJso.getStatistics().getIndividualCount()+"</i>"));
 		statisticsPanel.add(new HTML("Nodes: <i>"+visualizationJso.getStatistics().getNodeCount()+"</i>"));
 		statisticsPanel.add(new HTML("Edges: <i>"+visualizationJso.getStatistics().getAxiomCount()+"</i>"));
-
 		// Set up dynamic info panel
-		dynamicInfoPanel = new DecoratedStackPanel();
+		/*dynamicInfoPanel = new DecoratedStackPanel();
 		dynamicInfoPanel.setTitle("Dynamic panel");
 		dynamicInfoPanel.add(descriptionPanel);
 		dynamicInfoPanel.add(metadataPanel);
 		dynamicInfoPanel.add(statisticsPanel);
 		mainPanel.add(staticInfoPanel);
 		mainPanel.add(dynamicInfoPanel);
-
+		 */
+		mainPanel.add(staticInfoPanel);
+		mainPanel.add(dynamicInfoPanel);
 
 		//add(mainPanel);
 
-
+		loaded = true;
 	}
 
 }
