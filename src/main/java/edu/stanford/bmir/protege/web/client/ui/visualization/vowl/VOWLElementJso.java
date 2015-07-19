@@ -1,7 +1,6 @@
 package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsArray;
 
 public class VOWLElementJso extends JavaScriptObject {
 
@@ -22,6 +21,10 @@ public class VOWLElementJso extends JavaScriptObject {
 	
 	public final native String getCharacteristics() /*-{
 	  return (this.attributes() == null) ? "" : this.attributes();
+	}-*/;
+	
+	public final native String getId() /*-{
+	  return this.id();
 	}-*/;
 	
 	public final native String getComment() /*-{

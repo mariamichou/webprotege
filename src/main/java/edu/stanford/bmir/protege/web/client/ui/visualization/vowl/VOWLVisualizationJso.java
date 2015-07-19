@@ -32,18 +32,18 @@ public class VOWLVisualizationJso extends JavaScriptObject {
 	  }
 	  return supported;
   }-*/;
+	
+	public static native VOWLVisualizationJso getObject() /*-{
+	  return this;
+	}-*/;
 
 	public final native VOWLDetailsJso getStatistics()  /*-{
 	  return this.statistics();
   }-*/;
 	
-	public final native String getVersion()  /*-{
-	  return this.version();
-}-*/;
-	
-	public final native VOWLStaticDataJso getDescription()  /*-{
-	  return this.desription();
-}-*/;
+	public final native VOWLOntologyInfoJso getOntologyInfo()  /*-{
+	  return this.ontologyInfo();
+	}-*/;
 	
 
 	public final native VOWLNodeJso getSelectedNode() /*-{
