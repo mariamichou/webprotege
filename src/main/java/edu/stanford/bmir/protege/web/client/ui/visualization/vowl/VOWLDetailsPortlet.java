@@ -334,7 +334,7 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 		//descriptionPanel.add(new HTML("<b>Description</b>"));
 		descriptionPanel.add(new Label(visualizationJso.getOntologyInfo().getDescription()));
 
-		//metadataPanel.add(new Label(visualizationJso.getOntologyInfo().getOther()));
+		metadataPanel.add(new HTML(visualizationJso.getOntologyInfo().getOther().getMetadataElements().join("<br>")));
 
 		//statisticsPanel = new VerticalPanel();
 		//statisticsPanel.add(new HTML("<b>Statistics</b>"));
