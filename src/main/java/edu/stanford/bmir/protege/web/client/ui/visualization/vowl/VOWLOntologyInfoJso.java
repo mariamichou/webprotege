@@ -3,6 +3,11 @@ package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArrayString;
 
+/**
+ * Retrieves annotation data, i.e. <i>title</i>, <i>version</i>, <i>authors</i>.
+ * @author Maria Michou
+ *
+ */
 public class VOWLOntologyInfoJso extends JavaScriptObject {
 	
 	protected VOWLOntologyInfoJso() {}

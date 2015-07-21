@@ -2,6 +2,12 @@ package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
+/**
+ * This is a wrapper class for class and property instances.
+ * <i>Superclass</i> of {@link VOWLNodeJso} and {@link VOWLLabelJso}
+ * @author Maria Michou
+ *
+ */
 public class VOWLElementJso extends JavaScriptObject {
 
 	protected VOWLElementJso() {
@@ -29,14 +35,6 @@ public class VOWLElementJso extends JavaScriptObject {
 	
 	public final native String getComment() /*-{
 	  return (this.commentForCurrentLanguage() == null) ? "" : this.commentForCurrentLanguage();
-	}-*/;
-	
-	// returns object
-	public final native String getTermStatus() /*-{
-	  var termAr = this.annotations();
-	  if(termAr == null)
-	  	return "";
-	  return termAr.term_status;
 	}-*/;
 	
 	public final native VOWLAnnotationJso getAnnotations(String property) /*-{

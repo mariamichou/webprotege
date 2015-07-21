@@ -29,6 +29,5 @@ public interface Selectable {
     void removeSelectionListener(SelectionListener listener);
     Collection<? extends Object> getSelection();
     VerticalPanel getPanel();
-    Widget getWidget();
     void setSelection(Collection<? extends Object> selection);
 }

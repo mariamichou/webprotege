@@ -50,13 +50,12 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 
 	// Listeners to selection events in this portlet
 	private Collection<SelectionListener> listeners;
-	
+
 	// Listeners to graph loaded events in this portlet
 	private Collection<GraphListener> graphListeners;
 
 	private Widget graphContainer;
 	private VerticalPanel detailsDynamicPanel;
-	private Widget selectionDetailsContainer;
 	private boolean initialized = false;
 
 	public VOWLVisualizationPortlet(SelectionModel selectionModel, Project project) {
@@ -81,64 +80,46 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 	@Override
 	public void handleActivated() {
 		super.handleActivated();
-		GWT.log("[VOWL] I'm finally activated! Hooray!");
+		GWT.log("[VOWL] Visualization portlet status: Activated.");
 		if(!initialized)
-			initializeView();
+			convertOntology();
 	}
 
-	public void initializeView() {
-		// THIS runs when the project is loaded, i.e. long before a tab (portlet) is selected,
-		// meaning that the graphContainer has not loaded the graph yet!
+	public void convertOntology() {
 		DispatchServiceManager.get().execute(new ConvertOntologyAction(getProjectId()), new DispatchServiceCallback<ConvertOntologyResult>() {
 			@Override
 			public void handleSuccess(ConvertOntologyResult result) {
 				ontologyAsJSONStr = result.getOntologyasJSONStr();
-				initializeVisualizationWhenElementExists(ontologyAsJSONStr);
+				initializeVisualization(ontologyAsJSONStr);
 				setOntologyAsJSONString(ontologyAsJSONStr);
 				jsonValue = JSONParser.parseStrict(ontologyAsJSONStr);
-				//GWT.log("[VOWL] json: "+jsonValue);
 			}
 		});
 		initialized = true;
 	}
 
-	String getOntologyAsJSONString() {
-		return VOWLVisualizationPortlet.ontologyAsJSONStr;
-	}
-
-	void setOntologyAsJSONString(String ontologyAsJSONStr) {
+	private void setOntologyAsJSONString(String ontologyAsJSONStr) {
 		VOWLVisualizationPortlet.ontologyAsJSONStr = ontologyAsJSONStr;
 	}
 
 
-	/**
-	 * This is *actually* initialized when the Visualization tab is selected and not before!
-	 * Temporary solution until we can find out when the graph container element is created.
-	 */
-	private void initializeVisualizationWhenElementExists(final String convertedOntology) {
+	private void initializeVisualization(final String convertedOntology) {
 
 		if (Document.get().getElementById(getContainerId()) != null) {
 
-			if (VOWLVisualizationJso.isBrowserCompatible(getContainerId())) {
+			if (VOWLVisualizationJso.isBrowserCompatible(getContainerId()))
 				visualizationJso = VOWLVisualizationJso.initialize(getContainerId(), convertedOntology);
-				// graphContainer.getElement().getInnerHTML().isEmpty() = false
-				// here we have to load static Details panel only once!
-				// obviously we have to fire some kind of event for the Details portlet to take over.
-				//detailsJso = visualizationJso.getStatistics();
-				//ontologyInfoJso = visualizationJso.getOntologyInfo();
-			}
 
 			graphContainer.addDomHandler(new MyClickHandler(), ClickEvent.getType());
-			
+
 			notifyGraphListeners(new GraphLoadedEvent(VOWLVisualizationPortlet.this));
-			
+
 		}
 	}
 
 
 	@Override
 	protected void onRefresh() {
-
 
 		DispatchServiceManager.get().execute(new ConvertOntologyAction(getProjectId()), new DispatchServiceCallback<ConvertOntologyResult>() {
 			@Override
@@ -147,11 +128,9 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 				visualizationJso.setData(ontologyAsJSONStr);
 				setOntologyAsJSONString(ontologyAsJSONStr);
 				jsonValue = JSONParser.parseStrict(ontologyAsJSONStr);
-				
+
 			}
 		});
-		//graphContainer.addDomHandler(new MyClickHandler(), ClickEvent.getType());
-		//notifyGraphListeners(new GraphLoadedEvent(VOWLVisualizationPortlet.this));
 	}
 
 	private String getContainerId() {
@@ -214,6 +193,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		else return Collections.emptyList();
 	}
 
+	/* ---- Loadable implementation methods ----*/
 	@Override
 	public void addGraphListener(GraphListener listener) {
 		graphListeners.add(listener);
@@ -224,106 +204,67 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		for (GraphListener listener: graphListeners) {
 			listener.graphLoaded(new GraphLoadedEvent(this));
 		}
-		
+
 	}
 
 	@Override
 	public void removeGraphListener(GraphListener listener) {
 		graphListeners.remove(listener);
-		
+
 	}
 
 	@Override
 	public VOWLVisualizationJso getVisualizationObject() {
 		return visualizationJso;
 	}
-	
+
 	private void setDetailsContent() {
 		detailsDynamicPanel = new VerticalPanel();
 		detailsDynamicPanel.setSpacing(4);
-		/*
-		detailsDynamicPanel.add(new Label(visualizationJso.getOntologyInfo().getTitle()));
-		
-		detailsDynamicPanel.add(new HTML("<a href=\"" + visualizationJso.getOntologyInfo().getIRI() + "\">"+visualizationJso.getOntologyInfo().getIRI()+"</a>"));
-		detailsDynamicPanel.add(new Label("Version: "+ visualizationJso.getOntologyInfo().getVersion()));
-		
-		GWT.log("[VOWL] authors: "+visualizationJso.getOntologyInfo().getAuthors().toString());
-		detailsDynamicPanel.add(new Label("Author(s): "+ visualizationJso.getOntologyInfo().getAuthors().join()));
-			
-		
-		String langStr="";
-		for(int i=0; i< visualizationJso.getOntologyInfo().getLanguages().length(); i++) {
-			langStr += "<option value=\""+visualizationJso.getOntologyInfo().getLanguages().get(i)+"\">"+visualizationJso.getOntologyInfo().getLanguages().get(i)+"</option>";
-		}
-		if(!langStr.isEmpty())
-			detailsDynamicPanel.add(new HTML("Language: <select>"+ langStr + "</select>"));
-		
-		detailsDynamicPanel.add(new HTML("<b>Description</b>"));
-		detailsDynamicPanel.add(new Label(visualizationJso.getOntologyInfo().getDescription()));
-		
-		detailsDynamicPanel.add(new HTML("<b>Metadata</b>"));
-		detailsDynamicPanel.add(new Label(visualizationJso.getOntologyInfo().getOther()));
-		
-		
-		detailsDynamicPanel.add(new HTML("<b>Statistics</b>"));
-		
-		detailsDynamicPanel.add(new HTML("Classes: <i>"+visualizationJso.getStatistics().getClassCount()+"</i>"));
-		detailsDynamicPanel.add(new HTML("Object prop.: <i>"+visualizationJso.getStatistics().getObjectPropertyCount()+"</i>"));
-		detailsDynamicPanel.add(new HTML("Datatype prop.: <i>"+visualizationJso.getStatistics().getDatatypePropertyCount()+"</i>"));
-		detailsDynamicPanel.add(new HTML("Individuals: <i>"+visualizationJso.getStatistics().getIndividualCount()+"</i>"));
-		detailsDynamicPanel.add(new HTML("Nodes: <i>"+visualizationJso.getStatistics().getNodeCount()+"</i>"));
-		detailsDynamicPanel.add(new HTML("Edges: <i>"+visualizationJso.getStatistics().getAxiomCount()+"</i>"));
-		*/
-		
-		//detailsDynamicPanel.add(new HTML("<b>Selection Details</b>"));
-		
+
 		//TODO: add a loop
 		if(elementType.get().equals("node")) {
-			//GWT.log("[VOWL] selected node: "+ visualizationJso.getSelectedNode().getLabel());
 			detailsDynamicPanel.add(new HTML("Name: <a href=\""+visualizationJso.getSelectedNode().getIri()+"\">"+visualizationJso.getSelectedNode().getLabel()+"</a>"));
 			detailsDynamicPanel.add(new Label("Type: "+visualizationJso.getSelectedNode().getType()));
-			//GWT.log("[VOWL] individuals: "+ visualizationJso.getSelectedNode().getIndividual().getAnnotation());
-			
+
 			if(visualizationJso.getSelectedNode().getIndividuals() != null) {
 				String indStr = "";
-				
+
 				for(int i=0; i<visualizationJso.getSelectedNode().getIndividuals().length(); i++)  {
-					
+
 					indStr += "<a href=\""+visualizationJso.getSelectedNode().getIndividuals().get(i).getIri()+"\">"+visualizationJso.getSelectedNode().getIndividuals().get(i).getLabel()+"</a> ";
 				}
 				if(!indStr.isEmpty())
-				detailsDynamicPanel.add(new HTML("Individuals: "+ indStr));
+					detailsDynamicPanel.add(new HTML("Individuals: "+ indStr));
 			}
-			
+
 			String charStr = visualizationJso.getSelectedNode().getCharacteristics();
 			if(!charStr.isEmpty())
 				detailsDynamicPanel.add(new Label("Char.: "+ charStr));
 			String comment = visualizationJso.getSelectedNode().getComment();
 			if(!comment.isEmpty())
 				detailsDynamicPanel.add(new Label("Comment: "+comment));
-			//String termStr = visualizationJso.getSelectedNode().getTermStatus();
 			if(visualizationJso.getSelectedNode().getAnnotations("term_status") != null) {
 				String termStr = visualizationJso.getSelectedNode().getAnnotations("term_status").getAnnotationProperty("value");
 				if(!termStr.isEmpty())
 					detailsDynamicPanel.add(new Label("term_status: "+ termStr));
 			}
-			
+
 		}
 		else {
-			//GWT.log("[VOWL] selected label: "+ visualizationJso.getSelectedLabel().getDomain().getLabel());
 			detailsDynamicPanel.add(new HTML("Name: <a href=\""+visualizationJso.getSelectedLabel().getIri()+"\">"+visualizationJso.getSelectedLabel().getLabel()+"</a>"));
 			detailsDynamicPanel.add(new Label("Type: "+visualizationJso.getSelectedLabel().getType()));
-			
+
 			if(visualizationJso.getSelectedLabel().getInverse() != null)
 				detailsDynamicPanel.add(new HTML("Inverse: <a href=\""+visualizationJso.getSelectedLabel().getInverse().getIri() + "\">" + visualizationJso.getSelectedLabel().getInverse().getLabel()+"</a>"));
-			
+
 			detailsDynamicPanel.add(new HTML("Domain: <a href=\""+visualizationJso.getSelectedLabel().getDomain().getIri()+"\">"+visualizationJso.getSelectedLabel().getDomain().getLabel()+"</a>"));
 			detailsDynamicPanel.add(new HTML("Range: <a href=\""+visualizationJso.getSelectedLabel().getRange().getIri()+"\">"+visualizationJso.getSelectedLabel().getRange().getLabel()+"</a>"));
-			
+
 			if(visualizationJso.getSelectedLabel().getCardinality() != null)
 				detailsDynamicPanel.add(new Label("Cardinality: "+visualizationJso.getSelectedLabel().getCardinality()));
-			
-			
+
+
 			if(visualizationJso.getSelectedLabel().getSubproperties() != null) {
 				String subs="";
 				for(int i=0; i<visualizationJso.getSelectedLabel().getSubproperties().length(); i++) {
@@ -340,14 +281,13 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 				if(!sups.isEmpty())
 					detailsDynamicPanel.add(new HTML("Superprop.:"+sups));
 			}
-			
+
 			String charStr = visualizationJso.getSelectedLabel().getCharacteristics();
 			if(!charStr.isEmpty())
 				detailsDynamicPanel.add(new Label("Char.: "+ charStr));
 			String comment = visualizationJso.getSelectedLabel().getComment();
 			if(!comment.isEmpty())
 				detailsDynamicPanel.add(new Label("Comment: "+comment));
-			//String termStr = visualizationJso.getSelectedLabel().getTermStatus();
 			if(visualizationJso.getSelectedLabel().getAnnotations("term_status") != null) {
 				String termStr = visualizationJso.getSelectedLabel().getAnnotations("term_status").getAnnotationProperty("value");
 				if(!termStr.isEmpty())
@@ -359,11 +299,6 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 	@Override
 	public VerticalPanel getPanel() {
 		return detailsDynamicPanel;
-	}
-
-	@Override
-	public Widget getWidget() {
-		return selectionDetailsContainer;
 	}
 
 	class MyClickHandler implements ClickHandler {
@@ -378,10 +313,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 					selectedElement = Optional.of(gElement.getParentElement().getId());
 					// classes have value 'node', while properties have value 'property' 
 					elementType = Optional.of(gElement.getParentElement().getAttribute("class"));
-					//setDetailsContent(selectedElement.get());
-					//setDetailsContent(gElement.getParentElement());
 					setDetailsContent();
-					//Window.alert("<circle> or <rect> element with parent g id " + gElement.getParentElement().getId() + ", and class " + elementType.get() + " was clicked");
 					notifySelectionListeners(new SelectionEvent(VOWLVisualizationPortlet.this));
 				}
 				//event.stopPropagation();
