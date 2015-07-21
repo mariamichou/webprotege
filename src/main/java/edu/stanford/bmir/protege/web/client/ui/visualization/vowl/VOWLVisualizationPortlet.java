@@ -41,8 +41,6 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 
 	private static final String VOWL_TITLE = "WebVOWL 0.4.0";
 	private VOWLVisualizationJso visualizationJso;
-	//private VOWLDetailsJso detailsJso;
-	//private VOWLOntologyInfoJso ontologyInfoJso;
 	public static String ontologyAsJSONStr;
 	public static JSONValue jsonValue;
 	private static Optional<String> selectedElement;
@@ -218,81 +216,84 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		return visualizationJso;
 	}
 
-	private void setDetailsContent() {
+	private void setDetailsContent(VOWLNodeJso node) {
 		detailsDynamicPanel = new VerticalPanel();
 		detailsDynamicPanel.setSpacing(4);
 
-		//TODO: add a loop
-		if(elementType.get().equals("node")) {
-			detailsDynamicPanel.add(new HTML("Name: <a href=\""+visualizationJso.getSelectedNode().getIri()+"\">"+visualizationJso.getSelectedNode().getLabel()+"</a>"));
-			detailsDynamicPanel.add(new Label("Type: "+visualizationJso.getSelectedNode().getType()));
 
-			if(visualizationJso.getSelectedNode().getIndividuals() != null) {
-				String indStr = "";
+		detailsDynamicPanel.add(new HTML("Name: <a href=\""+node.getIri()+"\">"+node.getLabel()+"</a>"));
+		detailsDynamicPanel.add(new Label("Type: "+node.getType()));
 
-				for(int i=0; i<visualizationJso.getSelectedNode().getIndividuals().length(); i++)  {
+		if(node.getIndividuals() != null) {
+			String indStr = "";
 
-					indStr += "<a href=\""+visualizationJso.getSelectedNode().getIndividuals().get(i).getIri()+"\">"+visualizationJso.getSelectedNode().getIndividuals().get(i).getLabel()+"</a> ";
-				}
-				if(!indStr.isEmpty())
-					detailsDynamicPanel.add(new HTML("Individuals: "+ indStr));
+			for(int i=0; i<node.getIndividuals().length(); i++)  {
+
+				indStr += "<a href=\""+node.getIndividuals().get(i).getIri()+"\">"+node.getIndividuals().get(i).getLabel()+"</a> ";
 			}
-
-			String charStr = visualizationJso.getSelectedNode().getCharacteristics();
-			if(!charStr.isEmpty())
-				detailsDynamicPanel.add(new Label("Char.: "+ charStr));
-			String comment = visualizationJso.getSelectedNode().getComment();
-			if(!comment.isEmpty())
-				detailsDynamicPanel.add(new Label("Comment: "+comment));
-			if(visualizationJso.getSelectedNode().getAnnotations("term_status") != null) {
-				String termStr = visualizationJso.getSelectedNode().getAnnotations("term_status").getAnnotationProperty("value");
-				if(!termStr.isEmpty())
-					detailsDynamicPanel.add(new Label("term_status: "+ termStr));
-			}
-
+			if(!indStr.isEmpty())
+				detailsDynamicPanel.add(new HTML("Individuals: "+ indStr));
 		}
-		else {
-			detailsDynamicPanel.add(new HTML("Name: <a href=\""+visualizationJso.getSelectedLabel().getIri()+"\">"+visualizationJso.getSelectedLabel().getLabel()+"</a>"));
-			detailsDynamicPanel.add(new Label("Type: "+visualizationJso.getSelectedLabel().getType()));
 
-			if(visualizationJso.getSelectedLabel().getInverse() != null)
-				detailsDynamicPanel.add(new HTML("Inverse: <a href=\""+visualizationJso.getSelectedLabel().getInverse().getIri() + "\">" + visualizationJso.getSelectedLabel().getInverse().getLabel()+"</a>"));
+		String charStr = node.getCharacteristics();
+		if(!charStr.isEmpty())
+			detailsDynamicPanel.add(new Label("Char.: "+ charStr));
+		String comment = node.getComment();
+		if(!comment.isEmpty())
+			detailsDynamicPanel.add(new Label("Comment: "+comment));
+		if(node.getAnnotations("term_status") != null) {
+			String termStr = node.getAnnotations("term_status").getAnnotationProperty("value");
+			if(!termStr.isEmpty())
+				detailsDynamicPanel.add(new Label("term_status: "+ termStr));
+		}
 
-			detailsDynamicPanel.add(new HTML("Domain: <a href=\""+visualizationJso.getSelectedLabel().getDomain().getIri()+"\">"+visualizationJso.getSelectedLabel().getDomain().getLabel()+"</a>"));
-			detailsDynamicPanel.add(new HTML("Range: <a href=\""+visualizationJso.getSelectedLabel().getRange().getIri()+"\">"+visualizationJso.getSelectedLabel().getRange().getLabel()+"</a>"));
 
-			if(visualizationJso.getSelectedLabel().getCardinality() != null)
-				detailsDynamicPanel.add(new Label("Cardinality: "+visualizationJso.getSelectedLabel().getCardinality()));
+	}
+
+	private void setDetailsContent(VOWLLabelJso label) {
+		detailsDynamicPanel = new VerticalPanel();
+		detailsDynamicPanel.setSpacing(4);
+
+		detailsDynamicPanel.add(new HTML("Name: <a href=\""+label.getIri()+"\">"+label.getLabel()+"</a>"));
+		detailsDynamicPanel.add(new Label("Type: "+label.getType()));
+
+		if(label.getInverse() != null)
+			detailsDynamicPanel.add(new HTML("Inverse: <a href=\""+label.getInverse().getIri() + "\">" + label.getInverse().getLabel()+"</a>"));
+
+		detailsDynamicPanel.add(new HTML("Domain: <a href=\""+label.getDomain().getIri()+"\">"+label.getDomain().getLabel()+"</a>"));
+		detailsDynamicPanel.add(new HTML("Range: <a href=\""+label.getRange().getIri()+"\">"+label.getRange().getLabel()+"</a>"));
+
+		if(label.getCardinality() != null)
+			detailsDynamicPanel.add(new Label("Cardinality: "+label.getCardinality()));
 
 
-			if(visualizationJso.getSelectedLabel().getSubproperties() != null) {
-				String subs="";
-				for(int i=0; i<visualizationJso.getSelectedLabel().getSubproperties().length(); i++) {
-					subs += "<a href=\""+visualizationJso.getSelectedLabel().getSubproperties().get(i).getIri() + "\">" + visualizationJso.getSelectedLabel().getSubproperties().get(i).getLabel()+"</a> ";
-				}
-				if(!subs.isEmpty())
-					detailsDynamicPanel.add(new HTML("Subprop.:"+subs));
+		if(label.getSubproperties() != null) {
+			String subs="";
+			for(int i=0; i<label.getSubproperties().length(); i++) {
+				subs += "<a href=\""+label.getSubproperties().get(i).getIri() + "\">" + label.getSubproperties().get(i).getLabel()+"</a> ";
 			}
-			if(visualizationJso.getSelectedLabel().getSuperproperties() != null) {
-				String sups="";
-				for(int i=0; i<visualizationJso.getSelectedLabel().getSuperproperties().length(); i++) {
-					sups += "<a href=\""+visualizationJso.getSelectedLabel().getSuperproperties().get(i).getIri() + "\">" + visualizationJso.getSelectedLabel().getSuperproperties().get(i).getLabel()+"</a> ";
-				}
-				if(!sups.isEmpty())
-					detailsDynamicPanel.add(new HTML("Superprop.:"+sups));
+			if(!subs.isEmpty())
+				detailsDynamicPanel.add(new HTML("Subprop.:"+subs));
+		}
+		if(label.getSuperproperties() != null) {
+			String sups="";
+			for(int i=0; i<label.getSuperproperties().length(); i++) {
+				sups += "<a href=\""+label.getSuperproperties().get(i).getIri() + "\">" + label.getSuperproperties().get(i).getLabel()+"</a> ";
 			}
+			if(!sups.isEmpty())
+				detailsDynamicPanel.add(new HTML("Superprop.:"+sups));
+		}
 
-			String charStr = visualizationJso.getSelectedLabel().getCharacteristics();
-			if(!charStr.isEmpty())
-				detailsDynamicPanel.add(new Label("Char.: "+ charStr));
-			String comment = visualizationJso.getSelectedLabel().getComment();
-			if(!comment.isEmpty())
-				detailsDynamicPanel.add(new Label("Comment: "+comment));
-			if(visualizationJso.getSelectedLabel().getAnnotations("term_status") != null) {
-				String termStr = visualizationJso.getSelectedLabel().getAnnotations("term_status").getAnnotationProperty("value");
-				if(!termStr.isEmpty())
-					detailsDynamicPanel.add(new Label("term_status: "+ termStr));
-			}
+		String charStr = label.getCharacteristics();
+		if(!charStr.isEmpty())
+			detailsDynamicPanel.add(new Label("Char.: "+ charStr));
+		String comment = label.getComment();
+		if(!comment.isEmpty())
+			detailsDynamicPanel.add(new Label("Comment: "+comment));
+		if(label.getAnnotations("term_status") != null) {
+			String termStr = label.getAnnotations("term_status").getAnnotationProperty("value");
+			if(!termStr.isEmpty())
+				detailsDynamicPanel.add(new Label("term_status: "+ termStr));
 		}
 	}
 
@@ -306,15 +307,25 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		@Override
 		public void onClick(ClickEvent event) {
 			{
-
 				Element element=  event.getNativeEvent().getEventTarget().cast();
 				if(element.getTagName().equals("circle") || element.getTagName().equals("rect")) {
 					com.google.gwt.user.client.Element gElement = (com.google.gwt.user.client.Element)element.cast();
 					selectedElement = Optional.of(gElement.getParentElement().getId());
 					// classes have value 'node', while properties have value 'property' 
 					elementType = Optional.of(gElement.getParentElement().getAttribute("class"));
-					setDetailsContent();
-					notifySelectionListeners(new SelectionEvent(VOWLVisualizationPortlet.this));
+
+					if(elementType.get().equals("node")) {
+						if(visualizationJso.getSelectedNode()!=null) {
+							setDetailsContent(visualizationJso.getSelectedNode());
+							notifySelectionListeners(new SelectionEvent(VOWLVisualizationPortlet.this));
+						}
+					}
+					else {//if(elementType.get().equals("label") && visualizationJso.getSelectedLabel()!=null) 
+						if(visualizationJso.getSelectedLabel()!=null) {
+							setDetailsContent(visualizationJso.getSelectedLabel());
+							notifySelectionListeners(new SelectionEvent(VOWLVisualizationPortlet.this));
+						}
+					}
 				}
 				//event.stopPropagation();
 			}
