@@ -1,7 +1,6 @@
 package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 
 import java.util.Collection;
-import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.DecoratedStackPanel;
@@ -18,7 +17,6 @@ import edu.stanford.bmir.protege.web.client.ui.visualization.loading.GraphLoaded
 import edu.stanford.bmir.protege.web.client.ui.visualization.selection.SelectionEvent;
 import edu.stanford.bmir.protege.web.client.ui.visualization.selection.SelectionListener;
 import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
-import edu.stanford.bmir.protege.web.shared.visualization.vowl.ValueDetails;
 
 /**
  * This renders general details for the selected ontology and 
