@@ -2,6 +2,11 @@ package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 
 import com.google.gwt.core.client.JsArray;
 
+/**
+ * This is a wrapper class for owl:Class, rdfs:Class, etc.
+ * @author Maria Michou
+ *
+ */
 public class VOWLNodeJso extends VOWLElementJso {
 	protected VOWLNodeJso() {
 	}
@@ -10,15 +15,4 @@ public class VOWLNodeJso extends VOWLElementJso {
 	  return this.individuals();
 	}-*/;
 	
-	
-	public final native String getAnnotation() /*-{
-	  //$wnd.alert(JSON.stringify(this.annotations) + " "+JSON.stringify(this.annotations[p]));
-	  //var an =  this["annotations"];
-	  
-	  $wnd.alert(JSON.stringify(this));
-	  return "";
-	 // var labelAr = an["label"];
-	 // var label = labelAr[0];
-	 // return label[0].value;
-	}-*/;
 }

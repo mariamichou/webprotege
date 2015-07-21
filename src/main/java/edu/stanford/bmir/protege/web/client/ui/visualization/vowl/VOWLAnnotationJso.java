@@ -14,9 +14,4 @@ public class VOWLAnnotationJso extends JavaScriptObject {
 	  return "";
 	}-*/;
 	
-	
-	public final native int getObject() /*-{
-	  return this[0].indexOf("value");
-	}-*/;
-	
 }

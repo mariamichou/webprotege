@@ -2,6 +2,11 @@ package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
+/**
+ * Retrieves statistics for the selected ontology.
+ * @author Maria Michou
+ *
+ */
 public class VOWLDetailsJso extends JavaScriptObject {
 
 	protected VOWLDetailsJso() {

@@ -7,6 +7,12 @@ package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 
 import com.google.gwt.core.client.JavaScriptObject;
 
+/**
+ * Initializes the graph and converts the ontology as a JSON object.
+ * This is the top wrapper class for the JSON object.
+ * @author Maria Michou
+ *
+ */
 public class VOWLVisualizationJso extends JavaScriptObject {
 
 	protected VOWLVisualizationJso() {
@@ -33,10 +39,6 @@ public class VOWLVisualizationJso extends JavaScriptObject {
 	  return supported;
   }-*/;
 	
-	public static native VOWLVisualizationJso getObject() /*-{
-	  return this;
-	}-*/;
-
 	public final native VOWLDetailsJso getStatistics()  /*-{
 	  return this.statistics();
   }-*/;
@@ -54,7 +56,4 @@ public class VOWLVisualizationJso extends JavaScriptObject {
 	  return this.selectedLabel();
   }-*/;
 
-	public static native void alert(String msg) /*-{
-	  $wnd.alert(msg);
-  }-*/;
 }
