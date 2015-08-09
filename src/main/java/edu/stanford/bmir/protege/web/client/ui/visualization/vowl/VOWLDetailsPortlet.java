@@ -1,5 +1,7 @@
 package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 
+import static edu.stanford.bmir.protege.web.resources.WebProtegeClientBundle.BUNDLE;
+
 import java.util.Collection;
 
 import com.google.gwt.core.client.GWT;
@@ -20,6 +22,7 @@ import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
 
 /**
  * This renders general details for the selected ontology and 
+ * specific details for the selected node or label.
  * @author Maria Michou
  *
  */
@@ -42,13 +45,12 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Sele
 
 	@Override
 	public void initialize() {
-
 		setTitle(DETAILS_TITLE);
 
 
 		// Set up main panel
-		mainPanel = new VerticalPanel();  
-
+		mainPanel = new VerticalPanel(); 
+		
 		// Set up static info panel (contains name, IRI, version, author(s) and language)
 		staticInfoPanel = new Grid(5, 1);
 		staticInfoPanel.setCellSpacing(5);

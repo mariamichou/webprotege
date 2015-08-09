@@ -36,6 +36,11 @@ import edu.stanford.bmir.protege.web.shared.visualization.vowl.ConvertOntologyAc
 import edu.stanford.bmir.protege.web.shared.visualization.vowl.ConvertOntologyResult;
 
 
+/**
+ * This renders the graph visualization of the selected ontology.
+ * @author Maria Michou
+ *
+ */
 @SuppressWarnings("unchecked")
 public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implements Selectable, Loadable {
 
