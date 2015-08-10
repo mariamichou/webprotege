@@ -33,7 +33,7 @@ public class VOWLOntologyInfoJso extends JavaScriptObject {
 	}-*/;
 	
 	public final native String getDescription()  /*-{
-	  return (this.description == null) ? "" : this.description["undefined"];
+	  return (this.description == null) ? "No description available." : this.description["undefined"];
 	}-*/;
 
 	//metadata

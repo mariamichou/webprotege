@@ -16,6 +16,9 @@ public class VOWLMetadataJso extends JavaScriptObject {
 	     	array.push(elem["identifier"] + ": " + elem["value"]);
 	     }
 		}
+		if(array.length == 0) {
+			array = ["No annotations available."];
+		}
 		return array;
 	}-*/;
 
