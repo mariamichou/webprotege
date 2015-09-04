@@ -3,6 +3,7 @@ package edu.stanford.bmir.protege.web.client.ui.notes;
 import com.google.common.base.Optional;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
+
 import edu.stanford.bmir.protege.web.client.Application;
 import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceCallback;
 import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceManager;
@@ -12,15 +13,19 @@ import edu.stanford.bmir.protege.web.client.events.UserLoggedInEvent;
 import edu.stanford.bmir.protege.web.client.events.UserLoggedInHandler;
 import edu.stanford.bmir.protege.web.client.events.UserLoggedOutEvent;
 import edu.stanford.bmir.protege.web.client.events.UserLoggedOutHandler;
+import edu.stanford.bmir.protege.web.client.ui.ontology.discussions.UserData;
 import edu.stanford.bmir.protege.web.shared.HasDispose;
+import edu.stanford.bmir.protege.web.shared.app.WebProtegePropertyName;
 import edu.stanford.bmir.protege.web.shared.event.HandlerRegistrationManager;
 import edu.stanford.bmir.protege.web.shared.event.NotePostedEvent;
 import edu.stanford.bmir.protege.web.shared.event.NotePostedHandler;
 import edu.stanford.bmir.protege.web.shared.notes.*;
 import edu.stanford.bmir.protege.web.shared.project.ProjectId;
 import edu.stanford.bmir.protege.web.shared.user.UserId;
+
 import org.semanticweb.owlapi.model.OWLEntity;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -135,6 +140,10 @@ public class DiscussionThreadPresenter implements HasDispose {
         });
         for(Note rootNote : rootNotes) {
             appendNote(rootNote, 0, thread);
+            if(!rootNote.getAuthor().equals(Application.get().getUserId()))
+            	GWT.log("[MICHOU] NOT THE SAME USER in note: "+ rootNote.getBody());
+            else
+            	GWT.log("[MICHOU] THE SAME USER in note: "+ rootNote.getBody());
         }
         currentNoteIds.clear();
         currentNoteIds.addAll(thread.getNoteIds());
@@ -147,6 +156,23 @@ public class DiscussionThreadPresenter implements HasDispose {
         view.addNote(noteContainerPresenter, depth);
         for(Note childNote : discussionThread.getReplies(note.getNoteId())) {
             appendNote(childNote, depth + 1, discussionThread);
+            GWT.log("[MICHOU] Users so far: "+ UserData.userData.toString());
+        	
+            if(!childNote.getAuthor().equals(Application.get().getUserId()))
+            	GWT.log("[MICHOU] NOT THE SAME USER in note: "+ childNote.getBody());
+            else
+            	GWT.log("[MICHOU] THE SAME USER in note: "+ childNote.getBody());
+            Timestamp t0 = new Timestamp(childNote.getTimestamp());
+            if(UserData.getUserLogoutTime(Application.get().getUserId()).isPresent())
+            	if(t0.after(UserData.getUserLogoutTime(Application.get().getUserId()).get())) {
+            		GWT.log("[MICHOU] note timestamp is more recent than user's last logout.");
+            	}
+            //GWT.log("[MICHOU] note timestamp: "+note.getTimestamp());
+            /*Timestamp t0 = new Timestamp(childNote.getTimestamp());
+            GWT.log("[MICHOU] note timestamp: "+t0.toString());
+            java.util.Date date= new java.util.Date();
+            Timestamp t = new Timestamp(date.getTime());
+            GWT.log("[MICHOU] now: "+t.toString());*/
         }
     }
 
