@@ -32,8 +32,6 @@ public class VOWLSelectionDetailsPortlet extends AbstractOWLEntityPortlet implem
 		setTitle(DETAILS_TITLE);
 		view = new VOWLSelectionDetailsViewImpl();
 		
-		//presenter = new VOWLDetailsViewPresenter(getProjectId(), view);
-        //add(presenter.getWidget());
 		add(view.getWidget());
         
 	}

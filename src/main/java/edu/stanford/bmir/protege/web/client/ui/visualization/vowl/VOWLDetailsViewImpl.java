@@ -62,23 +62,6 @@ public class VOWLDetailsViewImpl extends Composite implements VOWLDetailsView {
 	}
 	
 	
-	
-	
-
-	/**
-	 * This renders details for the selected element, either a node or a label. 
-	 * @param vPanel The panel that describes the attributes of the selected element.
-	 * @param header The header of the panel.
-	 */
-	/*public void renderDetailsDynamicInfo(VerticalPanel vPanel, String header) {
-		if(dynamicInfoPanel.getWidgetCount() == 4)
-			dynamicInfoPanel.remove(3);
-		dynamicInfoPanel.add(vPanel, header, true);
-		dynamicInfoPanel.showStack(3);
-
-	}*/
-
-	
 
 	/**
 	 * This renders general ontology data only the first time the graph is loaded 

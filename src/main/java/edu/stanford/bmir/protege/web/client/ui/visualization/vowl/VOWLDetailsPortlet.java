@@ -1,7 +1,5 @@
 package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 
-import java.util.Collection;
-
 import com.google.gwt.core.client.GWT;
 import com.gwtext.client.widgets.layout.FitLayout;
 
@@ -9,8 +7,6 @@ import edu.stanford.bmir.protege.web.client.project.Project;
 import edu.stanford.bmir.protege.web.client.ui.portlet.AbstractOWLEntityPortlet;
 import edu.stanford.bmir.protege.web.client.ui.visualization.loading.GraphListener;
 import edu.stanford.bmir.protege.web.client.ui.visualization.loading.GraphLoadedEvent;
-import edu.stanford.bmir.protege.web.client.ui.visualization.selection.SelectionEvent;
-import edu.stanford.bmir.protege.web.client.ui.visualization.selection.SelectionListener;
 import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
 
 /**
@@ -35,36 +31,9 @@ public class VOWLDetailsPortlet extends AbstractOWLEntityPortlet implements Grap
 		setLayout(new FitLayout());
 		setTitle(DETAILS_TITLE);
 		view = new VOWLDetailsViewImpl();
-		
-		//presenter = new VOWLDetailsViewPresenter(getProjectId(), view);
-        //add(presenter.getWidget());
 		add(view.getWidget());
-        
 	}
 	
-	
-	/**
-	 * SelectionListener implementation method. 
-	 * Called when notified by some {@link edu.stanford.bmir.protege.web.client.ui.visualization.selection.Selectable} object 
-	 * (e.g., a class, property, etc in the visualization portlet), that 
-	 * their selections have been updated and that listeners should refresh content.
-	 */
-	/*@Override
-	public void selectionChanged(SelectionEvent event) {
-
-		Collection<? extends Object> selection = event.getSelectable().getSelection();
-		
-		if (selection.size() > 0) {
-			Object selectionData = selection.iterator().next();
-			if (selectionData instanceof String) {
-				String selectedEntity = (String)selectionData;
-				GWT.log("[VOWL] Selection is changed: "+ selectedEntity);
-
-				view.renderDetailsDynamicInfo(event.getSelectable().getPanel(), "<h3>Selection Details</h3>");
-			}
-		}
-		 
-	}*/
 	
 	/**
 	 * GraphListener implementation method.
