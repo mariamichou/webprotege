@@ -74,8 +74,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		graphContainer = new HTML();
 
 		graphContainer.getElement().setId(getContainerId());
-		graphContainer.getElement().getStyle().setBackgroundColor("#ecf0f1");
-
+		
 		add(graphContainer);
 
 	}
