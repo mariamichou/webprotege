@@ -13,6 +13,7 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		data,
 		statistics,
 		ontologyInfo,
+		language,
 	// Graph modules
 		focuser = webvowl.modules.focuser(),
 		datatypeFilter = webvowl.modules.datatypeFilter(),
@@ -69,6 +70,11 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 	app.selectedNode = function() {
 		return selectedNode;
 	};
+	
+	app.language = function(newLanguage) {
+		graph.language(newLanguage);
+		return app;
+	}
 
 	app.data = function (convertedOntology) {
 		if (!arguments.length) return data;

@@ -25,6 +25,8 @@ import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceCallback;
 import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceManager;
 import edu.stanford.bmir.protege.web.client.project.Project;
 import edu.stanford.bmir.protege.web.client.ui.portlet.AbstractOWLEntityPortlet;
+import edu.stanford.bmir.protege.web.client.ui.visualization.change.ChangeListener;
+import edu.stanford.bmir.protege.web.client.ui.visualization.change.ChangedEvent;
 import edu.stanford.bmir.protege.web.client.ui.visualization.loading.GraphListener;
 import edu.stanford.bmir.protege.web.client.ui.visualization.loading.GraphLoadedEvent;
 import edu.stanford.bmir.protege.web.client.ui.visualization.loading.Loadable;
@@ -42,7 +44,7 @@ import edu.stanford.bmir.protege.web.shared.visualization.vowl.ConvertOntologyRe
  *
  */
 @SuppressWarnings("unchecked")
-public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implements Selectable, Loadable {
+public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implements Selectable, Loadable, ChangeListener {
 
 	private static final String VOWL_TITLE = "WebVOWL 0.4.0";
 	private VOWLVisualizationJso visualizationJso;
@@ -336,6 +338,24 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 
 		}
 
+	}
+
+	@Override
+	public void isChanged(ChangedEvent event) {
+		
+		Collection<? extends Object> changedSelection = event.getChangeable().getChange();
+		
+		if (changedSelection.size() > 0) {
+			Object selectionData = changedSelection.iterator().next();
+			//GWT.log("[VOWL] Visualization Selection in the drop down list is changed");
+			if (selectionData instanceof String) {
+				String selectedEntity = (String) selectionData;
+				GWT.log("[VOWL] Visualization Selection in the drop down list is changed: "+ selectedEntity);
+				visualizationJso.setLanguage(selectedEntity);
+				onRefresh();
+				// TODO render the updated graph view.renderDetailsDynamicInfo(event.getSelectable().getPanel(), "<h3>Selection Details</h3>");
+			}
+		}
 	}
 
 }

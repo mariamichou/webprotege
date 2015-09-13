@@ -55,5 +55,9 @@ public class VOWLVisualizationJso extends JavaScriptObject {
 	public final native VOWLLabelJso getSelectedLabel() /*-{
 	  return this.selectedLabel();
   }-*/;
+	
+	public final native void setLanguage(String newLanguage) /*-{
+	  this.language(newLanguage);
+}-*/;
 
 }
