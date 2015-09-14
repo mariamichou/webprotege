@@ -13,9 +13,12 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.gwtext.client.widgets.Panel;
@@ -44,7 +47,7 @@ import edu.stanford.bmir.protege.web.shared.visualization.vowl.ConvertOntologyRe
  *
  */
 @SuppressWarnings("unchecked")
-public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implements Selectable, Loadable, ChangeListener {
+public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implements Selectable, Loadable, ChangeListener, SelectionListener {
 
 	private static final String VOWL_TITLE = "WebVOWL 0.4.0";
 	private VOWLVisualizationJso visualizationJso;
@@ -62,7 +65,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 	private Widget graphContainer;
 	private VerticalPanel detailsDynamicPanel;
 	private boolean initialized = false;
-
+	
 	public VOWLVisualizationPortlet(SelectionModel selectionModel, Project project) {
 		super(selectionModel, project);
 		this.listeners = new ArrayList<SelectionListener>();
@@ -78,7 +81,6 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		graphContainer.getElement().setId(getContainerId());
 		
 		add(graphContainer);
-
 	}
 
 	@Override
@@ -120,8 +122,8 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 
 		}
 	}
-
-
+	
+	
 	@Override
 	protected void onRefresh() {
 
@@ -356,6 +358,33 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 				// TODO render the updated graph view.renderDetailsDynamicInfo(event.getSelectable().getPanel(), "<h3>Selection Details</h3>");
 			}
 		}
+	}
+
+	@Override
+	public void selectionChanged(SelectionEvent event) {
+		Collection<? extends Object> changedSelection = event.getSelectable().getSelection();
+		
+		if (changedSelection.size() > 0) {
+			Object selection = changedSelection.iterator().next();
+			//GWT.log("[VOWL] Visualization Selection in the drop down list is changed");
+			if (selection instanceof Boolean) {
+				boolean pause = (Boolean) selection;
+				if(pause)
+					visualizationJso.pause();
+				else
+					visualizationJso.unpause();
+				GWT.log("[VOWL] Visualization graph pause/unpause");
+			}
+			else if(selection instanceof String) {
+				String option = (String) selection;
+				if(selection.equals("reset")) {
+					visualizationJso.reset();
+					onRefresh();
+				}
+			}
+			else {}
+		}
+		
 	}
 
 }

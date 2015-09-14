@@ -14,6 +14,10 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		statistics,
 		ontologyInfo,
 		language,
+		pause, unpause,
+		//pause = graph.freeze(),
+		//unpause = graph.unfreeze(),
+		reset,
 	// Graph modules
 		focuser = webvowl.modules.focuser(),
 		datatypeFilter = webvowl.modules.datatypeFilter(),
@@ -75,7 +79,22 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		graph.language(newLanguage);
 		return app;
 	}
-
+	
+	app.pause = function() {
+		graph.freeze();
+		//return app;
+	}
+	
+	app.unpause = function() {
+		graph.unfreeze();
+		//return app;
+	}
+	
+	app.reset = function() {
+		graph.reset();
+		//return app;
+	}
+	
 	app.data = function (convertedOntology) {
 		if (!arguments.length) return data;
 		data = convertedOntology;

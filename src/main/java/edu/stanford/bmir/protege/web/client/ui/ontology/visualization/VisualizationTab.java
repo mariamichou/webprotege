@@ -43,6 +43,6 @@ public class VisualizationTab extends AbstractTab {
 		vowlVisualizationPortlet.addSelectionListener(vowlSelectionDetailsPortlet);
 		vowlVisualizationPortlet.addGraphListener(vowlDetailsPortlet);
 		vowlDetailsPortlet.addChangeListener(vowlVisualizationPortlet);
-
+		vowlControlPortlet.addSelectionListener(vowlVisualizationPortlet);
 	}
 }

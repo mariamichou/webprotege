@@ -59,5 +59,16 @@ public class VOWLVisualizationJso extends JavaScriptObject {
 	public final native void setLanguage(String newLanguage) /*-{
 	  this.language(newLanguage);
 }-*/;
+	
+	public final native void pause() /*-{
+	  this.pause();
+}-*/;
+	public final native void unpause() /*-{
+	  this.unpause();
+}-*/;
+	
+	public final native void reset() /*-{
+	  this.reset();
+}-*/;
 
 }
