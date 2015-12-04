@@ -15,6 +15,8 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		ontologyInfo,
 		language,
 		pause, unpause,
+		pickPin,
+		classDistance, datatypeDistance,
 		//pause = graph.freeze(),
 		//unpause = graph.unfreeze(),
 		reset,
@@ -94,6 +96,19 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		graph.reset();
 		//return app;
 	}
+	
+	/* testing
+	 	app.pickPin = function() {
+		webvowl.modules.pickAndPin();
+	}
+	
+	app.classDistance = function(num) {
+		options.classDistance(num);
+	}
+	
+	app.datatypeDistance = function(num) {
+		options.datatypeDistance(num);
+	}*/
 	
 	app.data = function (convertedOntology) {
 		if (!arguments.length) return data;

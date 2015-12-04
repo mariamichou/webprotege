@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import com.google.common.base.Optional;
 import com.google.gwt.core.shared.GWT;
@@ -375,12 +376,50 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 					visualizationJso.unpause();
 				GWT.log("[VOWL] Visualization graph pause/unpause");
 			}
+			else if(selection instanceof Map) {
+				Map map = (Map)selection;
+				if(map.containsKey("pickPin")) {
+					visualizationJso.pickPin();
+				}
+				else if(map.containsKey("classDistance")) {
+					int distance = Integer.valueOf((String) map.get("classDistance"));
+					//Window.alert("Class Distance becomes: "+distance);
+					visualizationJso.classDistance(distance);
+				}
+				else if(map.containsKey("datatypeDistance")) {
+					//Window.alert("Listener got datatype distance event");
+					
+					int distance = Integer.valueOf((String) map.get("datatypeDistance"));
+					//Window.alert("Datatype Distance becomes: "+distance);
+					visualizationJso.datatypeDistance(distance);
+				}
+				else if(map.containsKey("collapseDegree")) {
+					//Window.alert("Listener got datatype distance event");
+					
+					int distance = Integer.valueOf((String) map.get("collapseDegree"));
+					//Window.alert("Datatype Distance becomes: "+distance);
+					//visualizationJso.collapseDegree(distance);
+				}
+				else {Window.alert("Listener got 0 event");
+				}
+			}
 			else if(selection instanceof String) {
 				String option = (String) selection;
 				if(selection.equals("reset")) {
 					visualizationJso.reset();
 					onRefresh();
 				}
+				else if(selection.equals("classDistance")) {
+					//Window.alert("Class Distance becomes: 20");
+					visualizationJso.classDistance(20);
+				}
+				else if(selection.equals("datatypeDistance")) {
+					visualizationJso.datatypeDistance(20);
+				}
+				else if(selection.equals("collapseDegree")) {
+					;//visualizationJso.classDistance(20);
+				}
+				else {;}
 			}
 			else {}
 		}

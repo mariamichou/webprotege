@@ -3,13 +3,20 @@ package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gwt.core.shared.GWT;
+import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.gwtext.client.widgets.Panel;
 
+import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceCallback;
+import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceManager;
 import edu.stanford.bmir.protege.web.client.project.Project;
 import edu.stanford.bmir.protege.web.client.ui.portlet.AbstractOWLEntityPortlet;
 import edu.stanford.bmir.protege.web.client.ui.visualization.composites.ExtendedMenuItem;
@@ -17,7 +24,8 @@ import edu.stanford.bmir.protege.web.client.ui.visualization.selection.Selectabl
 import edu.stanford.bmir.protege.web.client.ui.visualization.selection.SelectionEvent;
 import edu.stanford.bmir.protege.web.client.ui.visualization.selection.SelectionListener;
 import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
-import com.smartgwt.client.widgets.Slider;
+import edu.stanford.bmir.protege.web.shared.visualization.vowl.ConvertOntologyAction;
+import edu.stanford.bmir.protege.web.shared.visualization.vowl.ConvertOntologyResult;
 
 @SuppressWarnings("unchecked")
 public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Selectable {
@@ -30,8 +38,11 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 	private String option = null;
 	private Collection<? extends Object> selection;
 	private FlowPanel panel;
-	private ExtendedMenuItem cmi, dataProp, solSub, disjInfo, setOp, pickPin, nodeScale, compNotation;
+	private ExtendedMenuItem cmi, dataProp, solSub, disjInfo, setOp, pickPin, nodeScale, 
+	compNotation, classDistance, datatypeDistance, collapseDegree;
 	private Command cmd;
+	private Map<String, Object> map = new HashMap<String,Object>();
+	private VerticalPanel vPanel;
 
 	public VOWLControlPortlet(SelectionModel selectionModel, Project project) {
 		super(selectionModel, project);
@@ -48,10 +59,14 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 		createMenuItems();
 		add(panel);
 	}
+	
 
 	private void addSelectedComponent(ExtendedMenuItem item){
-		//Window.alert("Is cmi null? "+cmi==null?"NULL":"NOT NULL: "+cmi.getCaption());
-		panel.add(item.getPanel());
+		vPanel = item.getPanel();
+		if(!vPanel.isVisible())
+			vPanel.setVisible(true);
+		panel.add(vPanel);
+		//item.setParentPanel(panel);
 	}
 
 
@@ -117,17 +132,46 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 		});
 		controlBar.addSeparator();
 
-		gravityMenu.addItem("Class distance", new Command() {
+		/*
+		 gravityMenu.addItem("Class distance", new Command() {
 			public void execute() {
 				;
 			}
 		});
+		*/
+		
+		cmd = new Command() {
+			public void execute() {
+				//map.put("classDistance", classDistance.getElement().getNodeValue());
+				//map.put("classDistance", 20);
+				//selection = (Collection<? extends Object>) map;
+				//Window.alert("Clicked class distance");
+				selection = Arrays.asList("classDistance");
+				//Window.alert("selection "+ selection.toString());
+				addSelectedComponent(classDistance);
+				notifySelectionListeners(new SelectionEvent(VOWLControlPortlet.this));
+			}
+		};
 
-		gravityMenu.addItem("Datatype distance", new Command() {
+		//classDistance = new ExtendedMenuItem("Class Distance: <input type=\"text\" name=\"classDistance\" value=\"200\">", true, cmd);
+		classDistance = new ExtendedMenuItem("Class Distance", true, cmd);
+		gravityMenu.addItem(classDistance);
+		
+		cmd = new Command() {
 			public void execute() {
-				;
+				//map.put("datatypeDistance", datatypeDistance.getElement().getNodeValue());
+				//Window.alert("Clicked datatype distance");
+				//map.put("datatypeDistance", 10);
+				//selection = (Collection<? extends Object>) map;
+				selection = Arrays.asList("datatypeDistance");
+				addSelectedComponent(datatypeDistance);
+				notifySelectionListeners(new SelectionEvent(VOWLControlPortlet.this));
 			}
-		});
+		};
+		
+		datatypeDistance = new ExtendedMenuItem("Datatype distance", true, cmd);
+		gravityMenu.addItem(datatypeDistance);
+		
 		controlBar.addSeparator();
 
 		cmd = new Command() {
@@ -178,18 +222,16 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 		disjInfo = new ExtendedMenuItem("<input type=\"checkbox\" name=\"disjInfo\" value=\"1\" checked> Disjointness info", true, cmd);
 		filterMenu.addItem(disjInfo);
 		
+		/*
 		cmd = new Command() {
 			public void execute() {
 				addSelectedComponent(cmi);
-				//Window.alert("Is cmi null? "+cmi.getCaption());
-				//add(cmi.getPanel());
 			}
 		};
 
 		cmi = new ExtendedMenuItem("<b>Disjointness info</b>", true, cmd);
 		filterMenu.addItem(cmi);
-		//add(cmi.getPanel());
-
+		*/
 		
 		cmd = new Command() {
 			public void execute() {
@@ -204,11 +246,21 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 		setOp = new ExtendedMenuItem("<input type=\"checkbox\" name=\"setOp\" value=\"0\"> Set operators", true, cmd);
 		filterMenu.addItem(setOp);
 		
-		filterMenu.addItem("Degree of collapsing", new Command() {
+		cmd = new Command() {
 			public void execute() {
-				;
+				//map.put("datatypeDistance", datatypeDistance.getElement().getNodeValue());
+				//Window.alert("Clicked datatype distance");
+				//map.put("datatypeDistance", 10);
+				//selection = (Collection<? extends Object>) map;
+				selection = Arrays.asList("collapseDegree");
+				addSelectedComponent(collapseDegree);
+				notifySelectionListeners(new SelectionEvent(VOWLControlPortlet.this));
 			}
-		});
+		};
+		
+		collapseDegree = new ExtendedMenuItem("Degree of collapsing", true, cmd);
+		filterMenu.addItem(collapseDegree);
+		
 		controlBar.addSeparator();
 
 		/*modesMenu.addItem("Pick & Pin", new Command() {
@@ -220,10 +272,19 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 		cmd = new Command() {
 			public void execute() {
 				//addSelectedComponent(dataProp);
-				if (pickPin.isEnabled())
+				
+				if (pickPin.isEnabled()) {
 					pickPin.setEnabled(false);
-				else
+					map.put("pickPin", false);
+					//selection = Arrays.asList(false);
+				}
+				else {
 					pickPin.setEnabled(true);
+					map.put("pickPin", true);
+					//selection = Arrays.asList(true);
+				}
+				selection = (Collection<? extends Object>) map;
+				notifySelectionListeners(new SelectionEvent(VOWLControlPortlet.this));
 			}
 		};
 

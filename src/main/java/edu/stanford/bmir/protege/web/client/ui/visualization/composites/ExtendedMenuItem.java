@@ -3,31 +3,52 @@ package edu.stanford.bmir.protege.web.client.ui.visualization.composites;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
-public class ExtendedMenuItem extends MenuItem implements ClickHandler {
+public class ExtendedMenuItem extends MenuItem implements ClickHandler, KeyPressHandler {
 	
-	private TextBox textBox = new TextBox();
+	//private TextBox textBox = new TextBox();
+	private TextBox textBox;
 	private CheckBox checkBox = new CheckBox();
-	private VerticalPanel panel = new VerticalPanel();
+	private VerticalPanel panel;
+	//private VerticalPanel panel = new VerticalPanel();
+	private Button button = new Button();
+	private FlowPanel fPanel;
+	//Slider classDistanceSlider = new Slider("Class distance");  
+	//Slider classDistanceSlider = new Slider("Class distance", 10, 600, 200);
+	
 	
 	public ExtendedMenuItem(String html, boolean htmlON, ScheduledCommand cmd) {
 	    super(html, htmlON, cmd);
 	 // Place the check above the text box using a vertical panel.
-	 		panel.add(checkBox);
-	 		panel.add(textBox);
-
+	 		//panel.add(checkBox);
+	    panel = new VerticalPanel();
+	    textBox = new TextBox();
+	    	panel.add(textBox);
+	 		//panel.add(button);
+	 		textBox.setTitle(html);
+	 		textBox.setValue("200");
+	 		//button.setText("Ok");
+	 		//panel.add(classDistanceSlider);
+	 		
+	
 	 		// Set the check box's caption, and check it by default.
-	 		checkBox.setText(html);
-	 		checkBox.setChecked(true);
+	 		//checkBox.setText(html);
+	 		//checkBox.setChecked(true);
 	 		//checkBox.addClickHandler(this);
-	 		textBox.addClickHandler(this);
+	 		//textBox.addClickHandler(this);
+	 		textBox.addKeyPressHandler(this);
 	 		// All composites must call initWidget() in their constructors.
 	 		//initWidget(panel);
 
@@ -39,7 +60,8 @@ public class ExtendedMenuItem extends MenuItem implements ClickHandler {
 	public ExtendedMenuItem(String html, boolean htmlON, ScheduledCommand cmd, boolean checked) {
 	    super(html, htmlON, cmd);
 	 // Place the check above the text box using a vertical panel.
-	 		panel.add(checkBox);
+	    panel = new VerticalPanel();
+	    textBox = new TextBox();
 	 		checkBox.setText(html);
 	 		checkBox.setChecked(checked);
 	 		checkBox.addClickHandler(this);
@@ -73,7 +95,7 @@ public class ExtendedMenuItem extends MenuItem implements ClickHandler {
 		}
 	}
 	
-	private static class MyPopup extends PopupPanel {
+	private class MyPopup extends PopupPanel {
 
 	    public MyPopup() {
 	      // PopupPanel's constructor takes 'auto-hide' as its boolean parameter.
@@ -84,6 +106,7 @@ public class ExtendedMenuItem extends MenuItem implements ClickHandler {
 	      // PopupPanel is a SimplePanel, so you have to set it's widget property to
 	      // whatever you want its contents to be.
 	      setWidget(new Label("Click outside of this popup to close it"));
+	      //setWidget(textBox);
 	    }
 	  }
 
@@ -110,6 +133,29 @@ public class ExtendedMenuItem extends MenuItem implements ClickHandler {
 	public VerticalPanel getPanel() {
 		return panel;
 	}
+
+
+	@Override
+	public void onKeyPress(KeyPressEvent event) {
+		Object sender = event.getSource();
+		
+		if (sender == textBox && event.getUnicodeCharCode() == 0) {
+			
+			//Window.alert("You pressed ENTER");
+			
+			panel.setVisible(false);
+			// When the check box is clicked, update the text box's enabled state.
+			//textBox.setEnabled(checkBox.isChecked());
+		}
+		
+	}
 	
+	public void setParentPanel(FlowPanel fPanel) {
+		this.fPanel = fPanel;
+	}
+	
+	public void unsetPanel(Widget w) {
+		this.fPanel.remove(w);
+	}
 	
 }
