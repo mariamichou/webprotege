@@ -7,16 +7,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gwt.core.shared.GWT;
-import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.MenuBar;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.gwtext.client.widgets.Panel;
 
-import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceCallback;
-import edu.stanford.bmir.protege.web.client.dispatch.DispatchServiceManager;
 import edu.stanford.bmir.protege.web.client.project.Project;
 import edu.stanford.bmir.protege.web.client.ui.portlet.AbstractOWLEntityPortlet;
 import edu.stanford.bmir.protege.web.client.ui.visualization.composites.ExtendedMenuItem;
@@ -24,11 +25,9 @@ import edu.stanford.bmir.protege.web.client.ui.visualization.selection.Selectabl
 import edu.stanford.bmir.protege.web.client.ui.visualization.selection.SelectionEvent;
 import edu.stanford.bmir.protege.web.client.ui.visualization.selection.SelectionListener;
 import edu.stanford.bmir.protege.web.shared.selection.SelectionModel;
-import edu.stanford.bmir.protege.web.shared.visualization.vowl.ConvertOntologyAction;
-import edu.stanford.bmir.protege.web.shared.visualization.vowl.ConvertOntologyResult;
 
 @SuppressWarnings("unchecked")
-public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Selectable {
+public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Selectable, KeyPressHandler {
 
 	private static final String CONTROL_TITLE = "Control Bar";
 	private MenuBar controlBar;
@@ -42,7 +41,8 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 	compNotation, classDistance, datatypeDistance, collapseDegree;
 	private Command cmd;
 	private Map<String, Object> map = new HashMap<String,Object>();
-	private VerticalPanel vPanel;
+	private TextBox textBox;
+	private MyPopup mp;
 
 	public VOWLControlPortlet(SelectionModel selectionModel, Project project) {
 		super(selectionModel, project);
@@ -59,16 +59,17 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 		createMenuItems();
 		add(panel);
 	}
-	
 
 	private void addSelectedComponent(ExtendedMenuItem item){
-		vPanel = item.getPanel();
-		if(!vPanel.isVisible())
-			vPanel.setVisible(true);
-		panel.add(vPanel);
-		//item.setParentPanel(panel);
-	}
+		//listeners.clear();
+		//vPanel = item.getPanel();
+		textBox = item.getTextBox();
+		textBox.addKeyPressHandler(this);
+		mp = new MyPopup(textBox);
+		mp.setPopupPosition(10, 180);
+		mp.show();
 
+	}
 
 	private void createMenuItems() {
 		controlBar.moveSelectionDown();
@@ -132,31 +133,18 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 		});
 		controlBar.addSeparator();
 
-		/*
-		 gravityMenu.addItem("Class distance", new Command() {
-			public void execute() {
-				;
-			}
-		});
-		*/
-		
-		cmd = new Command() {
-			public void execute() {
-				//map.put("classDistance", classDistance.getElement().getNodeValue());
-				//map.put("classDistance", 20);
-				//selection = (Collection<? extends Object>) map;
-				//Window.alert("Clicked class distance");
-				selection = Arrays.asList("classDistance");
-				//Window.alert("selection "+ selection.toString());
-				addSelectedComponent(classDistance);
-				notifySelectionListeners(new SelectionEvent(VOWLControlPortlet.this));
-			}
-		};
+		TextBox tb = new TextBox();
+		tb.setName("classDistance");
+		tb.setValue("200");
+		tb.setTitle("Class Distance");
+		classDistance = new ExtendedMenuItem(new Command() {
 
-		//classDistance = new ExtendedMenuItem("Class Distance: <input type=\"text\" name=\"classDistance\" value=\"200\">", true, cmd);
-		classDistance = new ExtendedMenuItem("Class Distance", true, cmd);
+			public void execute() {
+				addSelectedComponent(classDistance);
+			}}, tb);
+
 		gravityMenu.addItem(classDistance);
-		
+
 		cmd = new Command() {
 			public void execute() {
 				//map.put("datatypeDistance", datatypeDistance.getElement().getNodeValue());
@@ -168,10 +156,19 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 				notifySelectionListeners(new SelectionEvent(VOWLControlPortlet.this));
 			}
 		};
+
 		
-		datatypeDistance = new ExtendedMenuItem("Datatype distance", true, cmd);
+		TextBox tb2 = new TextBox();
+		tb2.setName("datatypeDistance");
+		tb2.setValue("120");
+		tb2.setTitle("Datatype Distance");
+		datatypeDistance = new ExtendedMenuItem(new Command() {
+
+			public void execute() {
+				addSelectedComponent(datatypeDistance);
+			}}, tb2);
 		gravityMenu.addItem(datatypeDistance);
-		
+
 		controlBar.addSeparator();
 
 		cmd = new Command() {
@@ -186,8 +183,8 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 
 		dataProp = new ExtendedMenuItem("<input type=\"checkbox\" name=\"dataProp\" value=\"0\"> Datatype prop.", true, cmd);
 		filterMenu.addItem(dataProp);
-		
-		
+
+
 		cmd = new Command() {
 			public void execute() {
 				//addSelectedComponent(dataProp);
@@ -200,15 +197,15 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 
 		solSub = new ExtendedMenuItem("<input type=\"checkbox\" name=\"solSub\" value=\"0\"> Solitary subclass", true, cmd);
 		filterMenu.addItem(solSub);
-		
+
 		/*
 		filterMenu.addItem("Solitary subclass", new Command() {
 			public void execute() {
 				;
 			}
 		});
-		*/
-		
+		 */
+
 		cmd = new Command() {
 			public void execute() {
 				//addSelectedComponent(dataProp);
@@ -221,18 +218,8 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 
 		disjInfo = new ExtendedMenuItem("<input type=\"checkbox\" name=\"disjInfo\" value=\"1\" checked> Disjointness info", true, cmd);
 		filterMenu.addItem(disjInfo);
-		
-		/*
-		cmd = new Command() {
-			public void execute() {
-				addSelectedComponent(cmi);
-			}
-		};
 
-		cmi = new ExtendedMenuItem("<b>Disjointness info</b>", true, cmd);
-		filterMenu.addItem(cmi);
-		*/
-		
+
 		cmd = new Command() {
 			public void execute() {
 				//addSelectedComponent(dataProp);
@@ -245,22 +232,26 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 
 		setOp = new ExtendedMenuItem("<input type=\"checkbox\" name=\"setOp\" value=\"0\"> Set operators", true, cmd);
 		filterMenu.addItem(setOp);
-		
+
 		cmd = new Command() {
 			public void execute() {
-				//map.put("datatypeDistance", datatypeDistance.getElement().getNodeValue());
-				//Window.alert("Clicked datatype distance");
-				//map.put("datatypeDistance", 10);
-				//selection = (Collection<? extends Object>) map;
 				selection = Arrays.asList("collapseDegree");
 				addSelectedComponent(collapseDegree);
 				notifySelectionListeners(new SelectionEvent(VOWLControlPortlet.this));
 			}
 		};
-		
-		collapseDegree = new ExtendedMenuItem("Degree of collapsing", true, cmd);
+
+		TextBox tb3 = new TextBox();
+		tb3.setName("collapseDegree");
+		tb3.setValue("0");
+		tb3.setTitle("Degree of collapsing");
+		collapseDegree = new ExtendedMenuItem(new Command() {
+
+			public void execute() {
+				addSelectedComponent(collapseDegree);
+			}}, tb3);
 		filterMenu.addItem(collapseDegree);
-		
+
 		controlBar.addSeparator();
 
 		/*modesMenu.addItem("Pick & Pin", new Command() {
@@ -268,11 +259,11 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 				;
 			}
 		});*/
-		
+
 		cmd = new Command() {
 			public void execute() {
 				//addSelectedComponent(dataProp);
-				
+
 				if (pickPin.isEnabled()) {
 					pickPin.setEnabled(false);
 					map.put("pickPin", false);
@@ -290,8 +281,8 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 
 		pickPin = new ExtendedMenuItem("<input type=\"checkbox\" name=\"pickPin\" value=\"0\"> Pick & Pin", true, cmd);
 		modesMenu.addItem(pickPin);
-		
-		
+
+
 		cmd = new Command() {
 			public void execute() {
 				//addSelectedComponent(dataProp);
@@ -304,7 +295,7 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 
 		nodeScale = new ExtendedMenuItem("<input type=\"checkbox\" name=\"nodeScale\" value=\"1\" checked> Node Scaling", true, cmd);
 		modesMenu.addItem(nodeScale);
-		
+
 		cmd = new Command() {
 			public void execute() {
 				//addSelectedComponent(dataProp);
@@ -317,7 +308,7 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 
 		compNotation = new ExtendedMenuItem("<input type=\"checkbox\" name=\"compNotation\" value=\"0\"> Compact Notation", true, cmd);
 		modesMenu.addItem(compNotation);
-		
+
 		controlBar.addSeparator();
 		aboutMenu.addItem("<a target=\"_blank\" href=\"http://vowl.visualdataweb.org/webvowl/license.txt\">MIT License © 2014/15</a>", true, new Command() {
 			public void execute() {
@@ -348,11 +339,6 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 		});
 	}
 
-	@Override
-	public void handleActivated() {
-		super.handleActivated();
-		GWT.log("[VOWL] Control portlet status: Activated.");
-	}
 
 	@Override
 	public void addSelectionListener(SelectionListener listener) {
@@ -386,6 +372,38 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 	public void setSelection(Collection<? extends Object> selection) {
 		this.selection = selection;
 
+	}
+
+	@Override
+	public void onKeyPress(KeyPressEvent event) {
+
+		Object sender = event.getSource();
+		if (sender instanceof TextBox && event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
+			TextBox textBox = (TextBox)event.getSource();
+			//Window.alert("You pressed ENTER. Value becomes: "+textBox.getValue());
+			selection = Arrays.asList(textBox.getName());
+			notifySelectionListeners(new SelectionEvent(VOWLControlPortlet.this));
+			//mp.clear();
+			mp.hide();
+		}
+
+	}
+
+	private class MyPopup extends PopupPanel {
+
+		public MyPopup(TextBox tb) {
+			// PopupPanel's constructor takes 'auto-hide' as its boolean parameter.
+			// If this is set, the panel closes itself automatically when the user
+			// clicks outside of it.
+			super(true);
+
+			// PopupPanel is a SimplePanel, so you have to set it's widget property to
+			// whatever you want its contents to be.
+			//setWidget(new Label("Click outside of this popup to close it"));
+
+			setWidget(tb);
+			//setWidget(new Label("Click outside of this popup to close it"));
+		}
 	}
 
 

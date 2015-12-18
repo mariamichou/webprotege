@@ -410,8 +410,8 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 					onRefresh();
 				}
 				else if(selection.equals("classDistance")) {
-					//Window.alert("Class Distance becomes: 20");
-					visualizationJso.classDistance(20);
+					//Window.alert("Visualization portlet, class distance, Edw prepei na pairnw thn allagmenh timh kai oxi kapoia static.");
+					//visualizationJso.classDistance(20);
 				}
 				else if(selection.equals("datatypeDistance")) {
 					visualizationJso.datatypeDistance(20);
@@ -423,6 +423,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 			}
 			else {}
 		}
+		
 		
 	}
 
