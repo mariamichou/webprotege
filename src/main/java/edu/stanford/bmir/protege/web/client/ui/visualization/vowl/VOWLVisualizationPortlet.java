@@ -379,19 +379,19 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 			else if(selection instanceof Map) {
 				Map map = (Map)selection;
 				if(map.containsKey("pickPin")) {
-					visualizationJso.pickPin();
+					;//visualizationJso.pickPin();
 				}
 				else if(map.containsKey("classDistance")) {
 					int distance = Integer.valueOf((String) map.get("classDistance"));
 					//Window.alert("Class Distance becomes: "+distance);
-					visualizationJso.classDistance(distance);
+					//visualizationJso.classDistance(distance);
 				}
 				else if(map.containsKey("datatypeDistance")) {
 					//Window.alert("Listener got datatype distance event");
 					
 					int distance = Integer.valueOf((String) map.get("datatypeDistance"));
 					//Window.alert("Datatype Distance becomes: "+distance);
-					visualizationJso.datatypeDistance(distance);
+					//visualizationJso.datatypeDistance(distance);
 				}
 				else if(map.containsKey("collapseDegree")) {
 					//Window.alert("Listener got datatype distance event");
@@ -411,10 +411,10 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 				}
 				else if(selection.equals("classDistance")) {
 					//Window.alert("Visualization portlet, class distance, Edw prepei na pairnw thn allagmenh timh kai oxi kapoia static.");
-					//visualizationJso.classDistance(20);
+					;//visualizationJso.classDistance(20);
 				}
 				else if(selection.equals("datatypeDistance")) {
-					visualizationJso.datatypeDistance(20);
+					;//visualizationJso.datatypeDistance(20);
 				}
 				else if(selection.equals("collapseDegree")) {
 					;//visualizationJso.classDistance(20);
