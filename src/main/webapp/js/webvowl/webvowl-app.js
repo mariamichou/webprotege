@@ -67,7 +67,7 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 	
 	app.ontologyInfo = function() {
 		return ontologyInfo;
-	}
+	};
 
 	app.selectedLabel = function() {
 		return selectedLabel;
@@ -80,35 +80,47 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 	app.language = function(newLanguage) {
 		graph.language(newLanguage);
 		return app;
-	}
+	};
 	
 	app.pause = function() {
 		graph.freeze();
-		//return app;
-	}
+		return app;
+	};
 	
 	app.unpause = function() {
 		graph.unfreeze();
-		//return app;
-	}
+		return app;
+	};
 	
 	app.reset = function() {
 		graph.reset();
-		//return app;
-	}
+		return app;
+	};
+
+	app.togglePickAndPin = function() {
+		pickAndPin.enabled(!pickAndPin.enabled());
+		return app;
+	};
+
+	app.collapsingDegree = function(degree) {
+		nodeDegreeFilter.setDegreeQueryFunction(function() {
+			return degree;
+		});
+		graph.update();
+		return app;
+	};
 	
-	/* testing
-	 	app.pickPin = function() {
-		webvowl.modules.pickAndPin();
-	}
-	
-	app.classDistance = function(num) {
-		options.classDistance(num);
-	}
-	
-	app.datatypeDistance = function(num) {
-		options.datatypeDistance(num);
-	}*/
+	app.classDistance = function(distance) {
+		options.classDistance(distance);
+		graph.updateStyle();
+		return app;
+	};
+
+	app.datatypeDistance = function(distance) {
+		options.datatypeDistance(distance);
+		graph.updateStyle();
+		return app;
+	};
 	
 	app.data = function (convertedOntology) {
 		if (!arguments.length) return data;

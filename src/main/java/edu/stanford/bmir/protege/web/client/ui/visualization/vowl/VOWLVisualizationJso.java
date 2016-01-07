@@ -70,6 +70,21 @@ public class VOWLVisualizationJso extends JavaScriptObject {
 	public final native void reset() /*-{
 	  this.reset();
 }-*/;
-	
+
+  public final native void togglePickAndPin() /*-{
+	  this.togglePickAndPin();
+  }-*/;
+
+  public final native void collapsingDegree(int collapsingDegree) /*-{
+	  this.collapsingDegree(collapsingDegree);
+  }-*/;
+
+  public final native void classDistance(int classDistance) /*-{
+	  this.classDistance(classDistance);
+  }-*/;
+
+  public final native void datatypeDistance(int datatypeDistance) /*-{
+	  this.datatypeDistance(datatypeDistance);
+  }-*/;
 
 }
