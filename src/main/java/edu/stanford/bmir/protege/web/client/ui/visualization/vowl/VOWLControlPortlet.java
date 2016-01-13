@@ -3,6 +3,7 @@ package edu.stanford.bmir.protege.web.client.ui.visualization.vowl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,9 +94,7 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 		//MenuBar resetMenu = new MenuBar(true);
 		controlBar.addItem("Reset", new Command() {
 			public void execute() {
-				//Window.alert("You selected Reset!");
 				selection = Arrays.asList("reset");
-				GWT.log("[VOWL] Visualization graph, reset.");
 				notifySelectionListeners(new SelectionEvent(VOWLControlPortlet.this));
 			}
 		});
@@ -104,16 +103,15 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 		//MenuBar pauseMenu = new MenuBar(true);
 		controlBar.addItem("Pause", new Command() {
 			public void execute() {
-				if(paused) {
-					selection = Arrays.asList(false);
-
-				}
-				else {
-					paused = true;
-					selection = Arrays.asList(true);
-				}
+				selection = Arrays.asList(new String[]{"pause", String.valueOf(paused?"false":"true")});
 				notifySelectionListeners(new SelectionEvent(VOWLControlPortlet.this));
-				//Window.alert("You selected Pause!");
+				
+				if(paused)
+					paused = false;
+				else
+					paused = true;
+				
+
 			}
 		});
 		controlBar.addSeparator();
@@ -145,19 +143,7 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 
 		gravityMenu.addItem(classDistance);
 
-		cmd = new Command() {
-			public void execute() {
-				//map.put("datatypeDistance", datatypeDistance.getElement().getNodeValue());
-				//Window.alert("Clicked datatype distance");
-				//map.put("datatypeDistance", 10);
-				//selection = (Collection<? extends Object>) map;
-				selection = Arrays.asList("datatypeDistance");
-				addSelectedComponent(datatypeDistance);
-				notifySelectionListeners(new SelectionEvent(VOWLControlPortlet.this));
-			}
-		};
 
-		
 		TextBox tb2 = new TextBox();
 		tb2.setName("datatypeDistance");
 		tb2.setValue("120");
@@ -233,14 +219,6 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 		setOp = new ExtendedMenuItem("<input type=\"checkbox\" name=\"setOp\" value=\"0\"> Set operators", true, cmd);
 		filterMenu.addItem(setOp);
 
-		cmd = new Command() {
-			public void execute() {
-				selection = Arrays.asList("collapseDegree");
-				addSelectedComponent(collapseDegree);
-				notifySelectionListeners(new SelectionEvent(VOWLControlPortlet.this));
-			}
-		};
-
 		TextBox tb3 = new TextBox();
 		tb3.setName("collapseDegree");
 		tb3.setValue("0");
@@ -254,27 +232,16 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 
 		controlBar.addSeparator();
 
-		/*modesMenu.addItem("Pick & Pin", new Command() {
-			public void execute() {
-				;
-			}
-		});*/
-
 		cmd = new Command() {
 			public void execute() {
 				//addSelectedComponent(dataProp);
 
-				if (pickPin.isEnabled()) {
+				if (pickPin.isEnabled())
 					pickPin.setEnabled(false);
-					map.put("pickPin", false);
-					//selection = Arrays.asList(false);
-				}
-				else {
+				else
 					pickPin.setEnabled(true);
-					map.put("pickPin", true);
-					//selection = Arrays.asList(true);
-				}
-				selection = (Collection<? extends Object>) map;
+				
+				selection = Arrays.asList("pickPin");
 				notifySelectionListeners(new SelectionEvent(VOWLControlPortlet.this));
 			}
 		};
@@ -380,8 +347,7 @@ public class VOWLControlPortlet extends AbstractOWLEntityPortlet implements Sele
 		Object sender = event.getSource();
 		if (sender instanceof TextBox && event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER) {
 			TextBox textBox = (TextBox)event.getSource();
-			//Window.alert("You pressed ENTER. Value becomes: "+textBox.getValue());
-			selection = Arrays.asList(textBox.getName());
+			selection = Arrays.asList(new String[]{textBox.getName(), textBox.getValue()});
 			notifySelectionListeners(new SelectionEvent(VOWLControlPortlet.this));
 			//mp.clear();
 			mp.hide();

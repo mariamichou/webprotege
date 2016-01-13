@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import com.google.common.base.Optional;
@@ -66,7 +68,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 	private Widget graphContainer;
 	private VerticalPanel detailsDynamicPanel;
 	private boolean initialized = false;
-	
+
 	public VOWLVisualizationPortlet(SelectionModel selectionModel, Project project) {
 		super(selectionModel, project);
 		this.listeners = new ArrayList<SelectionListener>();
@@ -80,7 +82,7 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 		graphContainer = new HTML();
 
 		graphContainer.getElement().setId(getContainerId());
-		
+
 		add(graphContainer);
 	}
 
@@ -123,8 +125,8 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 
 		}
 	}
-	
-	
+
+
 	@Override
 	protected void onRefresh() {
 
@@ -345,9 +347,9 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 
 	@Override
 	public void isChanged(ChangedEvent event) {
-		
+
 		Collection<? extends Object> changedSelection = event.getChangeable().getChange();
-		
+
 		if (changedSelection.size() > 0) {
 			Object selectionData = changedSelection.iterator().next();
 			//GWT.log("[VOWL] Visualization Selection in the drop down list is changed");
@@ -364,67 +366,43 @@ public class VOWLVisualizationPortlet extends AbstractOWLEntityPortlet implement
 	@Override
 	public void selectionChanged(SelectionEvent event) {
 		Collection<? extends Object> changedSelection = event.getSelectable().getSelection();
-		
-		if (changedSelection.size() > 0) {
+
+		if (changedSelection.size() == 1) {
+
 			Object selection = changedSelection.iterator().next();
-			//GWT.log("[VOWL] Visualization Selection in the drop down list is changed");
-			if (selection instanceof Boolean) {
-				boolean pause = (Boolean) selection;
-				if(pause)
-					visualizationJso.pause();
-				else
-					visualizationJso.unpause();
-				GWT.log("[VOWL] Visualization graph pause/unpause");
-			}
-			else if(selection instanceof Map) {
-				Map map = (Map)selection;
-				if(map.containsKey("pickPin")) {
-					visualizationJso.togglePickAndPin();
-				}
-				else if(map.containsKey("classDistance")) {
-					int distance = Integer.valueOf((String) map.get("classDistance"));
-					//Window.alert("Class Distance becomes: "+distance);
-					visualizationJso.classDistance(distance);
-				}
-				else if(map.containsKey("datatypeDistance")) {
-					//Window.alert("Listener got datatype distance event");
-					
-					int distance = Integer.valueOf((String) map.get("datatypeDistance"));
-					//Window.alert("Datatype Distance becomes: "+distance);
-					visualizationJso.datatypeDistance(distance);
-				}
-				else if(map.containsKey("collapseDegree")) {
-					//Window.alert("Listener got datatype distance event");
-					
-					int distance = Integer.valueOf((String) map.get("collapseDegree"));
-					//Window.alert("Datatype Distance becomes: "+distance);
-					visualizationJso.collapsingDegree(distance);
-				}
-				else {Window.alert("Listener got 0 event");
-				}
-			}
-			else if(selection instanceof String) {
-				String option = (String) selection;
+			if(selection instanceof String) {
 				if(selection.equals("reset")) {
 					visualizationJso.reset();
-					onRefresh();
+					//onRefresh();
 				}
-				else if(selection.equals("classDistance")) {
-					//Window.alert("Visualization portlet, class distance, Edw prepei na pairnw thn allagmenh timh kai oxi kapoia static.");
-					visualizationJso.classDistance(20);
-				}
-				else if(selection.equals("datatypeDistance")) {
-					visualizationJso.datatypeDistance(20);
-				}
-				else if(selection.equals("collapseDegree")) {
-					visualizationJso.classDistance(20);
+				else if(selection.equals("pickPin")) {
+					visualizationJso.togglePickAndPin();
 				}
 				else {;}
 			}
-			else {}
+			else {;}
+		}else {
+			String[] array = (String[]) changedSelection.toArray();
+			if(array[0].equals("classDistance")) {
+				visualizationJso.classDistance(Integer.valueOf(array[1]));
+			}
+			else if(array[0].equals("datatypeDistance")) {
+				visualizationJso.datatypeDistance(Integer.valueOf(array[1]));
+			}
+			else if(array[0].equals("collapseDegree")) {
+				visualizationJso.collapsingDegree(Integer.valueOf(array[1]));
+			}
+			else if(array[0].equals("pause")) {
+				if(array[1].equals("true"))
+					visualizationJso.pause();
+				else
+					visualizationJso.unpause();
+			}
+			else {;}
+
 		}
-		
-		
+
+
 	}
 
 }
