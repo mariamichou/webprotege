@@ -37,6 +37,8 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 		selectedNode;
 
 	app.initialize = function () {
+		nodeDegreeFilter.enabled(true);
+
 		options.graphContainerSelector(graphContainerSelector);
 		options.selectionModules().push(focuser);
 		options.selectionModules().push(pickAndPin);
