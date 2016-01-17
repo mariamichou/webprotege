@@ -96,6 +96,10 @@ webvowlApp.app = function (graphContainerSelector, convertedOntology) {
 	
 	app.reset = function() {
 		graph.reset();
+		pickAndPin.enabled(false).reset();
+		app.collapsingDegree(0);
+
+		graph.updateStyle();
 		return app;
 	};
 
